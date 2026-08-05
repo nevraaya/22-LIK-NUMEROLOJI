@@ -1,0 +1,29 @@
+/* 22'lik Numeroloji — paylaşılan stil (yasal sayfalar + 404) */
+:root{
+  --ink:#F3EAE0; --ink-soft:#CFC2E0; --paper:#140A1E; --paper-alt:#1B0F2A;
+  --card:#221336; --line:#3A2050; --brand:#6B3FA0; --brand-text:#C9A6EA;
+  --gold:#E4A848; --gold-lt:#F5D89C; --radius:16px;
+  --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+}
+:root[data-theme="light"]{
+  --ink:#2b2420; --ink-soft:#5c5248; --paper:#faf7f1; --paper-alt:#f1ebdf;
+  --card:#ffffff; --line:#e5dcc9; --brand:#5b3a7a; --brand-text:#5b3a7a;
+  --gold:#b8863b; --gold-lt:#e4a848; --radius:14px;
+  --shadow:0 10px 30px -12px rgba(43,36,32,.18);
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.7;}
+h1,h2,h3{font-family:'Cinzel',Georgia,serif;font-weight:600;color:var(--ink);}
+a{color:var(--brand-text);}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px;}
+header.site{border-bottom:1px solid var(--line);padding:16px 0;}
+header.site .wrap{max-width:1080px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Cinzel',serif;font-weight:700;color:var(--brand-text);text-decoration:none;}
+.brand img{width:32px;height:32px;border-radius:8px;}
+main{padding:56px 0;}
+main h1{font-size:2rem;margin-bottom:.3em;}
+.updated{color:var(--ink-soft);font-size:.85rem;margin-bottom:2em;}
+section{margin-bottom:2em;}
+.placeholder{background:var(--card);border:1px dashed var(--gold);border-radius:10px;padding:14px 18px;color:var(--ink-soft);font-size:.92rem;}
+footer{border-top:1px solid var(--line);padding:32px 0;text-align:center;color:var(--ink-soft);font-size:.85rem;}
+footer nav{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-bottom:14px;}

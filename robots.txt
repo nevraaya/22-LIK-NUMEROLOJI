@@ -1,0 +1,13 @@
+# 22'lik Numeroloji — robots.txt
+# TODO: "https://example.com" placeholder'ını gerçek alan adınızla değiştirin.
+
+User-agent: *
+Allow: /
+
+# Henüz zorunlu işletme bilgileri (veri sorumlusu unvanı/adresi) tamamlanmadığı
+# için KVKK aydınlatma metni indekslenmesin diye ayrıca noindex meta etiketiyle
+# işaretlendi (bkz. kvkk-aydinlatma-metni.html); robots.txt seviyesinde ek bir
+# engelleme gerekmiyor çünkü sayfa genel ziyaretçiler için hâlâ erişilebilir
+# kalmalı, yalnızca arama sonuçlarından gizli tutulmalı.
+
+Sitemap: https://example.com/sitemap.xml
