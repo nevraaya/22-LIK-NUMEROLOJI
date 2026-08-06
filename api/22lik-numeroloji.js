@@ -980,7 +980,7 @@ function matrisTablo(rows){
       }
       var style = 'padding:'+PAD+';text-align:center;white-space:normal;word-break:normal;overflow-wrap:break-word;'+
                   'border:1px solid #F2A93C;background:'+bg+';color:'+fg+';width:'+COLW[c.key]+'%;font-size:'+FS+';'+
-                  (c.key==='cakra' ? 'font-family:\'Cinzel\',serif;font-weight:700;' : 'font-weight:600;');
+                  (c.key==='cakra' ? 'font-family:\\'Cinzel\\',serif;font-weight:700;' : 'font-weight:600;');
       return '<td style="'+style+'">'+txt+'</td>';
     }).join('') + '</tr>';
   });
@@ -1017,13 +1017,13 @@ function cakraAgaciPaneli(title, arr){
     var deger = arr[haneNo-1];
     var renk = CAKRA_RENK[haneNo] || {bg:'#999', fg:'#111'};
     return '<div style="grid-row:'+satir+';grid-column:'+sutun+';display:flex;align-items:center;justify-content:center;'+
-           'background:'+renk.bg+';color:'+renk.fg+';border:1px solid #00000055;font-family:\'Cinzel\',serif;'+
+           'background:'+renk.bg+';color:'+renk.fg+';border:1px solid #00000055;font-family:\\'Cinzel\\',serif;'+
            'font-weight:700;font-size:clamp(11px,2.6vw,1.05rem);min-height:0;">'+deger+'</div>';
   }).join('');
   return '<div style="margin-bottom:20px;background:#E4A848;border-radius:8px;padding:10px;">'+
     '<div style="background:linear-gradient(180deg,#4a3510,#0d0803);border-radius:5px;padding:8px 14px;'+
     'text-align:center;margin-bottom:8px;">'+
-    '<span style="font-family:\'Cinzel\',serif;font-weight:700;color:var(--gold-lt);letter-spacing:.08em;font-size:.85rem;">'+
+    '<span style="font-family:\\'Cinzel\\',serif;font-weight:700;color:var(--gold-lt);letter-spacing:.08em;font-size:.85rem;">'+
     title+'</span></div>'+
     '<div style="background:#D9D9D9;border:2px solid #000;border-radius:4px;padding:6px;">'+
     '<div style="display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(6,clamp(28px,7vw,46px));'+
