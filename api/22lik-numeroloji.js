@@ -1001,12 +1001,14 @@ function haneRow(title, arr){
 // Kutu içindeki sayı ise o hane için o an hesaplanmış DEĞERDİR — kullanıcıya göre değişir.
 // Hane10, hem "taban sırasında" (satır3) hem "üst sağ" bölümde (satır2) iki kez görünür;
 // bu, orijinal diyagramın kendisinde de böyledir (Hane10, Hane12'nin hesaplanışında tekrar
-// kullanılır: Hane12 = Hane10 + Hane11).
+// kullanılır: Hane12 = Hane10 + Hane11). Satır3/sütun5 hücresi Hane5'i gösterir
+// (Hane5 = Hane1 + Hane4, ilgili sistemin kendi indirgeme kuralıyla) — Hane10 zaten
+// satır2/sütun4'te ayrıca gösteriliyor.
 var CAKRA_AGACI_IZGARA = [
   // [hane_no, satır(1-6), sütun(1-5)]
   [13,1,1], [12,1,5],
   [10,2,4], [11,2,5],
-  [1,3,1], [2,3,2], [3,3,3], [4,3,4], [10,3,5],
+  [1,3,1], [2,3,2], [3,3,3], [4,3,4], [5,3,5],
   [6,4,2], [7,4,3],
   [8,5,3],
   [9,6,5]
@@ -1106,7 +1108,7 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   html += kulvarBlok(tamIsimBaslik, kTamBirlesik);
   html += '</div>';
 
-  html += '<div class="mod"><h3>Çakra Ağacı</h3>';
+  html += '<div class="mod"><h3>Çakra Merdiveni</h3>';
   html += cakraAgaciPaneli('KLASİK SİSTEM', za.dogumPiramit);
   html += cakraAgaciPaneli('22 BAZLI', za.dogumPiramit22);
   html += cakraAgaciPaneli('KİŞİSEL YIL ÇAKRA ANALİZİ', za.kisiselYilPiramit);
