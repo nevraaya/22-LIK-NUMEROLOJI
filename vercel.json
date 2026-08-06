@@ -1,0 +1,6 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/22lik-numeroloji", "destination": "/api/22lik-numeroloji" }
+  ]
+}
