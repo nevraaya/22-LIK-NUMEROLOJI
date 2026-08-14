@@ -288,6 +288,27 @@ const APP_HTML = `<!DOCTYPE html>
     </div>
 
     <div id="calcOut" class="results"></div>
+
+    <div style="margin-top:56px;padding-top:32px;border-top:2px dashed var(--line);">
+      <span class="eyebrow" style="color:var(--gold);">Bağımsız Modül</span>
+      <h2 style="font-size:1.5rem;margin-bottom:6px;">🔮 Öngörü / Yorumlama</h2>
+      <p style="color:var(--ink-soft);font-size:.88rem;max-width:680px;margin-bottom:24px;">
+        "22'lik Numerolojide Öngörü Hesaplama ve Yorumlama Kılavuzu" belgesine göre hesaplanır.
+        Yukarıdaki hesap motorundan tamamen bağımsızdır; yukarıdaki isim/doğum tarihi alanlarını kullanır,
+        kendi ayrı bir mantıkla çalışır.
+      </p>
+      <div class="calc-card">
+        <div class="grid2">
+          <div class="field" style="grid-column:1/-1;">
+            <label for="ogTarih">İncelenecek Tarih</label>
+            <input type="date" id="ogTarih">
+            <div class="hint">Kişisel yıl/ay/gün enerjileri, dürtü ve harf yankısı bu tarihe göre hesaplanır. Boş bırakılırsa bugünün tarihi kullanılır.</div>
+          </div>
+        </div>
+        <button class="btn" type="button" id="ogBtn">Öngör</button>
+      </div>
+      <div id="ogOut" class="results"></div>
+    </div>
   </div>
 </main>
 
@@ -1128,6 +1149,536 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   out.innerHTML = html;
   out.classList.add('show');
 });
+// ============================================================
+// ONGORU MODULU VERI TABLOLARI ("22'lik Numerolojide Ongoru
+// Hesaplama ve Yorumlama Kilavuzu" belgesinden birebir alinmistir)
+// ============================================================
+var OG_EK_A = [
+  {no:1,baslik:"Başlatma, görünür olma, atılım",anaTema:"Yeni başlangıç, inisiyatif, “Ben yaparım” modu.",hediye:"Yeni iş/yan proje kurmak, parlak fikir, eğitim ve beceri sıçraması.",strateji:"Öne çıkmak, görünür olmak, network kurmak, fırsat kovalamak.",iyiGelir:"Kurslar/sertifikalar, sınavlar, eğitim başvuruları, yarışmalar.",dikkat:"Benmerkezcilik, aşırı hırs, gurur; özgüven eksikliği yüzünden planları sabote etmek.",saglikOdagi:"Omurga–kemik–bacaklar–bel; spor + düzenli yaşam; duygu yönetimi.",isPara:"Sonuç almak için başlatman şart; “ellerinle üretme/kurma” yılı.",iliskiler:"Hedef netse seviye atlatır; pasif kalma."},
+  {no:2,baslik:"Sezgi, iç dünya, akışa güven",anaTema:"Gizli olanı fark etme, sezgi, iç rehberlik.",hediye:"“Doğru zamanda doğru yerde olma”, gizli yeteneklerin uyanması.",strateji:"Zorlamadan ilerlemek; işaretleri okumak; doğru an gelince hareket.",iyiGelir:"Psikoloji/astroloji/numeroloji gibi içgörü çalışmaları; meditasyon; doğa.",iliskiTemasi:"Anne/ailenin kadınlarıyla bağları iyileştirme; eskiyle helalleşme.",dikkat:"Maske takmak, duyguları saklamak, dedikodu/entrika, kararsızlıkta kaybolmak.",saglikOdagi:"Yıllık kontroller; terapist/uzman ziyareti planı.",isPara:"İlişkiler fayda getirir ama acele yok; iç ses “tamam” deyince hamle.",iliskiler:"Derin bağ, ruh eşi hissi, “yarım kelime” anlaşma."},
+  {no:3,baslik:"Bereket, üretkenlik, dişil yaratım",anaTema:"Somut sonuçlar, büyüme, üretkenlik, yaratıcı doğuş.",hediye:"Uzun zamandır düşündüğün şeylerin forma girmesi; “meyve toplama”.",yaraticilik:"Sanat–müzik–edebiyat–üretim alanları açılır; proje doğurur.",dengeDersi:"İş–aile–keyif arasında denge; “ya hep ya hiç” değil.",dikkat:"Dişil enerji düşüklüğü → agresyon/kontrol/histeri; ya da sadece dış görünüşe takılma.",saglikOdagi:"Cinsel sağlık; uzman kontrolleri; doğum kontrol bilgisini güncelle.",isPara:"Enerji güçlü; çaba sonuç getirir; büyüme/yenilik/canlanma.",iliskiler:"Yeni sayfa ya da mevcut ilişkide “yeni doğum” etkisi."},
+  {no:4,baslik:"Disiplin, gerçekçilik, yapı kurma",anaTema:"Planların “gerçeklik testi”, sorumluluk, yapılandırma.",hediye:"Terfi/otorite, iş kurma, ciddi adımlar, gayrimenkul/satın alma olasılığı.",strateji:"Öz disiplin + sabır + diplomasi; hedefe düzenli yürümek.",iliskiTemasi:"Güven veren ciddi biriyle karşılaşma ihtimali; sağlamlık arayışı.",dikkatBaglar:"Baba/erkek akrabalar/eski partnerle çözülmemiş meseleler tıkar.",dikkat:"“Eril enerjiye fazla kaçıp” yumuşak tarafı unutmak; sertleşmek.",saglikOdagi:"Genel olarak güçlü; ama baş ağrısı/canlılık düşüşü ve hareketsizlik riski.",isPara:"Anlaşma–sözleşme için iyi; fakat emek şart, kolay para yok.",iliskiler:"Güçlenme olur; ama aşırı “güvenlik” ilişkide sıkışma yaratabilir."},
+  {no:5,baslik:"Değerler, aile, resmiyet ve düzen",anaTema:"“Anlam” arayışı; değerleri güncelleme; resmileştirme.",hediye:"Dünya görüşü yenilenir; aile/evlilik/çocuk teması güçlenir.",strateji:"Önceliklendirme, sistem kurma, zaman yönetimi, evrak işlerinde titizlik.",iyiGelir:"Eğitim almak + öğrendiklerini paylaşmak (öğretmen/mentor rolü).",kritikDers:"“Baba figürünü kabul/çalışma” bu enerjiyi artıya çevirir (metnin vurgusu bu).",dikkat:"Kanun/otorite/baba temalı gerilim; ilişkilerde bozulma; aşırı ahlakçılık.",saglikOdagi:"Kronikler + kötü alışkanlıklar; psikolojik yük; fazla bilgi → migren; dinlenme şart.",isPara:"Etik testler; kurallara uy; dolandırıcılık/şaibeli işlere girme.",iliskiler:"İdealleştirme + büyüme; evlilik niyeti/hamilelik göstergesi olabilir."},
+  {no:6,baslik:"Aşk, seçim, uyum ve sosyal dönem",anaTema:"Duygular yükselir; ilişki/uyum/güzellik/kalpten seçim.",hediye:"Aşk, keyif, sosyal çevre, etkinlikler; “güzel dönem” etkisi.",strateji:"Duyguları bastırma; açık konuş; ihtiyaçlarını net söyle.",iyiGelir:"Estetik düzenleme, hobiler, yaratıcı uğraşlar; içsel uyum çalışmaları.",dikkat:"Karşılıksız sevgi, kararsızlık, düşük özdeğer; aşırı idealizm → hayal kırıklığı.",saglikOdagi:"Hormon kontrolü; duygusal dalgalanma; cilt/estetik hassasiyet.",isPara:"Yön değişimi, yeni görevler; ortaklıkla kazanç ihtimali.",iliskiler:"“Seçim” yılı: bir şeyden vazgeçip gönüllü bağ kurunca mutluluk açılır."},
+  {no:7,baslik:"Sıçrama, hareket, zafer ve liderlik",anaTema:"Hızlanma; hedefe kilitlenme; ilerleme ve başarı.",hediye:"Yeni başlangıçlar, taşınma/seyahat, liderlik, iş büyütme.",strateji:"Net hedef + plan + disiplinli ilerleme; ekip kurmaktan korkma.",iyiGelir:"Mobil olmak; yeni çevre; ortak projeler; finansal okuryazarlık çalışmaları.",dikkat:"Kibir, acelecilik, “ne pahasına olursa olsun”; hedef yanlışsa taktik değiştir.",saglikOdagi:"Spor/ulaşım kazalarına dikkat (bisiklet, araç, kaykay vb.).",isPara:"Daha büyük sorumluluk; yeni alana cesur giriş; kapılar açılır.",iliskiler:"Yeni ilişki başlangıcı; ilk adımı atma teması."},
+  {no:8,baslik:"Karma, adalet, hesap kapatma",anaTema:"“Ne ektiysen onu biçersin”; denge; sorumluluk.",hediye:"Emeklerin karşılığı; belgeler–kayıtlar–pasaport/iş/eğitim kayıtları gibi süreçler.",strateji:"Dürüstlük, borç kapatma, düzen, sözünde durma.",dikkat:"Dengesizlik; öfkeyle “adalet savaşına” girip kendini yakmak; hileyle kazanma çabası.",saglikOdagi:"Metabolizma/vitamin eksikliği; psikosomatik kökler.",isPara:"Adil karşılık alırsın; ama hile/aldatma varsa “başarısızlık garanti” teması.",iliskiler:"Karşılıklılık ve saygı; nasıl davranırsan öyle döner."},
+  {no:9,baslik:"İçsel yol, bilgelik, sadeleşme",anaTema:"Kendini tanıma, hayatın anlamı, içe dönüş.",hediye:"Derin kavrayış; bir alanda uzmanlaşma; rehber/mentorlarla temas.",strateji:"Yalnızlık ihtiyacını suçlama; doğa, okuma, terapi/koçluk, derin çalışma.",dikkat:"İzolasyonun depresyona kayması; insanları yargılama; enerji düşüşü.",saglikOdagi:"Aşırı yük → yorgunluk/uykusuzluk/ton düşüşü; enerji koruma.",isPara:"“Başarı/para/tanınma” tanımını yeniden yazma; gerçek hedefi bulma.",iliskiler:"Egoist isteklerden olgun sevgiye geçiş; ilişkiyi korumak için bilinçli seçim."},
+  {no:10,baslik:"Kader Çarkı, şans, dönüm noktası",anaTema:"Kadersel değişim, fırsat, akışa girme.",hediye:"Beklenmedik şans, doğru insanlar, açılan kapılar, kader karşılaşmaları.",strateji:"Akışa güven, aktif ol, sosyal ol, çevreye karış, işaretleri fark et.",iyiGelir:"Yeni projeler, çevre genişletme, PR–iletişim, seyahat, görünürlük.",dikkat:"Pasiflik, tembellik, amaç kaybı, fırsatı fark etmeme.",riskliTaraf:"Yanlış çevre → şans kapanır; aşırı kontrol → akış durur.",saglikOdagi:"Ruh hali dalgalanması; enerji iniş–çıkış döngüsü.",isPara:"Beklenmedik kazanç, yön değişimi, kariyerde sürpriz rota.",iliskiler:"Kadersel tanışma; doğru zamanda doğru yerde olma teması."},
+  {no:11,baslik:"Güç, tutku, yüksek enerji",anaTema:"Güç patlaması, irade, yoğun üretim.",hediye:"Büyük çalışma kapasitesi, etki alanı büyümesi, yaratıcı sıçrama.",strateji:"Enerjiyi disipline et, spora yönlendir, ritim kur.",iyiGelir:"Büyük projeler, liderlik, yaratıcı işler, performans gerektiren alanlar.",dikkat:"Aşırı çalışma, öfke, baskıcılık, tükenme.",riskliTaraf:"Enerji boşalmazsa agresyon ve hastalık üretir.",saglikOdagi:"Aşırı yüklenme, ateş, bağışıklık düşüşü riski.",isPara:"Yaratıcı zirve, yoğun üretimle finansal sıçrama.",iliskiler:"Tutkulu ama sınavlı ilişkiler; duygu kontrolü şart."},
+  {no:12,baslik:"Askıda kalma, bakış açısı değişimi",anaTema:"Durma, yeniden değerlendirme, yön değiştirme.",hediye:"Bilgelik, perspektif değişimi, içsel dönüşüm.",strateji:"Yavaşla, gözlemle, fedakârlık–öz değer dengesini kur.",iyiGelir:"Eğitim, içsel çalışma, terapi, manevi gelişim.",dikkat:"Kurban rolü, kendini feda etme, bedavacılık.",riskliTaraf:"Başkalarının yükünü taşıma, sömürülme.",saglikOdagi:"Kronik konular, fonksiyonel dengesizlikler.",isPara:"Yavaşlama; yeniden eğitim ve yön ayarı gerekir.",iliskiler:"Durgunluk; ilişkiyi yeniden yapılandırma sınavı."},
+  {no:13,baslik:"Dönüşüm, bitiş ve yeniden doğuş",anaTema:"Radikal değişim, kapanış ve yeniden başlama.",hediye:"Eski yüklerden kurtulma, kimlik yenilenmesi, temiz sayfa.",strateji:"Biteni bırak, direnmeyi bırak, hızlı uyum sağla.",iyiGelir:"Detoks, sadeleşme, taşınma, iş/alan değişimi, alışkanlık bırakma.",dikkat:"Geçmişe tutunma, kararsızlık, sorumluluktan kaçış.",riskliTaraf:"Kaos, sert kopuşlar, agresif tepkiler.",saglikOdagi:"Yaşam tarzı değişimi ihtiyacı; kötü alışkanlıkları bırakma.",isPara:"Mevcut işin kapanışı veya köklü yön değişimi.",iliskiler:"Bir döngü tamamlanır; ayrılık veya ilişki form değiştirir."},
+  {no:14,baslik:"Denge, uyum ve şifa",anaTema:"Ilımlılık, denge, iç huzur kurma.",hediye:"Ruhsal ve duygusal şifa, sakin ama sağlam ilerleme.",strateji:"Sabır, ölçülülük, yavaş ve bilinçli ilerleme.",iyiGelir:"Yaratıcılık, sanat, terapi, içsel gelişim, şifa çalışmaları.",dikkat:"Aşırılıklar, erteleme, enerji dağıtma.",riskliTaraf:"Süreçleri gereksiz uzatma, kararsız bekleme hali.",saglikOdagi:"Böbrekler, sıvı dengesi, doğal destekler.",isPara:"Dengeli bütçe, sakin ve plansız stresten uzak çalışma.",iliskiler:"Yumuşak, güvenli, dostluk temelli bağlar."},
+  {no:15,baslik:"Gölge, ayartma ve güç testi",anaTema:"Nefs, arzu, güç ve para sınavı.",hediye:"Büyük maddi fırsatlar, etki ve çekim gücü artışı.",strateji:"Dürüst kal, arzuları yönet, bilinçli seçim yap.",iyiGelir:"Büyük anlaşmalar, ticaret, maddi büyüme fırsatları.",dikkat:"Açgözlülük, kıskançlık, manipülasyon, bağımlılıklar.",riskliTaraf:"Kolay para tuzakları, etik dışı kazanç yolları.",saglikOdagi:"Bağımlılık riski, aşırılığa bağlı yıpranma.",isPara:"Büyük kazanç potansiyeli var; ahlaki test içerir.",iliskiler:"Yoğun tutku, kışkırtıcı çekim; sınır koymak şart."},
+  {no:16,baslik:"Yıkım, kriz ve uyanış",anaTema:"Yanlış yapıların çöküşü, ego kırılması.",hediye:"Özgürleşme, gerçeklerle yüzleşme, bilinç sıçraması.",strateji:"Direnme, bırak, yeniden kurmaya razı ol.",iyiGelir:"İnanç sistemi güncelleme, köklü hayat temizliği.",dikkat:"İnada tutunma, kibir, çatışmacı tutum.",riskliTaraf:"Ani kopuşlar, iş/ilişki yıkımı, sert krizler.",saglikOdagi:"Onarım dönemi; diş, kemik, yapısal kontroller.",isPara:"İşten ayrılma veya plan çöküşü; sonrası özgürleşme.",iliskiler:"Dayanıksız bağlar yıkılır, gerçek bağ kalır."},
+  {no:17,baslik:"Yıldız, parlamak ve görünürlük",anaTema:"Umut, ilham, görünür olma.",hediye:"Tanınma, popülerlik, yeteneklerin açılması.",strateji:"Kendini göster, üret, sahneye çık, paylaş.",iyiGelir:"Yaratıcı işler, medya, sosyal ağlar, sanat projeleri.",dikkat:"Özgüven düşüşü, içine kapanma, fırsat kaçırma.",riskliTaraf:"Kibir veya tam tersi kendini saklama.",saglikOdagi:"Enerji toparlanması; alerjik hassasiyetler.",isPara:"Yeni kariyer kapısı, uzun vadeli şanslı projeler.",iliskiler:"Önemsiz görünen tanışmalar kader bağlantısına dönebilir."},
+  {no:18,baslik:"Ay, bilinçaltı ve sezgi",anaTema:"Belirsizlik, sezgi, bilinçaltı çalışması.",hediye:"Sezgisel güç, yaratıcı vizyon, iç dünyayı tanıma.",strateji:"Yavaş ilerle, sezgiyi dinle, riskleri ölç.",iyiGelir:"Sanat, psikoloji, terapi, bilinçaltı çalışmaları.",dikkat:"Korkular, kuruntu, aldanma, hayal dünyasına kaçış.",riskliTaraf:"Yanılsama, gizli gündemler, aldatılma.",saglikOdagi:"Uyku, psikoloji, bağımlılık eğilimleri.",isPara:"Belirsiz süreçler, yeniden yapılanma dönemleri.",iliskiler:"Gizlilik, net olmayan niyetler; şeffaflık arayın."},
+  {no:19,baslik:"Güneş, başarı ve canlılık",anaTema:"Açık başarı, neşe, yaşam enerjisi.",hediye:"Bolluk, görünür sonuçlar, mutluluk ve sıcak ilişkiler.",strateji:"Paylaş, açık ol, üret ve keyifle ilerle.",iyiGelir:"Öğretmek, bilgi paylaşmak, ekip işleri, yaratıcı üretim.",dikkat:"Kibir, aşırı özgüven, kendini yakma (tükenme).",riskliTaraf:"Takıntı, aşırı kontrol → psikosomatik stres.",saglikOdagi:"Yüksek enerji; aşırı çalışmaya ve yanmaya dikkat.",isPara:"İşte başarı, ekip uyumu, verimli dönem.",iliskiler:"Sıcak, cömert, destekleyici bağlar."},
+  {no:20,baslik:"Uyanış, çağrı ve kökler",anaTema:"Karmik uyanış, köklerle yüzleşme.",hediye:"Kayıp görünen değeri geri kazanma, hayat amacı netleşmesi.",strateji:"Aile bağlarını onar, affet, geçmişi temizle.",iyiGelir:"Soy–aile çalışmaları, kök araştırması, büyük projeler.",dikkat:"Sürekli eleştiri, hayatı reddetme, küskünlük.",riskliTaraf:"Akrabalarla çatışma → fırsat kapanması.",saglikOdagi:"Genel kontroller, planlı muayene.",isPara:"Büyük yön değişimi; gerçek mesleğe geçiş.",iliskiler:"Derin birliktelik; “gerçek eş” teması."},
+  {no:21,baslik:"Dünya, tamamlanma ve bütünlük",anaTema:"Tamamlanma, bütünleşme, yeni seviye.",hediye:"Hayat alanlarının birleşmesi, yerini bulma.",strateji:"Ufku genişlet, hareket et, dünyaya açıl.",iyiGelir:"Seyahat, uluslararası işler, medya, ağ kurma.",dikkat:"Borçlanma, finansal dikkatsizlik.",riskliTaraf:"Dünya ile kavga, sert ideolojik tutum.",saglikOdagi:"Bağışıklık ve genel beden hareketliliği.",isPara:"Başarılı projeler, yabancı bağlantılar.",iliskiler:"Kalıcı birlik, evlilik veya uzun vadeli ortaklık."},
+  {no:22,baslik:"Yeni döngü, özgürlük ve sıfırlama",anaTema:"Sıfırdan başlangıç, özgürlük, keşif.",hediye:"Yeni yol, yeni deneyimler, sürpriz fırsatlar.",strateji:"Hafifle, dene, hareket et, akışta kal.",iyiGelir:"Seyahat, yeni girişimler, deneysel projeler.",dikkat:"Dağınıklık, sorumsuzluk, sınır aşımı.",riskliTaraf:"Kumar, bağımlılık, hayal dünyasına kaçış.",saglikOdagi:"Sinir sistemi, zihinsel denge.",isPara:"İş/pozisyon değişimi, finansal özgürleşme.",iliskiler:"İlişki formatı değişir; daha özgür model."},
+];
+var OG_ZIRVE_TEMEL = {"1": ["Aktivite ve değişim fırsatı", "Bireyselleşme ve bağımsızlık", "Baskıyı reddetme"], "2": ["Güçten çok işbirliği", "Uyum ve ortaklık", "Diplomasi geliştirme"], "3": ["Neşe ve keyifli gelişmeler", "Yaratıcılık ve sanat", "Yetenekleri ortaya çıkarma"], "4": ["Yavaş ama sağlam ilerleme", "Gelecek inşası", "Sabır ve hizmet bilinci"], "5": ["Sürekli değişim ve deneyim", "Yeni insanlara ve ortamlara açılma", "Eskiyi bırakma, yeniyi kabul"], "6": ["Sorumluluk ve aile konuları", "Sevgi ve görevler", "Uyum ve hizmet"], "7": ["Felsefe ve derin düşünce", "Analiz ve içe dönüş", "Bilgi arayışı ve sabır"], "8": ["Güç ve otorite", "Başarı ve tanınma", "Cesaret ve büyüme"], "9": ["Tamamlanma ve genişleme", "Evrensel başarı", "Bireysel hayal kırıklıklarından öğrenme", "Empati ve şefkat"], "11": ["Ruhsal açılım", "Aydınlanma ve ün", "Yüksek hassasiyet", "İdeallere bağlanma"], "22": ["Dünya ve uluslararası konular", "Büyük ölçekli düşünme", "Bilinç genişlemesi"]};
+var OG_ZIRVE_DONEM = {"1": {"baslik": "Liderlik Dönemi", "maddeler": ["Bağımsızlık ve özgüven artar", "Kendi yolunu çizme isteği", "Liderlik fırsatları doğar", "Yeni iş veya proje başlatmak için uygun zaman", "Başkalarını memnun etmekten çok kendine yönelme"]}, "2": {"baslik": "İlişki ve İşbirliği Dönemi", "maddeler": ["Uyumlu ilişkiler ön planda", "Sezgiler güçlenir", "İnsanları daha iyi anlama", "Yardım ve destek teması", "Uygun alanlar:", "Danışmanlık", "Şifacılık", "Sanat", "Müzik", "Sağlık çalışmaları"]}, "3": {"baslik": "İfade ve Yaratıcılık Dönemi", "maddeler": ["Kendini ifade etme artar", "İletişim güçlenir", "Çok çalışma ve düzen kurma zamanı", "Sanatsal üretim desteklenir", "Uygun ifade yolları:", "Yazmak", "Konuşmak", "Sahne / gösteri", "Şarkı söylemek", "Tasarlamak", "Odak ve disiplinle başarı ve mutluluk potansiyeli yükselir"]}, "4": {"baslik": "Disiplin ve Kuruluş Dönemi", "maddeler": ["İstikrar kurma zamanı", "Gelecek için sağlam temel atma", "Direnme ve sorunlarla yüzleşme gücü gelişir", "Düzenli ve planlı çalışma desteklenir", "Disiplin ve odak artar", "Başladığını bitirme enerjisi verir", "Çok çalışma + etik duruş = başarı potansiyeli"]}, "5": {"baslik": "Değişim ve Deneyim Dönemi", "maddeler": ["Hareket ve değişim artar", "Yeni deneyimler ve yeni insanlar", "İletişim becerileri gelişir", "Keşif ve öğrenme dönemi", "Kişisel tanıtım / görünürlük fırsatı", "Değişime uyum öğrenilir", "Öz disiplin ve ölçülülük dersi getirir", "Esneklik ve uyum gücü kazandırır"]}, "6": {"baslik": "Aile ve Hizmet Dönemi", "maddeler": ["Sorumluluk artışı", "Aile ve yakın çevre ön planda", "Verme–alma dengesi öğrenilir", "Ev ve iş yaşamı dengesi kurulur", "Uygun temalar:", "Evlilik / nişan", "Çocuk", "Aileyle ilgilenme", "Hizmet alanları", "Evden çalışma", "Şefkat ve sahiplenme duygusu güçlenir"]}, "7": {"baslik": "İçsel Gelişim ve Uzmanlık Dönemi", "maddeler": ["Araştırma ve derin öğrenme zamanı", "Uzmanlaşma fırsatı", "Kişisel gelişim hızlanır", "Spiritüel farkındalık artar", "Yaşamın anlamını sorgulama", "Sezgiler güçlenir", "İç gözlem ve içe dönüş desteklenir", "Bilinçli uygulamalar benimsenir"]}, "8": {"baslik": "Güç, Para ve Kariyer Dönemi", "maddeler": ["Maddi fırsatlar artar", "Kariyer ilerlemesi mümkündür", "Yönetim ve liderlik şansı", "Kendi işini kurma potansiyeli", "Doğru karar verme önemlidir", "Dürüstlük ve çalışma disiplini şarttır", "Ego kontrolü öğrenilir", "Para ile sağlıklı ilişki geliştirme süreci"]}, "9": {"baslik": "Şefkat ve Tamamlama Dönemi", "maddeler": ["Açık fikirlilik gelişir", "Karşılıksız yardım eğilimi artar", "Empati ve anlayış büyür", "Geçmişi bırakma süreci", "Affetme ve kabullenme", "Bitenleri doğal görmek", "İnsanlık bilinci güçlenir", "Başkalarının ihtiyaçlarını gözetme"]}};
+var OG_MUCADELE = {"0": {"baslik": "Seçim ve Özgür İrade", "maddeler": ["Özel bir mücadele teması yoktur", "Seçenekler fazladır", "Tercihler tamamen size bağlıdır", "Özgür irade vurgusu yüksektir", "Yönü sizin kararlarınız belirler"]}, "1": {"baslik": "Bağımsızlık ve Özgüven", "maddeler": ["Kendini savunmayı öğrenme", "Daha iddialı olma gerekliliği", "Bağımsız hareket etme dersi", "Başkalarının düşüncelerine daha az takılma", "Özgüven geliştirme", "Kendi yolunda yürümeye zorlanma"]}, "2": {"baslik": "Duygusal Denge", "maddeler": ["Hassasiyet artar", "Duyguları dengeleme ihtiyacı", "Aşırı tepkiyi kontrol etme", "Her şeyi kişisel almamayı öğrenme", "Özgüven geliştirme", "Kıyas yapmayı azaltma"]}, "3": {"baslik": "İfade ve Odak", "maddeler": ["Kendini doğru ifade etme sınavı", "İletişimi yapıcı kullanma", "Şunlardan uzak durma dersi:", "Abartı", "Dedikodu", "Sürekli şikayet", "Kelimeleri ilham ve umut için kullanma", "Dağılmak yerine odaklanma", "Duyguları söze dökmede zorlanma"]}, "4": {"baslik": "Disiplin ve Dayanıklılık", "maddeler": ["Düzen kurma zorunluluğu", "Disiplin geliştirme", "Vazgeçme eğilimiyle yüzleşme", "Sorunlardan kaçmama", "Sabırla yapı kurma", "Yavaş ama sağlam ilerleme", "Zor dönemlerde olumlu kalma sınavı"]}, "5": {"baslik": "Kontrol ve Sorumluluk", "maddeler": ["Aşırılıklara karşı sınav", "Bağımlılık eğilimlerini kontrol", "Fiziksel hazlarda ölçü", "Sorumluluk almada zorlanma", "Taahhüt verme dersi", "Disiplinli kalma ihtiyacı"]}, "6": {"baslik": "Kabul ve Gerçekçilik", "maddeler": ["Aşırı idealizmi bırakma", "Kusurları kabul etme", "Kendini ve başkalarını kabullenme", "Yargılamayı azaltma", "Esneklik geliştirme", "“Mükemmel değil ama değerli” anlayışı"]}, "7": {"baslik": "İçsel Güven ve Derinlik", "maddeler": ["Yaşamın derin anlamını arama", "İçsel dönüşüm süreci", "Öz farkındalık artışı", "İçe dönüş ve yalnız kalma ihtiyacı", "İnanç ve güven geliştirme", "Mutluluğun içten geldiğini öğrenme"]}, "8": {"baslik": "Ego ve Güç Dengesi", "maddeler": ["Güç ve kontrol isteğiyle sınav", "Ego yönetimi", "Maddiyat–maneviyat dengesi", "Para ile sağlıklı ilişki kurma", "Başkalarını kontrol etme isteğini azaltma", "Kişisel gücü olgunlaştırma", "❗ Not", "Mücadele sayısı 9 yoktur."]}};
+var OG_BYD = {"1": {"baslik": "Bağımsızlık ve Liderlik", "maddeler": ["Bağımsız olmayı öğretir", "Kendi ayakların üzerinde durma", "Liderlik yeteneklerini ortaya çıkarma", "Kararlarına güven geliştirme", "Kendi yolunu çizme", "Cesaret ve içsel güç kazanımı", "Özgüven artışı", "Başkalarını memnun etmek için kendinden ödün vermemeyi öğrenme", "Olası gelişmeler:", "İş kurma", "Yeni proje başlatma", "Kariyer ilerletme", "Liderlik rolü alma", "İmaj değişikliği", "Yenilik / icat"]}, "2": {"baslik": "Yardım ve Denge", "maddeler": ["Yardımseverlik ve merhamet gelişir", "Uzlaşma becerisi artar", "Duygusal farkındalık büyür", "Yaşam dengesi kurmayı öğretir", "Sezgi güçlenir", "Hassasiyet artar", "Psişik/sezgisel algı açılabilir", "Olası gelişmeler:", "Ortaklık kurma", "İlişki başlatma", "Evlilik", "Aile kurma", "Sanat ve müzikle ilgilenme", "Başkalarına destek olma"]}, "3": {"baslik": "İfade ve Yaratıcılık", "maddeler": ["Yaratıcılığı zorlar ve açar", "Kendini olumlu ifade etmeyi öğretir", "Sözel ve sanatsal ifade gelişir", "Entelektüel üretim artar", "Duygusal ifade güçlenir", "Olası gelişmeler:", "Kitap yazma", "Enstrüman çalma", "Sanatsal faaliyet", "Eğitim / öğretmenlik", "Sahne ve anlatım işleri"]}, "4": {"baslik": "Disiplin ve İnşa", "maddeler": ["Çok çalışma dönemi", "Sağlam temel kurma", "Düzen ve disiplin geliştirme", "Sabır öğrenme", "Zorluklara direnme", "Emeklerin somut sonuç vermesi", "Olası gelişmeler:", "Kariyer kurma", "İş kurma", "Ev yapma / yenileme", "Para biriktirme", "Nişan / evlilik"]}, "5": {"baslik": "Değişim ve Deneyim", "maddeler": ["Değişime uyum dersi", "Özgürlük ihtiyacı artar", "Akışa uyum öğrenilir", "Çok sayıda yeni deneyim", "Yeni insanlar ve fırsatlar", "İletişim becerisi gelişir", "Kendini tanıtma / görünürlük artar", "Olası gelişmeler:", "Seyahat", "Taşınma", "Yaşam tarzı değişimi", "Yeni deneyimler", "Köklü kararlar"]}, "6": {"baslik": "Aile ve Sorumluluk", "maddeler": ["Aile ve ilişkiler öncelik olur", "Sorumluluk alma artar", "Hizmet bilinci gelişir", "Sevgi teması güçlenir", "Alma–verme dengesi öğrenilir", "Kişisel sınırlar tanımlanır", "Olası gelişmeler:", "Evlilik", "Çocuk", "Aileye adanma", "Hizmet sektörü işi"]}, "7": {"baslik": "Uzmanlaşma ve Spiritüel Gelişim", "maddeler": ["Derin düşünme ve araştırma", "Yüzeyin ötesini görme", "Uzmanlaşma süreci", "İçsel gelişim artışı", "Spiritüel farkındalık", "Yalnız kalabilme becerisi", "Sezgi gelişimi", "Olası gelişmeler:", "Spiritüel pratikler", "Alternatif yöntemler", "Kişisel gelişim çalışmaları", "Derin eğitim / araştırma"]}, "8": {"baslik": "Güç ve Kariyer", "maddeler": ["Kişisel güç teması", "Finans ve kariyer odaklı dönem", "Liderlik pozisyonu fırsatı", "Terfi ve yönetim rolleri", "Büyük yatırımlar", "İnanç kalıplarını dönüştürme", "Para ve başarı algısını yeniden kurma", "Hukuki ve resmi işler gündeme gelebilir"]}, "9": {"baslik": "Şefkat ve Dönüşüm", "maddeler": ["Hoşgörü ve anlayış gelişir", "Şefkat artar", "Evrensel bakış açısı", "Geçmişi iyileştirme", "Affetme süreci", "Topluma katkı isteği", "Olası gelişmeler:", "Sosyal projeler", "Yardım faaliyetleri", "Sanatsal üretim", "Aile ilişkilerini onarma", "Eski yaraları kapatma"]}, "11/2": {"baslik": "Aydınlanma ve İlham", "maddeler": ["Spiritüel farkındalık artışı", "İçsel dönüşüm", "Başkalarına ilham verme", "Moral ve motivasyon kaynağı olma", "Sezgi ve psişik algı gelişimi", "Şifa / danışmanlık eğilimi", "Olası gelişmeler:", "Spiritüel eğitim", "Danışmanlık", "Şifacılık", "Psikoloji alanı", "Hizmet çalışmaları", "(2 sayısının temaları da geçerlidir)"]}, "22/4": {"baslik": "Büyük Kurucu Enerji", "maddeler": ["İnsanlığa hizmet teması", "Büyük ölçekli projeler", "Sistem kurma ve yapılandırma", "Köprü kuran çalışmalar", "Yüksek sorumluluk", "Güçlü odak ve disiplin", "Olası gelişmeler:", "Toplumsal projeler", "Küresel roller", "Organizasyon kurma", "Uzun vadeli yapı kurma", "(4 sayısının temaları da geçerlidir)"]}};
+var OG_EK_C = {"0": ["Sonsuz potansiyel", "tüm rakamların potansiyeli", "hem bir döngünün başlangıcı hem de sonu", "sonsuz olası sonuçlar ve eş zamanlı tamamlanmalar", "sezgiler", "inandığını çeker", "yüksek yaratım gücü"], "1": ["başlama", "adım atma", "yeni durum", "eril", "emin başlangıç", "cesur", "öne çıkma"], "2": [". 1de başaldığını besleme,büyütme", "Hassas ve belirsiz zamanlar", "kaygılı zamanlar", "duygusallık hakim", "ikili ilişkiler", "anne çocuk konuları"], "3": ["egonun ortaya çıkışı", "hakkını savunma", "cesur korkusuz", "öngörülmeyen olaylar karşısında savaş enerjisi", "yeni bir organizasyon,taşınma", "duygunun ifadesi", "eser yaratma", "emir verme", "çocuklar,aile", "dağılmış olanı düzenleme", "pratik çözümler", "çok çalışma"], "4": ["değişim dönüşüm", "sınav sonrası farkındalık", "istikrar ve düzen", "daha azla yetinme", "sadeleşmen gereken konular", "yeni kurallar ve sınırlar", "taşınma", "tadilat", "ameliyat", "ev alma"], "5": ["yenilikler", "hareket", "sabırsızlık", "hızlanma", "özgürlük", "sosyallik", "yeni şeyler öğrenme", "stres", "çözümler", "yıldızlaşma"], "6": ["denge", "aile ve sorumluluk", "lüks ve rahatlık", "aşk", "sorumluluk", "kutlama", "estetik", "aldatma  aldatılma", "kıskançlık", "sağlık"], "7": ["ruhsal  dersler ve sonrası ruhsal büyüme", "hastalık", "inziva", "sessizlik", "maddi manevi hesap", "hayatta yön bulma ve hedef belirleme"], "8": ["sorumlu olmak", "iş bitirme", "sonuçlanma", "maddi kazanç", "alma satma", "statü değişimi", "mahkeme", "emeklilik,evlilik,boşanma,terfi", "büyük çatılar,kamu"], "9": ["çocuk,yaşlı,hamilelik", "sonlanma ve şifalanma", "kapanma ve kabul", "gereksiz şeylerden kurtulma", "hastalık ve şifa", "sürprizler", "eğitim", "yeni tohumlar ve 1 e hazırlık"], "10": ["sezgisel bir liderlik,adım atma", "insanlarda iyiyi görme", "daha büyük iyilikler için cesaret ve başlangıç"], "11": ["aydınlanma", "aydınlanmış başlangıç ve bağımsızlık", "empati ve diplomasi ile gelen ideallerin ortaya konuşu"]};
+var OG_EK_D_SINIF = {"A": {"sinif": "olumlu", "aciklama": "Her alanda ilerleme. Etkinliklerin gelişmesi. İkamet değişikliği. Yeni başlangıç. Kadınlar için duygusal bir karşılaşma."}, "B": {"sinif": "olumsuz", "aciklama": "Duygusal güçlükler. İlişkinin ve sağlığın bozulma tehlikesi. Maddi istikrar tehlikede. Boşanmaya ilişkin titreşim."}, "C-Ç": {"sinif": "olumlu", "aciklama": "Başarı söz konusu. Mutlu, dengeli bir duygusal yaşam. Büyük olasılıkla yer değiştirme (yolculuklar). Maddi başarı."}, "D": {"sinif": "olumsuz", "aciklama": "Ailede ve duygusal yaşamda karışıklık. Sağlık sorunları. İş açısından olumlu olabilir.Ancak umduğunu, bulamama tehlikesi."}, "E": {"sinif": "olumlu", "aciklama": "Tüm-alanlar korunaklı ve bir önceki olumsuz yılın kötülüklerinden iz kalmamış durumda."}, "F": {"sinif": "olumsuz", "aciklama": "Aile ön planda, sağlık tehlikede, Özellikle duygusal alanda çeşitli dertler. İlişki. Çeşitli dilekler. Birleşme ya da boşanma."}, "G-Ğ": {"sinif": "olumlu", "aciklama": "Eğer başarı maddi dengeyi ve meslek yaşamını kamçılayacak olursa, duygusal yaşam gergin bir hal alacaktır."}, "H": {"sinif": "olumsuz", "aciklama": "Manevi konularda şüphe tereddütler yaşayacağınız dengesizlikler hissedebilirsiniz. Kendinizi bütünün bir parçası ya da bütünden ayrı hissedebileceğiniz konular yaşanabilir. Maddi konularda dikkatli olunması gerekebilir yanılmalar yaşanabilir."}, "I-İ": {"sinif": "olumsuz", "aciklama": "Gergin bir duygusal yaşam: Kopma ya da boşanma olasılığı. Sağlığın bozulma olasılığı. Etkinlikler yavaşlama dönemine girecek. Kaza, geçirilebilir."}, "J": {"sinif": "olumlu", "aciklama": "Tüm. Alanlar, korunaklı."}, "K": {"sinif": "olumlu", "aciklama": "Başarı ve hedeflerin sonuca varması. Mutlu bir duygusal yaşam."}, "L": {"sinif": "olumlu", "aciklama": "Tüm alanlar korunaklı."}, "M": {"sinif": "olumsuz", "aciklama": "Gergin ve kargaşalı bir duygusal, yaşam. Maddi alanda sorunlar. Ailede düzensizlik ve sağlık tehlikede."}, "N": {"sinif": "olumlu", "aciklama": "Olumlu değişiklikler ile duygusal ya da dostane karşılaşmalar sayesinde sağlanan"}, "O-Ö": {"sinif": "olumlu", "aciklama": "Duygusal yaşam birinci planda ve korunaklı durumda, Evlilik, uzun süreli birliktelik, mutluluk."}, "P": {"sinif": "olumsuz", "aciklama": ", her alanda. Gizli tutulan duygusal yaşam çok yüzeysel."}, "R": {"sinif": "olumsuz", "aciklama": "Sağlık, yaşam, mali durum, duygular gibi temel dengelerin tehlikede olduğu kötü bir yıl. Evlilik için pek elverişli değil."}, "S-Ş": {"sinif": "olumlu", "aciklama": ", her alanda, olası kaygılara ve güçlüklere rağmen. Duygusal karışıklıklar söz konusu,"}, "T": {"sinif": "olumlu", "aciklama": "; her alanda. Duygusal yaşam iyi durumda. Evliliğe ya da uzun süreli bir ilişkiye elverişli bir yıl. Konut değişikliği ve hareketlilik (yolculuklar, yer değiştirmeler, etkinlikler...)"}, "Ü-Ü": {"sinif": "olumsuz", "aciklama": "Duygusal ve maddi güçlükler. Kısıtlama yılı."}, "V": {"sinif": "olumlu", "aciklama": "Tüm alanlar korunaklı. Başarı, mutluluk, sağlık."}, "Y": {"sinif": "notr", "aciklama": "Her durumda değişim ve seçim. İstikrarsız ve çalkantılı duygusal yaşam."}, "Z": {"sinif": "olumlu", "aciklama": "Maddi alanda başarı. Duygusal yaşam tehlikede, ancak evlilikte uzlaşma olasılığı. Aksi halde boşanma ya da kopma tehlikesi."}};
+var OG_EK_D_DETAY = {"A": ["Pratik konular ön planda olur", "Bize bağımsızlık katar, liderlik katar", "Risk almamız lazım, hareket etmemiz lazım", "Değişim vardır,aktivite vardır,atılım yapmamız gerekir", "Kendine güvenme derslerini öğrenmenin ve kendi çabalarınızla ilerlemek için kararlılığınızı ikiye katlamanın zamanıdır.", "Bir sağlık göstergesi olarak a, akciğerlere veya solunum sistemi hastalıklarına dikkat etmek anlamına gelir."], "B": ["Duygusallık ve utangaçlık hakimdir", "Sinir sistemi ile ilgili sağlık problemlerine dikkat etmek gerekir, daha duyarlıyız, insanlara karşı daha duyarlı ve diplomatik oluruz, insanlarla ilişkimizde duygusal tepkilerimiz ortaya çıkar,", "İnsanlar bize yardımcı olmak isteyebilir veya biz insanlara yardımcı oluruz,", "Güçlü sevgi bağları kurabiliriz, ama sağlık sorunlarına dikkat etmek gerekir", "Ortaklıklar veya evlilik için güçlü bir arzu getirir.", "Ders sabır, sakinlik ve zihin dinginliği ile ilgilidir.", "Kararlar başkalarına bırakılmalıdır. Bu, başkaları tarafından fark edilmeyebilecek bir gizli gelişim döngüsüdür.", "Bir sağlık faktörü olarak B, sinirliliğe, baş ağrısına ve duygusal rahatsızlıklara neden olabilir."], "C": ["Kendimizi ifade edeceğimiz, daha konuşkan olacağımız, daha yaratıcı olacağımız bir dönem", "Daha etkin olabiliriz kendimizi tanıtabiliriz", "Sanatsal, politik veya ticari başarıyı destekler.", "Kendini ifade etme, üretkenlik ve büyüme için iyidir.", "Zengin duygusal deneyimler, refah ve mutluluk olmalı. Bu güçlü bir evlilik titreşimidir.", "Bir sağlık faktörü olarak C, boğaz, tiroid ve ses telleri ile ilgili endişelere neden olabilir."], "D": ["Fiziksel özellik sağlık mevzu bahistir,", "Beslenmemize diyetimize fiziksel sağlığımıza dikkat etmemiz gerekir,", "Duygularımız konusunda bize destek olacak insanlar arayabiliriz, fiziksel sağlık;", "İstikrar düzen kuracağımız bir zaman", "Gelecek için sağlam bir temel oluşturma çabasını temsil eder.", "Geçici gecikmeler mümkündür, ancak sabır konusunda değerli dersler çıkarılabilir.", "Spekülasyondan kaçınılmalı ve muhafazakarlık uygulanmalıdır.", "Seyahat mümkündür."], "E": ["Evlilik olabilir", "Kariyerle ilgili değişimler olabilir", "Yaşadığımız yerle ilgili değişim veya taşınma olabilir", "Bu taşınmanın kaynağı da ya iştir ya da evliliktir", "Aynı zamanda entelektüelliği de temsil ettiği için yeni ortamlara girip yeni fikirler yeni bilgiler yeni eğitimler ediniriz", "Aynı zamanda e harfi 5 duyudur", "Giyim kuşamdır bunlarla ilgili yani hayat tarzımızda ilgili değişimler de olabilir", "Bir sağlık faktörü olarak iyi bir sağlık göstergesidir. Kalp kendini özgür hisseder, ancak dürtüsellik kontrol edilmelidir.", "Değişim için birçok şans arasından seçim yapmak zorunda kalacak.", "Sürekli aktivite, yeni insanlar ve yeni durumlar olacak.", "Bekarsanız, şimdi evlilik için fırsat var, ancak bunun duygusal dürtüden ziyade gerçek aşk olduğundan emin olmalısınız.", "Bir sağlık faktörü olarak iyi bir sağlık göstergesidir. Kalp kendini özgür hisseder, ancak dürtüsellik kontrol edilmelidir."], "F": ["Büyümeyle ilgili bir dönem", "Hem evde hem hem iş hayatında daha fazla çalışma ve sorumluluk alma", "Daha duyarlı olmak", "Ama net olacağımız hayattan ne istediğimizi bildiğimiz bir dönem fedakarlık yapmaya açık olduğumuz dönemler", "Bu dönemlerde kurban psikolojisine girmemeye çalışmalı fazla fedakarlık yapmamalıyız", "Dikkatinizi evli olsun ya da olmasın, sevdiklerinizle bağlantılı aile meselelerine ve görevlere odaklar.", "İstekli hizmetin anlamını öğrenmenin zamanı geldi, çünkü alternatifler hayal kırıklığı yaratabilir. Akıllıca seçimler gereklidir.", "Bir sağlık faktörü olarak F, kalbin sinir koşulları da dahil olmak üzere sorunu gösterir."], "G": ["Maddi kazanç vardır", "Hem zihinsel hem ruhsal bir harf olduğu için başarıyla derinleşmeyle alakalı bir dönem", "Birçok kez yalnız hisseder içimize dönmek isteriz", "Çok konuşmak istemeyeceğiz", "Çünkü daha düşünerek konuşmaya başlayacağız", "Daha verimli bir ifade tarzı yakalayacağız k", "Endimizi daha basit ve dengeli bir şekilde ifade edeceğiz düşünmeden hareket etmeyeceğiz", "İçsel bir çatışma ve içsel bir dönüşüm de yaşayabiliriz", "Genişleme, üretkenlik ve maddi başarı zamanıdır.", "Sanat, müzik, drama veya edebiyat için uygundur.", "Bir sağlık faktörü olarak G her zaman iyidir. Hastalık ortaya çıkarsa, iyileşmeye yönelik yardım vardır."], "H": ["Gücü elimizde bulunduracağız ve daha dayanıklı olacağız.", "Öz disiplin ve başarılı odaklı olma dönemi,", "Mücadeleci ve iddialı olacağız,", "Statü artışı veya değişim mümkün,", "Evlenme boşanma terfi istifa kovulma", "Yaşam yoluna açılan bir kapı, bir bariyer veya bir açıklık olabilen bir kapı görevi görür. Bu, kozmik yasaların karmanın tamamlanması için çalıştığı bir zamandır. Mali veya yasal işlerle ve yaşamın fiziksel ve maddi yönüyle ilgili endişeler vardır.", "Bir sağlık faktörü olarak H kişisel gerginlik getirebilir."], "I": ["Daha gergin ve strese karşı savunmasız olacağız", "Kazalara eğilim olduğu için daha merkezde ve sakin kalmayı denemeliyiz", "Ruh halimizin değişkenlerine karşı kendimizi kontrol etmemiz gerek", "Miras ile alakalı konular gündeme gelebilir", "Bir iniş ve çıkışlar zamanı.", "İnançlarınıza sıkı sıkıya bağlı kalarak, büyük ilham verir. Tereddüt, servette dalgalanmalar getirecek ve yeni başlangıçlara neden olacaktır.", "Bu, kişisel duyguların çok önemli olduğu bir dönemdir; duyarlılık, sempati ve sezgi yüksektir.", "Bir sağlık faktörü olarak, muhtemelen aşırı efordan kaynaklanan gerginlik getiriyorum.", "Yoğun duygular yorgunluğa neden olabilir."], "J": ["Kişisel insiyatif alacağımız belki kariyer ile ilgili yönümüzü değiştireceğimiz bir dönem", "Kazancımızı arttırmamız için fırsatlarla karşılaşacağız sorumluluklar girecek hayatımıza", "Neredeyse her zaman bir şekilde kazanç ve avantaj anlamına gelir.", "Daha az şanslı olanlara yardım eli uzatmalı", "İyi şansın tadını çıkarmak istiyorsa moralini yüksek tutmalı", "Liderlik pozisyonuna getirilecek veya terfi alacaktır.", "Neredeyse her zaman bir şekilde kazanç ve avantaj sağlar."], "K": ["Sezgisellik artacak,", "Kendimize ruhi atılımlar yapacağız,", "Yeni insanlarla yeni iş alanlarıyla ilgilenmeye başlayacağız, yaratıcılığımızı kullanmamız lazım ve her zamankinden daha fazla mücadele etmemiz lazım", "Çünkü daha fazla sorumluluk alacağız", "Yüzden işbirliği yapabilmeyi becermemiz lazım,", "Tüm sorumluluğu kendi üstümüze alırsak sinir sistemimiz zarar görebilir", "Abartılar sahtekarlıklar düşüncesizlikler kendini gösterebilir", "Yaratıcı ilham ve idealizm olumlu bir hedefe yönlendirilmelidir, aksi takdirde bu döngü çatışmaya neden olabilir.", "Ya yoğun romantik deneyim ya da ruhsal yüceltme için büyük bir duygusal güç vardır.", "Seyahat ve değişim getirir ve dikkatli olunursa başarı getirebilir.", "Bir sağlık faktörü olarak K, aşırı aktiviteden kaynaklanabilecek sinirliliği gösterir. Ancak güç ve dayanıklılık veren iyi bir güçtür."], "M": ["Konuşmanın az", "Sıkı çalışmanın çok olduğu dönemler", "Yakınlarımızla daha mesafeli olacağız", "Duyguları ifade etmemiz lazım yoksa bedensel olarak sıkıntılar yaşayabiliriz", "İstikrarlı ilişkiler kurmak için güzel bir dönem olacaktır", "Hiç şey için acele etmemek lazım", "Daha iyilerine yer açmak için eski fikirlerin süpürüldüğü bir yeniden yapılanma dönemidir.", "Beklenmedik değişiklikler şimdi meydana gelebilir ve bunlar yeni bir mutluluk aşamasının açılacağı ilerlemeye açılan bir kapı olarak kabul edilmelidir.", "Bir sağlık faktörü olarak M, öfkeyi gösterebilir, kızarıklık davranışına ve baş ağrısına neden olabilir.", "Ciddi değişiklik potansiyeli nedeniyle, dikkatli bir şekilde ele alınmadığı sürece birden fazla M tehlikeli olabilir. Herhangi bir harften ikisi etkilerini ikiye katlar."], "N": ["Ufkumuzu geliştirecek yeni fırsatlar önümüzde çıkacak", "Seyahatlere çıkabilir", "Evimizi değiştirebiliriz", "Mali konular fiziksel egzersizler önemli olacak", "Şehvetli hissetme ihtimalimiz de fazla olur", "Çeşitlilik, değişim ve deneyimler getirir. Ticari veya siyasi girişimler için elverişlidir ve çok fazla rekabet içerebilir.", "Bir sağlık faktörü olarak N, evlilik düşüncelerinin getirdiği duygusal rahatsızlıklar nedeniyle sinirliliğe neden olabilir."], "O": ["Daha güçlü duygusal bir dönem", "Kendimizi fazla endişelendirmemiz gerek", "Üzerimize fazla sorumluluk almamalıyız", "Etrafımızdakilere çok müdahale etmeyeceğiz", "Mevcut sınırlamalardan kurtulmaya izin vererek ilerleme için bir fırsat sunar.", "Bakış açısında radikal bir değişiklik meydana gelebilir ve korkular silinebilir.", "O bir sağlık faktörü olarak, olumsuz tarafına cevap veriyorsanız endişe ve depresyona neden olabilir. Yavaşlamak kalp düzensizliklerini ve umutsuzlukları önleyebilir. O, dini konularla uyumludur; Bu nedenle, dua yardımcı olabilir ve ilham verebilir."], "P": ["Gereksiz riskler almayacağız çünkü reflekslerimiz iyi olmayacak", "Daha düşünceli daha takıntılı olabiliriz", "Manevi ve içsel büyümeyle ilgili bir dönem", "Finansal açıdan çok büyüme göremeyebiliriz", "Bir işe zihinsel olarak odaklanabilecek bir dönem", "Kendimizi daha az kontrol edebiliriz", "Bu yüzden gereksiz riskler almamalıyız çünkü  dönemlerde beklenmedik olaylar vuku bulabilir", "Gelecek için parlak beklentiler sunar. Yaratıcı yetenekleriniz sayesinde, iyi şans kapıda. Akıllıca plan yapın ve bu döngü sırasında geleceği hedefleyin.", "Bir sağlık faktörü olarak P, fazla çalışmamanız gerektiğini gösterir."], "R": ["Genel olarak odaklanabileceğimiz  plan yapıp adım atacağımız bir dönem", "En iyiyi ve en kötüyü görebileceğimiz dönemler", "Çevreyi iyi gözlemleyerek yaptığımız işlerde ve attığımız adımlarda dikkatli olmamız gerek", "Yeni planlar ve fikirler için bir açılım sağlar ve yaşamda yeni bir meslek çağrısında bulunur. Bu süre boyunca statü elde etmeye karar verin.", "Tempo hızlı, biraz yavaşlamaya ihtiyaç var.", "Bir sağlık faktörü olarak R, dikkatsizlik nedeniyle kazalar meydana gelebilir ve bu da hastalığa neden olabilir."], "S": ["Duygular derinleşir farkındalık artar yükselir", "O yüzden kişiliğimizin gizli yönleri daha çok açığa çıkabilir", "Kendimizin de fark etmediğimiz özellikleri fark etmeye başlayabiliriz", "Keşifler özgürlük daha gerçekçi olmak bunlar önemli hale gelebilir", "Rüyalar daha canlı olmaya başlar", "O dönemde irademizin test edilecek ve bununla alakalı yine gücümüzle alakalı yüzleşmeler yaşayacağız", "Sürprizlerle dolu ,seyahati, sürprizlerle dolu bir dönemi temsil edecek", "Pozitif olunmadığında duygusal çalkantılar, başarısızlık ve kontrolsüz dürtülere dikkat etmek gerekir.", "S, bir hastalığı keskinleştirebilir, ancak aynı zamanda iyileşme sağlama ve sorunu azaltma eğilimindedir, böylece daha iyi koşullar yaratır."], "T": ["Gerginlikle alakalı yine duyguların ön planda olduğu bir dönem olacak,", "Feda etmek veya yüklerinizi taşımak yani onlarla mücadele etmek ,onları bırakmamak, takıntılı olmak", "Yalnızlık dönemleri olabilir, kişi içine dönebilir,", "T lerin olduğu dönemler iç dünyasına döndüğü dönemler , kendisiyle barışmayı öğrendiği dönemler", "Bilgi için açlık çekeceğimiz, yeni bilgi kaynaklarıyla tanışa bileceğiniz dönemler", "Yeni aktiviteler arayabiliriz, yeni bir şeyler öğrenmeye hevesli olabiliriz, o yüzden hem iş için hem yeni ortaklıklar için yeni ilişkiler için  açık bir dönem", "Gezme fırsatları olabilir , gezip görüp keşfedebiliriz", "Yeniden yapılanma zamanıdır.", "Bu etki, fikirler insanlığa fayda sağlayabilecek pratik faaliyetlerle ifade edilmedikçe bir huzursuzluk duygusu yaratır. Zaman boşa harcanmamalı, tembelliğe müsamaha gösterilmemelidir.", "Bu, daha iyi dünya koşulları için çalışma zamanıdır. Aynı zamanda ruhsal gelişim zamanıdır."], "U": ["Stres hissedeceğimiz dönemler,", "Daha sezgisel daha hassas olacağımız dönemler", "Burada motivasyon önemli olacak, çünkü bu dönem motivasyonun inisiyatifin eksik olabileceği dönemler", "Eskiden unuttuğumuz ya da üzerinden zaman geçmiş duygusal problemler su yüzüne çıkabilir, ön plana gelebilirler", "Uzun zamandır haber almadığınız kişiler bizimle iletişime geçebilir", "O dönemde akrabalar aileler o konularda çabalamamız gerekebilir", "Çok fazla kendimizi ifade etmeye veya yeni çözümler bulmaya çözüm üretmeye aç olduğumuz", "Kendimizi yine bu dönemde tanıtabiliriz gösterebiliriz", "Bilinçaltı gelişim için bir zamanı gösterir.", "Şimdi gecikmeler ve kısıtlamalar olabilir ve aile sorumlulukları artabilir, ancak artan bir güvenlik ve koruma duygusu var.", "Evlilik aktive edilir. Bir U altında dikkatli olun, çünkü işler genellikle bir fırsatı gözden kaçırmak ve bir fırsatı yakalamayı ihmal etmek gibi kişisel bir hata nedeniyle kayıp gitme eğilimindedir.", "Konular dikkatlice incelenmeli ve iş anlaşmalarında bir avukata danışılmalıdır.", "Bir sağlık faktörü olarak U, kayıp ve kaygı getirme eğilimindedir. Endişeler, yüksek tansiyon gibi başka hastalıklara neden olur. İçinizde sakin ve huzurlu kalmaya çalışın."], "V": ["Kollarını yukarıya açmış bir harf düşünün, o yüzden yatırım fırsatlarıyla alakalı gelecek vadeden  ya da kendimizi daha büyük işler yapabilecek daha ilham alabilecek daha iç dünyamızı zenginleştirecek fırsatlarla karşılaşabiliriz", "Bu yüzden yalnız kalmayı da tercih edebiliriz yani daha büyük idealler daha büyük fikirler böyle küresel çapta bir şeyler düşünebiliriz", "O yüzden hem kendinizdeki bireysel reformlar dönüşümler hem de geleceğe dair önemli projelere başlayacağımız bir dönem düşünebiliriz", "Çok fazla cömertlik veya savurganlık ile birleştiğinde yolculuk tutkusu potansiyeline sahiptir.", "Bir sağlık faktörü olarak V, aşırı aktivite nedeniyle sinirsel ve duygusal çöküntülere neden olabilir. İçinizde barışı geliştirin."], "Y": ["Yine sentezleyici zihin çalışacağı için sezgisellik, ruhsal büyüme ön plana çıkacak", "Yön duygumuz bulanacak yani neyi seçelim (y nin ucundaki çataldan kaynaklı) bir kendimizi incelemek, geliştirmek, hayatın önümüze çıkardığı 7 rakamından kaynaklı sorunlarla mücadele etmek ve ruhsal olarak olgunlaşma ve gelişmeyle alakalı", "Bazı entelektüel ihtiyaçları olan bakıma ihtiyacı olan arkadaşlarla bağlantılar kurabiliriz yeni insanlar tanıyabiliriz", "Ufak tefek sağlık sorunları da olabilir burada o yüzden beslenmeye dikkat etmek gerekir", "Ani bir değişim getirir, çünkü bu bir dallanma döngüsü olduğu için hızlı kararlar gereklidir. Kesin olarak karar verin ve geriye bakmayı veya geçmişe pişmanlık duymayı reddedin. Seçim yapıldıktan sonra her şeyin en iyisini yapın.", "Bir sağlık faktörü olarak Y,  esenlik ve koruma hissi verir"], "Z": ["Biraz daha zikzak çizmek, sınırların üstesinde üstesinden gelmek,", "Sınırlamaları ortadan kaldırmak için çabalamak, inancımızı ortaya koymak için çabalamak,", "Plan yapmamak biraz daha rahat olmaya çalışmak,", "Finansal olarak büyümeye yatkın olduğumuz bir dönem olarak düşünebiliriz", "Burada kişi daha çok sezgilerine göre karar verecektir, yeni ilişkiler kurmak ama farklı ilişkiler kurmak için de yine önemli bir dönem olacaktır", "İlişkilerle alakalı değişiklikleri düşünebiliriz, süreçlerle alakalı bitişler değişiklikler yine burada kendini gösterecektir", "Ama finansal olarak gelişmeye açık bir dönem 8 rakamından kaynaklı", "Statünün değişebileceği bir dönem", "Gizli ilerleme döngüsünde zikzak bir rota çizer. Aksilikler olsa da, daha yüksek bir seviyeye ilerliyorsunuz. Bu dönemde sabrı ve ödüllerini öğrenin.", "Bir sağlık faktörü olarak Z, hastalık üzerinde kontrol sağlar."], "X": ["Savunmasızlıkla alakalı olacak, duygusal kargaşaya eğilimiyle alakalı", "Kişinin alışılmadık yerlerden kaçınması gerekecek yani yeni gruplardan yeni alanlardan yeni fikirlerden biraz daha  temkinli gitmeli", "Ayakları yere basmalı ve görene kadar beklemesi gerekecek", "Hızlı karar vermemesi gerekecek çünkü fedakarlıkla alakalı durumlar ortaya çıkarabilir ya da işte veya aşk hayatında kendini çok fazla sorunun içinde bulabilecek", "Geçmişi bırakmalı"], "W": ["Değişime kollarını açmakla alakalı bir dönem ,m harfinin tersi m’de ne kadar 4 ayağınız sabitleniyorsa w de 5 rakamı o kadar ayaklar havada", "Emekle alakalı, özgür olmakla alakalı bir ortam çıkaracak ama bu da yüzeysellik  düzensizliği farklılığı , yani öngörülemez olayları çekebilir,kaosu ortaya çıkarabilir", "Bu yüzden kontrol önemli öz disiplin önemli", "Sağlık için de ayrıca dikkat etmeleri gerekecektir"], "Q": ["Sezgiler ve zeka ön plana çıkacak", "Orijinal fikirler üretecekler hatta yeni bir şeyler icat etme de olabilir", "Problem çözme becerileri artacak", "Zeki ama karmaşanın olduğu dönem", "Daha dengesiz daha düzensiz sıra dışı insanları kendine çektiği bir dönem olacak", "Tabii sekizden kaynaklı statü değişimleri ,mfinansal değişimler finansal fırsatlara da dikkat edeceğiz", "Özellikle çalışma ortamındaki değişiklikler"]};
+
+/* ============================================================
+   ÖNGÖRÜ / YORUMLAMA MODÜLÜ
+   Kaynak: "22'lik Numerolojide Öngörü Hesaplama ve Yorumlama Kılavuzu"
+   (2026 derlemesi) + kullanıcının ayrıca yüklediği Dürtü (6/7 haneli)
+   ve Harf–Çakra eşleme tabloları.
+   Bu modül, sayfadaki MEVCUT hesap motorundan (Hayat Amacı, Kulvar,
+   Çakra Merdiveni/Ağacı) TAMAMEN BAĞIMSIZDIR — hiçbir mevcut
+   fonksiyonu çağırmaz, hiçbir mevcut değişkeni paylaşmaz. Tüm
+   fonksiyon/değişken adları "og" öneki taşır.
+   ============================================================ */
+
+// ---------- indirgeme fonksiyonları (Kılavuz Bölüm 1) ----------
+function ogDigitSum(n){ return String(Math.abs(n)).split('').reduce(function(a,d){return a+Number(d);},0); }
+function ogReduceA(n){ while(n>9) n = ogDigitSum(n); return n; }                              // Mod A: klasik tek hane
+function ogReduceB(n){ while(n>9 && n!==11 && n!==22 && n!==33) n = ogDigitSum(n); return n; } // Mod B: 11/22 korumalı klasik
+function ogReduceC(n){ while(n>22) n = ogDigitSum(n); return n; }                              // Mod C: 22 arketip
+function ogTarihRakamToplami(gun, ay, yil){
+  var s = String(gun).padStart(2,'0') + String(ay).padStart(2,'0') + String(yil).padStart(4,'0');
+  return s.split('').reduce(function(a,d){ return a+Number(d); }, 0);
+}
+function ogYas(dogum, incelenen){
+  var yasRaw = incelenen.getFullYear() - dogum.getFullYear();
+  var ayFark = (incelenen.getMonth()+1) - (dogum.getMonth()+1);
+  var gunFark = incelenen.getDate() - dogum.getDate();
+  return (ayFark===0 && gunFark<0) ? yasRaw-1 : (ayFark<0 ? yasRaw-1 : yasRaw);
+}
+
+// ---------- harf–çakra eşlemesi (kullanıcının yüklediği tablo) ----------
+var OG_SAYI_CAKRA_HARF = {1:['A','S','Ş','J'],2:['B','K','T'],3:['U','Ü','C','Ç','L'],4:['D','M','V'],5:['E','N'],6:['O','Ö','F'],7:['G','Ğ','P','Y'],8:['H','Z'],9:['I','İ','R']};
+var OG_HARF_SAYI = {};
+Object.keys(OG_SAYI_CAKRA_HARF).forEach(function(no){
+  OG_SAYI_CAKRA_HARF[no].forEach(function(h){ OG_HARF_SAYI[h] = Number(no); });
+});
+function ogHarfSayisi(h){ return OG_HARF_SAYI[h] || null; }
+function ogHarfleriTemizle(str){
+  if(!str) return [];
+  var up = str.toLocaleUpperCase('tr-TR');
+  var out = [];
+  for(var i=0;i<up.length;i++){ if(OG_HARF_SAYI[up[i]]) out.push(up[i]); }
+  return out;
+}
+
+// ---------- Çakra Döngüsü teması (Kılavuz Bölüm 8) — 9 yıllık dönemler ----------
+var OG_CAKRA_TEMA = {
+  1:'Hayata uyanış, öğrenme, iletişim, temel ihtiyaçlar',
+  2:'Sevgi, aşk, empati',
+  3:'Tutku, ego, kendini ifade, mücadele',
+  4:'Kök salma, yuva, güvence, para',
+  5:'Değişim, deneyim, özgürlük, çözüm, heyecan',
+  6:'Yeniden aşk, zevkler, sorumluluk, hayaller',
+  7:'İçe dönüş, muhasebe, yalnızlaşma, ruhsallık',
+  8:'Manevi hırsın bitişi, maddi güven, emeklilik, bereket',
+  9:'Olgunluk, bilgelik, tamamlanma'
+};
+// Kullanıcı onayıyla netleşen kural: her döngü 9 yıl (1–9, 10–18, 19–27 … 73–81);
+// 82 yaşından itibaren yeniden 1. döngüye dönülür.
+function ogCakraDongusu(yas){
+  var dongu = yas<=0 ? 1 : Math.ceil(yas/9);
+  var tema = dongu<=9 ? dongu : ((dongu-1)%9)+1;
+  var baslangic = (dongu-1)*9+1;
+  var bitis = dongu*9;
+  return {dongu:dongu, tema:tema, baslangic:baslangic, bitis:bitis, aciklama:OG_CAKRA_TEMA[tema]};
+}
+
+// ---------- Zirve/Mücadele dönem sınırları (Kılavuz Tablo 11, HA 1–9'a göre) ----------
+var OG_HA_DONEM = {
+  1:[[0,35],[36,44],[45,53],[54,999]],
+  2:[[0,34],[35,43],[44,52],[53,999]],
+  3:[[0,33],[34,42],[43,51],[52,999]],
+  4:[[0,32],[33,41],[42,50],[51,999]],
+  5:[[0,31],[32,40],[41,49],[50,999]],
+  6:[[0,30],[31,39],[40,48],[49,999]],
+  7:[[0,29],[30,38],[39,47],[48,999]],
+  8:[[0,28],[29,37],[38,46],[47,999]],
+  9:[[0,27],[28,36],[37,45],[46,999]]
+};
+
+/* ============================================================
+   1) KİŞİSEL YIL · AY · GÜN ENERJİLERİ  (Kılavuz Bölüm 3-4)
+   ============================================================ */
+function ogKisiselYilAyGun(DG,DA,DY,Y,M,G){
+  var kyHam = DG + DA + ogDigitSum(Y);
+  var kyKok = ogReduceA(kyHam);
+  var ky22 = ogReduceC(kyHam);
+
+  var klasikAyHam = kyKok + M;
+  var klasikAyKok = ogReduceA(klasikAyHam);
+
+  var yy22AyHam = ky22 + M;
+  var yy22Ay = ogReduceC(yy22AyHam);
+
+  // Gün — Yöntem 1
+  var gunY1KlasikHam = klasikAyKok + G;
+  var gunY1Klasik = ogReduceA(gunY1KlasikHam);
+  var gunY1BilesikHam = klasikAyHam + G;
+  var gunY1Bilesik = ogReduceA(gunY1BilesikHam);
+
+  // Gün — Yöntem 2 (kaynaktaki belgelenmiş asimetri birebir uygulanıyor: doğum tarihi
+  // toplamı >9 ise BİR KEZ daha indirgenir — "38→11" örneği — incelenen tarih toplamı
+  // ise kaynaktaki gibi indirgenmeden bırakılır; bu Ek E'de zaten işaretli açık bir tutarsızlıktır)
+  var dogumToplam = ogTarihRakamToplami(DG,DA,DY);
+  var dogumToplamGosterim = dogumToplam>9 ? ogDigitSum(dogumToplam) : dogumToplam;
+  var incelenenToplam = ogTarihRakamToplami(G,M,Y);
+  var gunY2Toplam = dogumToplamGosterim + incelenenToplam;
+  var gunY2Sonuc = ogReduceA(gunY2Toplam);
+
+  return {
+    kisiselYil: {ham:kyHam, kok:kyKok},
+    kisiselYil22: {ham:kyHam, deger:ky22},
+    klasikAy: {ham:klasikAyHam, kok:klasikAyKok},
+    yy22Ay: {ham:yy22AyHam, deger:yy22Ay},
+    gunY1: {klasikHam:gunY1KlasikHam, klasik:gunY1Klasik, bilesikHam:gunY1BilesikHam, bilesik:gunY1Bilesik},
+    gunY2: {dogumToplam:dogumToplam, dogumToplamGosterim:dogumToplamGosterim, incelenenToplam:incelenenToplam, toplam:gunY2Toplam, sonuc:gunY2Sonuc}
+  };
+}
+
+/* ============================================================
+   2) YILLIK ÖNGÖRÜ VE 22'LİK ENERJİ YORUMU  (Ek A)
+   ============================================================ */
+function ogEkABul(no){
+  for(var i=0;i<OG_EK_A.length;i++){ if(OG_EK_A[i].no===no) return OG_EK_A[i]; }
+  return null;
+}
+
+/* ============================================================
+   3) DÜRTÜ HESABI VE AKTİF DÖNEM  (Kılavuz Bölüm 7 + yüklenen tablolar)
+   Tablo mekanik olarak 18 yaşından başlayıp sıralı ilerliyor;
+   basamak_no = yaş − 17 formülüyle üretiliyor (tablo verisiyle
+   birebir örtüşüyor, ayrıca satır satır kodlamaya gerek yok).
+   ============================================================ */
+function ogDurtuHesapla(DG,DA,DY,yas){
+  // Kılavuz örneği: 03.03 → 303 (gün baştaki sıfırı atılır, ay HER ZAMAN 2 haneli kalır: "3"+"03")
+  var dgda = Number(String(DG) + String(DA).padStart(2,'0'));
+  var urun = dgda * DY;
+  var haneler = String(urun).split('');
+  if(yas < 18){
+    return {gecersiz:true, sebep:'Dürtü tablosu daima 18 yaşından başlar; incelenen yaş 18’in altında olduğu için hesaplanamaz.', urun:urun, haneSayisi:haneler.length};
+  }
+  // Yüklenen 6/7 haneli tablolar 18 yaşından başlayıp düzinelerce yaşı kapsıyor; ürünün hane
+  // sayısı (6 veya 7) kadar bir DÖNGÜ oluşturup baştan tekrarlıyor. Doğrulama: 03.03.1970 için
+  // ürün 303×1970=596910 (6 hane); kaynak "53 yaşında 0 dürtüsünde" diyor.
+  // index = (53-18) mod 6 = 5 → haneler[5] = '0' ✓ kaynakla birebir eşleşti.
+  var index = (yas - 18) % haneler.length;
+  var basamakNo = index + 1;
+  var rakam = Number(haneler[index]);
+  var turNo = Math.floor((yas-18)/haneler.length) + 1;
+  return {gecersiz:false, urun:urun, haneSayisi:haneler.length, basamakNo:basamakNo, turNo:turNo, rakam:rakam, anlam:OG_EK_C[String(rakam)]};
+}
+
+/* ============================================================
+   4) HARF YANKISI VE AKTİF HARF DÖNEMİ
+   Kural: 1. yaştan başlar; bitiş=başlangıç+değer−1; sonraki
+   harf bitiş+1'de başlar; harfler biterse başa dönülür.
+   ============================================================ */
+function ogAktifHarf(harfler, yas){
+  if(!harfler.length) return {aktif:null, tumDizi:[]};
+  var dizi = [];
+  var baslangic = 1;
+  var bulunan = null;
+  var guard = 0;
+  var maxGuard = harfler.length * 40; // yeterince tur (en az birkaç yüz yıl kapsar)
+  outer:
+  while(guard < maxGuard){
+    for(var i=0;i<harfler.length;i++){
+      var h = harfler[i];
+      var deger = ogHarfSayisi(h);
+      var bitis = baslangic + deger - 1;
+      var kayit = {harf:h, deger:deger, baslangic:baslangic, bitis:bitis, cakraNo:deger};
+      dizi.push(kayit);
+      if(yas>=baslangic && yas<=bitis && !bulunan) bulunan = kayit;
+      baslangic = bitis + 1;
+      guard++;
+      if(bulunan && dizi.length > harfler.length) break outer; // bulunca bir tur daha tamamlayıp çık
+    }
+    if(bulunan) break;
+  }
+  return {aktif:bulunan, tumDizi:dizi};
+}
+
+/* ============================================================
+   6) ZİRVE VE MÜCADELE  (Kılavuz Bölüm 10) — Klasik (Mod B) + 22 Arketip (Mod C)
+   Doğrulama: 03.03.1970 için klasik zirve 6,11,8,11 / mücadele 0,5,5,5;
+   22 arketip zirve 6,20,8,20 / mücadele 0,14,14,14 — kaynak örneğiyle birebir eşleşti.
+   ============================================================ */
+function ogHayatAmaci(DG,DA,DY){
+  var ham = ogTarihRakamToplami(DG,DA,DY);
+  var kok = ogReduceB(ham);
+  var tabloDegeri = kok===11?2:(kok===22?4:(kok===33?6:kok));
+  return {ham:ham, kok:kok, tabloDegeri:tabloDegeri};
+}
+function ogAktifDonemIndeksi(tabloDegeri, yas){
+  var sinirlar = OG_HA_DONEM[tabloDegeri] || OG_HA_DONEM[ogReduceA(tabloDegeri)] || OG_HA_DONEM[1];
+  for(var i=0;i<sinirlar.length;i++){
+    if(yas>=sinirlar[i][0] && yas<=sinirlar[i][1]) return {index:i+1, aralik:sinirlar[i]};
+  }
+  return {index:4, aralik:sinirlar[3]};
+}
+function ogZirveMucadele(DG,DA,DY){
+  var dyDigitSum = ogDigitSum(DY);
+  // KLASİK
+  var dyKokB = ogReduceB(dyDigitSum);
+  var dgKokB = ogReduceB(DG);
+  var daKokB = ogReduceB(DA);
+  var Z1 = ogReduceB(dgKokB + daKokB);
+  var Z2 = ogReduceB(dgKokB + dyKokB);
+  var Z3 = ogReduceB(Z1 + Z2);
+  var Z4 = ogReduceB(daKokB + dyKokB);
+
+  var dgA = ogReduceA(DG), daA = ogReduceA(DA), dyA = ogReduceA(dyDigitSum);
+  var M1 = Math.abs(dgA - daA);
+  var M2 = Math.abs(dgA - dyA);
+  var M3 = Math.abs(M1 - M2);
+  var M4 = Math.abs(daA - dyA);
+
+  // 22 ARKETİP
+  var dyC = ogReduceC(dyDigitSum);
+  var dgC = ogReduceC(DG);
+  var daC = ogReduceC(DA);
+  var Z1c = ogReduceC(dgC + daC);
+  var Z2c = ogReduceC(dgC + dyC);
+  var Z3c = ogReduceC(Z1c + Z2c);
+  var Z4c = ogReduceC(daC + dyC);
+
+  var M1c = Math.abs(dgC - daC);
+  var M2c = Math.abs(dgC - dyC);
+  var M3c = Math.abs(M1c - M2c);
+  var M4c = Math.abs(daC - dyC);
+
+  return {
+    klasik: {Z:[Z1,Z2,Z3,Z4], M:[M1,M2,M3,M4]},
+    arketip: {Z:[Z1c,Z2c,Z3c,Z4c], M:[M1c,M2c,M3c,M4c]}
+  };
+}
+
+/* ============================================================
+   7) BÜYÜK YAŞAM DÖNGÜSÜ  (Kılavuz Bölüm 11)
+   Doğrulama: 03.03.1970 klasik 3/3/8, 22 arketip 3/3/17 — kaynakla birebir eşleşti.
+   "Aktif" dönem: kullanıcı onayıyla Zirve dönem sınırlarıyla aynı kabul edilir
+   (1. dönem→Gençlik, 2. dönem→Erişkinlik, 3./4. dönem→Bilgelik).
+   ============================================================ */
+function ogBuyukYasamDongusu(DG,DA,DY){
+  var dyDigitSum = ogDigitSum(DY);
+  return {
+    klasik: {genclik:ogReduceB(DA), eriskinlik:ogReduceB(DG), bilgelik:ogReduceB(dyDigitSum)},
+    arketip: {genclik:ogReduceC(DA), eriskinlik:ogReduceC(DG), bilgelik:ogReduceC(dyDigitSum)}
+  };
+}
+function ogAktifBydAlani(donemIndex){
+  return donemIndex===1 ? 'genclik' : (donemIndex===2 ? 'eriskinlik' : 'bilgelik');
+}
+
+/* ============================================================
+   ANA HESAPLAMA — tüm alt bölümleri birleştirir
+   ============================================================ */
+function ogHesapla(DG,DA,DY,incelenenTarih,harfler){
+  var Y = incelenenTarih.getFullYear(), M = incelenenTarih.getMonth()+1, G = incelenenTarih.getDate();
+  var dogum = new Date(DY, DA-1, DG);
+  var yas = ogYas(dogum, incelenenTarih);
+
+  var bolum1 = ogKisiselYilAyGun(DG,DA,DY,Y,M,G);
+  var ekAKarti = ogEkABul(bolum1.kisiselYil22.deger);
+  var durtu = ogDurtuHesapla(DG,DA,DY,yas);
+  var harfSonuc = ogAktifHarf(harfler, yas);
+  var cakraDongu = ogCakraDongusu(yas);
+  var ha = ogHayatAmaci(DG,DA,DY);
+  var donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
+  var zm = ogZirveMucadele(DG,DA,DY);
+  var byd = ogBuyukYasamDongusu(DG,DA,DY);
+  var bydAlan = ogAktifBydAlani(donem.index);
+
+  var aktifZ = zm.klasik.Z[donem.index-1];
+  var aktifM = zm.klasik.M[donem.index-1];
+  var aktifZc = zm.arketip.Z[donem.index-1];
+  var aktifMc = zm.arketip.M[donem.index-1];
+  var aktifByd = byd.klasik[bydAlan];
+  var aktifBydC = byd.arketip[bydAlan];
+
+  // 8) SENTEZ — tekrar eden kök sayılar
+  var sayilar = [
+    {deger:bolum1.kisiselYil.kok, kaynak:'Kişisel Yıl'},
+    {deger:bolum1.klasikAy.kok, kaynak:'Klasik Ay'},
+    {deger:bolum1.gunY1.klasik, kaynak:'Gün (Yöntem 1, klasik)'},
+    {deger:bolum1.gunY2.sonuc, kaynak:'Gün (Yöntem 2)'},
+    {deger:cakraDongu.tema, kaynak:'Çakra Döngüsü teması'},
+    {deger:ogReduceA(aktifZ), kaynak:'Aktif Zirve (kök)'},
+    {deger:aktifM, kaynak:'Aktif Mücadele'},
+    {deger:ogReduceA(aktifByd), kaynak:'Büyük Yaşam Döngüsü (kök)'}
+  ];
+  if(!durtu.gecersiz) sayilar.push({deger:durtu.rakam, kaynak:'Dürtü'});
+  if(harfSonuc.aktif) sayilar.push({deger:harfSonuc.aktif.cakraNo, kaynak:'Harf Yankısı çakrası'});
+
+  var frekans = {};
+  sayilar.forEach(function(s){
+    var k = String(s.deger);
+    if(!frekans[k]) frekans[k] = {deger:s.deger, adet:0, kaynaklar:[]};
+    frekans[k].adet++;
+    frekans[k].kaynaklar.push(s.kaynak);
+  });
+  var sentez = Object.keys(frekans).map(function(k){ return frekans[k]; })
+    .filter(function(f){ return f.adet>=2; })
+    .sort(function(a,b){ return b.adet-a.adet; });
+
+  return {
+    yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
+    bolum1:bolum1, ekAKarti:ekAKarti, durtu:durtu, harfSonuc:harfSonuc,
+    cakraDongu:cakraDongu, ha:ha, donem:donem, zm:zm, byd:byd, bydAlan:bydAlan,
+    aktifZ:aktifZ, aktifM:aktifM, aktifZc:aktifZc, aktifMc:aktifMc,
+    aktifByd:aktifByd, aktifBydC:aktifBydC, sentez:sentez
+  };
+}
+
+/* ============================================================
+   GÖRÜNTÜLEME
+   ============================================================ */
+function ogKv(label, val){
+  return '<div class="kv"><div class="lab">'+label+'</div><div class="val">'+val+'</div></div>';
+}
+function ogMadList(arr){
+  return '<ul style="margin:8px 0 0;padding-left:18px;color:var(--ink-soft);font-size:.88rem;">'+
+    arr.map(function(m){ return '<li style="margin-bottom:4px;">'+m+'</li>'; }).join('') + '</ul>';
+}
+function ogRenderEkA(kart){
+  if(!kart) return '<p style="color:var(--ink-soft);">Kaynakta bu değere ait kayıt bulunamadı.</p>';
+  var satirlar = [
+    ['Ana tema', kart.anaTema], ['Yılın hediyesi', kart.hediye], ['En doğru strateji', kart.strateji],
+    ['İyi gelir', kart.iyiGelir], ['Yaratıcılık', kart.yaraticilik], ['Denge dersi', kart.dengeDersi],
+    ['İlişki teması', kart.iliskiTemasi], ['Dikkat edilmesi gereken bağlar', kart.dikkatBaglar],
+    ['Kritik ders', kart.kritikDers], ['Dikkat', kart.dikkat], ['Riskli taraf', kart.riskliTaraf],
+    ['Sağlık odağı', kart.saglikOdagi], ['İş/para', kart.isPara], ['İlişkiler', kart.iliskiler]
+  ].filter(function(p){ return p[1]; });
+  return '<h4 style="margin:0 0 10px;color:var(--gold-lt);">'+kart.no+'. Enerji — '+kart.baslik+'</h4>'+
+    '<div style="display:grid;gap:6px;font-size:.9rem;">'+
+    satirlar.map(function(p){ return '<div><strong style="color:var(--ink-soft);">'+p[0]+':</strong> '+p[1]+'</div>'; }).join('') +
+    '</div>';
+}
+
+function ogRenderCiktisi(r){
+  var html = '';
+
+  // 1) Kişisel Yıl/Ay/Gün
+  html += '<div class="mod"><h3>1. Kişisel Yıl · Ay · Gün Enerjileri</h3><div class="kv-grid">';
+  html += ogKv('Kişisel Yıl (Mod A)', r.bolum1.kisiselYil.ham+' / '+r.bolum1.kisiselYil.kok);
+  html += ogKv('Kişisel Yıl 22\\'lik (Mod C)', r.bolum1.kisiselYil22.deger);
+  html += ogKv('Klasik Ay (Mod A)', r.bolum1.klasikAy.ham+' / '+r.bolum1.klasikAy.kok);
+  html += ogKv('22\\'lik Ay (Mod C)', r.bolum1.yy22Ay.deger);
+  html += '</div>';
+  html += '<div class="note" style="margin-top:14px;">'+
+    '<strong>Gün — Yöntem 1:</strong> Klasik tema (ay kökü+gün) = '+r.bolum1.gunY1.klasikHam+' → <strong>'+r.bolum1.gunY1.klasik+'</strong>; '+
+    '22\\'lik okuma (ayın bileşiği+gün) = '+r.bolum1.gunY1.bilesikHam+' → <strong>'+r.bolum1.gunY1.bilesik+'</strong><br>'+
+    '<strong>Gün — Yöntem 2:</strong> doğum tarihi rakam toplamı='+r.bolum1.gunY2.dogumToplam+
+    (r.bolum1.gunY2.dogumToplamGosterim!==r.bolum1.gunY2.dogumToplam ? ' → '+r.bolum1.gunY2.dogumToplamGosterim : '')+
+    ', incelenen tarih rakam toplamı='+r.bolum1.gunY2.incelenenToplam+'; toplam='+r.bolum1.gunY2.toplam+' → <strong>'+r.bolum1.gunY2.sonuc+'</strong>'+
+    '<br><span style="font-size:.78rem;">⚠️ Kaynakta doğum tarihi toplamı ikinci kez indirgenirken (38→11 örneği), incelenen tarih toplamı indirgenmeden bırakılıyor — bu, kılavuzun kendi belgelediği açık bir tutarsızlıktır (Ek E); yukarıdaki sonuç kaynağın örnek davranışını birebir izler.</span>'+
+    '</div></div>';
+
+  // 2) Yıllık Öngörü
+  html += '<div class="mod"><h3>2. Yıllık Öngörü ve 22\\'lik Enerji Yorumu</h3>';
+  html += '<p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:14px;">Kişisel yılın 22\\'lik değeri (<strong>'+r.bolum1.kisiselYil22.deger+'</strong>) Ek A kataloğunda aranıyor:</p>';
+  html += ogRenderEkA(r.ekAKarti);
+  html += '</div>';
+
+  // 3) Dürtü
+  html += '<div class="mod"><h3>3. Dürtü Hesabı ve Aktif Dönem</h3>';
+  if(r.durtu.gecersiz){
+    html += '<div class="note">⚠️ '+r.durtu.sebep+'</div>';
+  } else {
+    html += '<div class="kv-grid">';
+    html += ogKv('Dürtü Ürünü ('+r.durtu.haneSayisi+' haneli)', r.durtu.urun);
+    html += ogKv('Basamak No (döngü içinde)', r.durtu.basamakNo+'. tur: '+r.durtu.turNo);
+    html += ogKv('Aktif Dürtü Rakamı', r.durtu.rakam);
+    html += '</div>';
+    if(r.durtu.anlam) html += ogMadList(r.durtu.anlam);
+  }
+  html += '</div>';
+
+  // 4) Harf Yankısı
+  html += '<div class="mod"><h3>4. Harf Yankısı ve Aktif Harf Dönemi</h3>';
+  if(!r.harfSonuc.aktif){
+    html += '<div class="note">⚠️ Ad/soyad alanlarında harf-çakra tablosuyla eşleşen harf bulunamadı.</div>';
+  } else {
+    var a = r.harfSonuc.aktif;
+    html += '<div class="kv-grid">';
+    html += ogKv('Aktif Harf', a.harf);
+    html += ogKv('Çakra No / Değer', a.cakraNo);
+    html += ogKv('Etkili Yaş Aralığı', a.baslangic+'–'+a.bitis);
+    html += '</div>';
+    var sinifBilgi = OG_EK_D_SINIF[a.harf] || OG_EK_D_SINIF[a.harf+'-'+a.harf];
+    var grupAnahtar = Object.keys(OG_EK_D_SINIF).find(function(k){ return k.split('-').indexOf(a.harf)>-1; });
+    if(grupAnahtar) sinifBilgi = OG_EK_D_SINIF[grupAnahtar];
+    if(sinifBilgi){
+      html += '<p style="margin-top:12px;"><strong style="color:var(--gold-lt);">'+
+        (sinifBilgi.sinif==='olumlu'?'Olumlu harf':sinifBilgi.sinif==='olumsuz'?'Olumsuz harf':'Nötr harf')+
+        ':</strong> '+sinifBilgi.aciklama+'</p>';
+    }
+    var detayHarf = a.harf==='İ'?'I':(a.harf==='Ç'?'C':(a.harf==='Ğ'?'G':(a.harf==='Ö'?'O':(a.harf==='Ş'?'S':(a.harf==='Ü'?'U':a.harf)))));
+    var detay = OG_EK_D_DETAY[detayHarf];
+    if(detay) html += ogMadList(detay);
+    html += '<h4 style="margin-top:18px;font-size:.85rem;color:var(--ink-soft);">Ad/Soyaddaki Tüm Harflerin Yaş Aralığı</h4>';
+    html += '<div class="tbl-wrap"><table class="hane"><tr><th>Harf</th><th>Değer</th><th>Yaş Aralığı</th></tr>'+
+      r.harfSonuc.tumDizi.map(function(d){
+        var aktifMi = d===a;
+        return '<tr'+(aktifMi?' style="background:var(--brand-soft);"':'')+'><td>'+d.harf+'</td><td>'+d.deger+'</td><td>'+d.baslangic+'–'+d.bitis+'</td></tr>';
+      }).join('') + '</table></div>';
+  }
+  html += '</div>';
+
+  // 5) Çakra Döngüsü
+  html += '<div class="mod"><h3>5. Çakra Döngüsü</h3><div class="kv-grid">';
+  html += ogKv('Döngü No', r.cakraDongu.dongu);
+  html += ogKv('Yaş Aralığı', r.cakraDongu.baslangic+'–'+r.cakraDongu.bitis);
+  html += ogKv('Çakra Teması', r.cakraDongu.tema);
+  html += '</div><p style="margin-top:12px;color:var(--ink-soft);">'+r.cakraDongu.aciklama+'</p></div>';
+
+  // 6) Zirve ve Mücadele
+  html += '<div class="mod"><h3>6. Zirve ve Mücadele Dönemi</h3>';
+  html += '<div class="kv-grid">';
+  html += ogKv('Hayat Amacı (ham/kök)', r.ha.ham+' / '+r.ha.kok);
+  html += ogKv('Aktif Dönem', r.donem.index+'. dönem ('+(r.donem.aralik[1]===999 ? r.donem.aralik[0]+'+' : r.donem.aralik[0]+'–'+r.donem.aralik[1])+' yaş)');
+  html += ogKv('Aktif Zirve (Klasik)', r.aktifZ);
+  html += ogKv('Aktif Mücadele (Klasik)', r.aktifM);
+  html += ogKv('Aktif Zirve (22 Arketip)', r.aktifZc);
+  html += ogKv('Aktif Mücadele (22 Arketip)', r.aktifMc);
+  html += '</div>';
+  html += '<div style="margin-top:14px;font-size:.82rem;color:var(--ink-soft);">Tüm dönemler — Klasik Zirve: '+r.zm.klasik.Z.join(', ')+
+    ' · Klasik Mücadele: '+r.zm.klasik.M.join(', ')+' · 22 Arketip Zirve: '+r.zm.arketip.Z.join(', ')+
+    ' · 22 Arketip Mücadele: '+r.zm.arketip.M.join(', ')+'</div>';
+  var zTemel = OG_ZIRVE_TEMEL[String(r.aktifZ)];
+  var zDonem = OG_ZIRVE_DONEM[String(ogReduceA(r.aktifZ))];
+  var mDonem = OG_MUCADELE[String(r.aktifM)];
+  if(zTemel){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">Zirve '+r.aktifZ+' — Temel Anlamlar</h4>'+ogMadList(zTemel); }
+  if(zDonem){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">Zirve Dönemi — '+zDonem.baslik+'</h4>'+ogMadList(zDonem.maddeler); }
+  if(mDonem){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">Mücadele '+r.aktifM+' — '+mDonem.baslik+'</h4>'+ogMadList(mDonem.maddeler); }
+  html += '</div>';
+
+  // 7) Büyük Yaşam Döngüsü
+  var bydAlanEtiket = {genclik:'Gençlik (Doğum Ayı)', eriskinlik:'Erişkinlik (Doğum Günü)', bilgelik:'Bilgelik (Doğum Yılı)'}[r.bydAlan];
+  html += '<div class="mod"><h3>7. Büyük Yaşam Döngüsü</h3><div class="kv-grid">';
+  html += ogKv('Gençlik (Klasik/22)', r.byd.klasik.genclik+' / '+r.byd.arketip.genclik);
+  html += ogKv('Erişkinlik (Klasik/22)', r.byd.klasik.eriskinlik+' / '+r.byd.arketip.eriskinlik);
+  html += ogKv('Bilgelik (Klasik/22)', r.byd.klasik.bilgelik+' / '+r.byd.arketip.bilgelik);
+  html += ogKv('Aktif Alan', bydAlanEtiket);
+  html += '</div>';
+  var bydTemel = OG_BYD[String(r.aktifByd)];
+  if(bydTemel){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">'+r.aktifByd+' — '+bydTemel.baslik+'</h4>'+ogMadList(bydTemel.maddeler); }
+  html += '<div class="note" style="margin-top:12px;font-size:.78rem;">ℹ️ Aktif alan seçimi, Zirve dönem sınırlarıyla eşleştirilerek belirlenir (1. dönem→Gençlik, 2. dönem→Erişkinlik, 3./4. dönem→Bilgelik).</div>';
+  html += '</div>';
+
+  // 8) Sentez
+  html += '<div class="mod"><h3>8. Tekrar Eden Sayıların Sentezi</h3>';
+  if(!r.sentez.length){
+    html += '<p style="color:var(--ink-soft);">Bu katmanlar arasında 2 veya daha fazla tekrar eden bir sayı bulunmadı.</p>';
+  } else {
+    html += r.sentez.map(function(f){
+      var etiket = f.adet>=3 ? 'ANA VURGU' : 'DESTEK';
+      var renk = f.adet>=3 ? 'var(--gold-lt)' : 'var(--ink-soft)';
+      return '<div class="sonuc-box" style="margin-bottom:10px;"><h4 style="color:'+renk+';">'+etiket+' — Sayı '+f.deger+' ('+f.adet+' katmanda)</h4>'+
+        '<p style="font-size:.85rem;">'+f.kaynaklar.join(' · ')+'</p></div>';
+    }).join('');
+  }
+  html += '</div>';
+
+  return html;
+}
+
+document.getElementById('ogBtn').addEventListener('click', function(){
+  var ad1 = document.getElementById('ad1').value;
+  var ad2 = document.getElementById('ad2').value;
+  var soyad = document.getElementById('soyad').value;
+  var esSoyad = document.getElementById('esSoyad').value;
+  var dStr = document.getElementById('dtarih').value;
+  var tStr = document.getElementById('ogTarih').value;
+  var out = document.getElementById('ogOut');
+
+  if(!dStr){
+    out.classList.remove('show');
+    alert('Öngörü için yukarıdaki "Doğum Tarihi" alanını doldurun.');
+    return;
+  }
+  var dParts = dStr.split('-');
+  var DY = Number(dParts[0]), DA = Number(dParts[1]), DG = Number(dParts[2]);
+  var incelenenTarih = tStr ? new Date(tStr.split('-')[0], Number(tStr.split('-')[1])-1, tStr.split('-')[2]) : new Date();
+  if(incelenenTarih < new Date(DY,DA-1,DG)){
+    out.classList.remove('show');
+    alert('İncelenecek tarih, doğum tarihinden önce olamaz.');
+    return;
+  }
+
+  var harfler = ogHarfleriTemizle((ad1||'')+(ad2||'')+(soyad||'')+(esSoyad||''));
+  var sonuc = ogHesapla(DG,DA,DY,incelenenTarih,harfler);
+
+  out.innerHTML = ogRenderCiktisi(sonuc);
+  out.classList.add('show');
+});
+
 </script>
 </body>
 </html>
