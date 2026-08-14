@@ -284,7 +284,23 @@ const APP_HTML = `<!DOCTYPE html>
           <div class="hint">Yaş, Kişisel Yıl ve Yıllık Enerjiler bu yıl için hesaplanır. Boş bırakılırsa içinde bulunduğunuz yıl kullanılır.</div>
         </div>
       </div>
-      <button class="btn" type="button" id="hesaplaBtn">Hesapla</button>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;">
+        <button class="btn" type="button" id="hesaplaBtn">Hesapla</button>
+        <button class="btn" type="button" id="kisiKaydetBtn" style="background:transparent;border:1px solid var(--line);color:var(--ink);">Kişiyi Kaydet</button>
+        <button class="btn" type="button" id="formTemizleBtn" style="background:transparent;border:1px solid var(--line);color:var(--ink-soft);">Temizle / Yeni Kişi</button>
+        <span id="kisiKayitMesaj" style="font-size:.85rem;font-weight:600;"></span>
+      </div>
+    </div>
+
+    <div class="calc-card" style="padding:22px 28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;" id="kisilerToggle">
+        <h3 style="margin:0;font-size:1.05rem;color:var(--brand-dark);">Kayıtlı Kişiler <span id="kisiSayisi" style="color:var(--ink-soft);font-weight:400;">(0)</span></h3>
+        <span id="kisilerOk" style="color:var(--gold);font-size:1.1rem;transition:transform .2s;">▾</span>
+      </div>
+      <div id="kisilerIcerik" style="display:none;margin-top:18px;">
+        <input type="text" id="kisiAra" placeholder="Ad, soyad veya doğum tarihiyle ara…" style="width:100%;font-size:1rem;padding:12px 14px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--paper-alt);color:var(--ink);margin-bottom:14px;box-sizing:border-box;">
+        <div id="kisiListe" style="max-height:420px;overflow-y:auto;"></div>
+      </div>
     </div>
 
     <div id="calcOut" class="results"></div>
@@ -1082,6 +1098,136 @@ function kv(label, val){
   return '<div class="kv"><div class="lab">'+label+'</div><div class="val">'+val+'</div></div>';
 }
 
+// ============================================================
+// KİŞİ KAYIT VE ARAMA SİSTEMİ (localStorage, mevcut hesaplama
+// motoruna dokunmaz — yalnızca Ad, Soyad, Doğum günü/ay/yıl saklar)
+// ============================================================
+var KISI_DEPO_ANAHTARI = 'numeroloji_kayitli_kisiler';
+
+function kisiListesiGetir(){
+  try{
+    var ham = localStorage.getItem(KISI_DEPO_ANAHTARI);
+    var arr = ham ? JSON.parse(ham) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function kisiListesiKaydet(arr){
+  try{ localStorage.setItem(KISI_DEPO_ANAHTARI, JSON.stringify(arr)); }catch(e){}
+}
+function kisiTr(s){ return (s||'').toLocaleUpperCase('tr-TR').trim(); }
+function kisiTarihMetni(g,a,y){
+  return String(g).padStart(2,'0')+'.'+String(a).padStart(2,'0')+'.'+y;
+}
+function kisiAyniMi(k, ad, soyad, g, a, y){
+  return kisiTr(k.ad)===kisiTr(ad) && kisiTr(k.soyad)===kisiTr(soyad) &&
+         Number(k.g)===Number(g) && Number(k.a)===Number(a) && Number(k.y)===Number(y);
+}
+function kisiKaydet(ad, soyad, g, a, y){
+  ad = (ad||'').trim(); soyad = (soyad||'').trim();
+  if(!ad || !g || !a || !y) return {basarili:false, zatenVar:false, eksik:true};
+  var liste = kisiListesiGetir();
+  var varMi = liste.some(function(k){ return kisiAyniMi(k, ad, soyad, g, a, y); });
+  if(varMi) return {basarili:false, zatenVar:true};
+  liste.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,8), ad:ad, soyad:soyad, g:Number(g), a:Number(a), y:Number(y)});
+  kisiListesiKaydet(liste);
+  kisiListesiRenderla();
+  return {basarili:true, zatenVar:false};
+}
+function kisiSil(id){
+  var liste = kisiListesiGetir().filter(function(k){ return k.id!==id; });
+  kisiListesiKaydet(liste);
+  kisiListesiRenderla();
+}
+function kisiFormdanOku(){
+  var dStr = document.getElementById('dtarih').value;
+  var ad = document.getElementById('ad1').value;
+  var soyad = document.getElementById('soyad').value;
+  if(!dStr) return null;
+  var p = dStr.split('-');
+  return {ad:ad, soyad:soyad, y:Number(p[0]), a:Number(p[1]), g:Number(p[2])};
+}
+function kisiMesajGoster(msg, renk){
+  var el = document.getElementById('kisiKayitMesaj');
+  el.textContent = msg;
+  el.style.color = renk || 'var(--gold-lt)';
+  if(msg) setTimeout(function(){ if(el.textContent===msg) el.textContent=''; }, 4000);
+}
+function kisiListesiRenderla(){
+  var liste = kisiListesiGetir();
+  var arama = kisiTr(document.getElementById('kisiAra').value);
+  var filtreli = liste.filter(function(k){
+    if(!arama) return true;
+    var tarih = kisiTarihMetni(k.g,k.a,k.y);
+    var adSoyad = kisiTr(k.ad+' '+k.soyad);
+    return kisiTr(k.ad).indexOf(arama)>-1 || kisiTr(k.soyad).indexOf(arama)>-1 ||
+           adSoyad.indexOf(arama)>-1 || tarih.indexOf(arama)>-1;
+  }).sort(function(x,y){ return kisiTr(x.ad+' '+x.soyad).localeCompare(kisiTr(y.ad+' '+y.soyad), 'tr'); });
+
+  document.getElementById('kisiSayisi').textContent = '('+liste.length+')';
+
+  var kutu = document.getElementById('kisiListe');
+  if(!filtreli.length){
+    kutu.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;padding:8px 0;">'+
+      (liste.length ? 'Aramayla eşleşen kişi bulunamadı.' : 'Henüz kayıtlı kişi yok.')+'</p>';
+    return;
+  }
+  kutu.innerHTML = filtreli.map(function(k){
+    return '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);">'+
+      '<div><strong style="color:var(--ink);">'+k.ad+' '+k.soyad+'</strong>'+
+      '<div style="font-size:.8rem;color:var(--ink-soft);">'+kisiTarihMetni(k.g,k.a,k.y)+'</div></div>'+
+      '<div style="display:flex;gap:8px;flex-shrink:0;">'+
+      '<button type="button" class="kisi-sec-btn" data-id="'+k.id+'" style="padding:8px 16px;min-height:36px;border-radius:999px;font-weight:700;font-size:.82rem;border:1px solid var(--line);background:transparent;color:var(--brand-text);cursor:pointer;">Seç</button>'+
+      '<button type="button" class="kisi-sil-btn" data-id="'+k.id+'" style="padding:8px 16px;min-height:36px;border-radius:999px;font-weight:700;font-size:.82rem;border:1px solid var(--line);background:transparent;color:#c0453f;cursor:pointer;">Sil</button>'+
+      '</div></div>';
+  }).join('');
+
+  kutu.querySelectorAll('.kisi-sec-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var k = kisiListesiGetir().find(function(x){ return x.id===btn.getAttribute('data-id'); });
+      if(!k) return;
+      document.getElementById('ad1').value = k.ad;
+      document.getElementById('soyad').value = k.soyad;
+      document.getElementById('dtarih').value = k.y+'-'+String(k.a).padStart(2,'0')+'-'+String(k.g).padStart(2,'0');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+  kutu.querySelectorAll('.kisi-sil-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var k = kisiListesiGetir().find(function(x){ return x.id===btn.getAttribute('data-id'); });
+      if(!k) return;
+      if(window.confirm('Bu kişiyi kayıtlı kişiler listesinden silmek istediğinizden emin misiniz?\\n\\n'+k.ad+' '+k.soyad+' — '+kisiTarihMetni(k.g,k.a,k.y))){
+        kisiSil(k.id);
+      }
+    });
+  });
+}
+
+document.getElementById('kisilerToggle').addEventListener('click', function(){
+  var icerik = document.getElementById('kisilerIcerik');
+  var ok = document.getElementById('kisilerOk');
+  var acik = icerik.style.display !== 'none';
+  icerik.style.display = acik ? 'none' : 'block';
+  ok.style.transform = acik ? 'rotate(0deg)' : 'rotate(180deg)';
+});
+document.getElementById('kisiAra').addEventListener('input', kisiListesiRenderla);
+document.getElementById('kisiKaydetBtn').addEventListener('click', function(){
+  var veri = kisiFormdanOku();
+  if(!veri || !veri.ad){
+    kisiMesajGoster('⚠️ Ad ve Doğum Tarihi alanlarını doldurun.', '#c0453f');
+    return;
+  }
+  var sonuc = kisiKaydet(veri.ad, veri.soyad, veri.g, veri.a, veri.y);
+  if(sonuc.zatenVar) kisiMesajGoster('Bu kişi zaten kayıtlı.', 'var(--ink-soft)');
+  else if(sonuc.basarili) kisiMesajGoster('✅ Kişi kaydedildi.', 'var(--gold-lt)');
+});
+document.getElementById('formTemizleBtn').addEventListener('click', function(){
+  ['ad1','ad2','soyad','esSoyad','dtarih','hesapYili'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('calcOut').classList.remove('show');
+  document.getElementById('calcOut').innerHTML = '';
+  kisiMesajGoster('');
+});
+kisiListesiRenderla();
+
 document.getElementById('hesaplaBtn').addEventListener('click', function(){
   var ad1 = document.getElementById('ad1').value;
   var ad2 = document.getElementById('ad2').value;
@@ -1172,6 +1318,10 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
 
   out.innerHTML = html;
   out.classList.add('show');
+
+  // Hesaplama yapıldığında kişi otomatik olarak kayıtlı kişiler listesine eklenir
+  // (zaten kayıtlıysa sessizce atlanır — kişiKaydetBtn'deki mesajları burada tekrar göstermiyoruz).
+  if(ad1) kisiKaydet(ad1, soyad, dogum.getDate(), dogum.getMonth()+1, dogum.getFullYear());
 });
 // ============================================================
 // ONGORU MODULU VERI TABLOLARI ("22'lik Numerolojide Ongoru
