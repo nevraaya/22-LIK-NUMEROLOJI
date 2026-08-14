@@ -1485,22 +1485,33 @@ function ogKisiselYilAyGun(DG,DA,DY,Y,M,G){
 
   if(!G) return result;
 
-  // Gün — Yöntem 1
+  // Gün — Yöntem 1 (Klasik): Klasik Ay'ın KÖK sayısı + gün, tam indirgeme (Mod A).
   var gunY1KlasikHam = klasikAyKok + G;
   var gunY1Klasik = ogReduceA(gunY1KlasikHam);
-  var gunY1BilesikHam = klasikAyHam + G;
-  var gunY1Bilesik = ogReduceA(gunY1BilesikHam);
 
-  // Gün — Yöntem 2 (kaynaktaki belgelenmiş asimetri birebir uygulanıyor: doğum tarihi
-  // toplamı >9 ise BİR KEZ daha indirgenir — "38→11" örneği — incelenen tarih toplamı
-  // ise kaynaktaki gibi indirgenmeden bırakılır; bu Ek E'de zaten işaretli açık bir tutarsızlıktır)
+  // Gün — Yöntem 1 (22'lik): Klasik Ay'ın BİLEŞİK (ham) değeri + gün, 22 arketip
+  // indirgemesiyle (Mod C: 1-22 aynen korunur, >22 ise rakamları toplanarak indirilir).
+  // NOT: Mod A (tek haneye indirme) ile KARIŞTIRILMAZ — 22 kendi başına geçerli bir
+  // esas sonuçtur, 4'e indirgenmez.
+  var gunY1BilesikHam = klasikAyHam + G;
+  var gunY1BilesikDeger = ogReduceC(gunY1BilesikHam);
+  var gunY1BilesikKok = ogReduceA(gunY1BilesikDeger);
+
+  // Gün — Yöntem 2 (Klasik Ay/kişisel ay hesabından tamamen bağımsız):
+  // A) Doğum tarihindeki tüm rakamlar toplanır; sonuç >9 ise rakamları YALNIZCA
+  //    BİR KEZ daha toplanır (ör. 38→11; 11 iki haneli kalsa da tekrar indirgenmez).
+  // B) İncelenen tarihteki tüm rakamlar toplanır; bu toplam HİÇ indirgenmeden bırakılır.
+  // C) A ve B toplanır, nihai sonuç tam indirgemeyle (Mod A) bulunur.
   var dogumToplam = ogTarihRakamToplami(DG,DA,DY);
   var dogumToplamGosterim = dogumToplam>9 ? ogDigitSum(dogumToplam) : dogumToplam;
   var incelenenToplam = ogTarihRakamToplami(G,M,Y);
   var gunY2Toplam = dogumToplamGosterim + incelenenToplam;
   var gunY2Sonuc = ogReduceA(gunY2Toplam);
 
-  result.gunY1 = {klasikHam:gunY1KlasikHam, klasik:gunY1Klasik, bilesikHam:gunY1BilesikHam, bilesik:gunY1Bilesik};
+  result.gunY1 = {
+    klasikHam:gunY1KlasikHam, klasik:gunY1Klasik,
+    bilesikHam:gunY1BilesikHam, bilesikDeger:gunY1BilesikDeger, bilesikKok:gunY1BilesikKok
+  };
   result.gunY2 = {dogumToplam:dogumToplam, dogumToplamGosterim:dogumToplamGosterim, incelenenToplam:incelenenToplam, toplam:gunY2Toplam, sonuc:gunY2Sonuc};
   return result;
 }
@@ -1769,14 +1780,21 @@ function ogRenderCiktisi(r){
   } else if(!r.bolum1.gunY1){
     html += '<div class="note" style="margin-top:14px;">ℹ️ Bu hesaplama için gün gereklidir.</div>';
   } else {
-    html += '<div class="note" style="margin-top:14px;">'+
-      '<strong>Gün — Yöntem 1:</strong> Klasik tema (ay kökü+gün) = '+r.bolum1.gunY1.klasikHam+' → <strong>'+r.bolum1.gunY1.klasik+'</strong>; '+
-      '22\\'lik okuma (ayın bileşiği+gün) = '+r.bolum1.gunY1.bilesikHam+' → <strong>'+r.bolum1.gunY1.bilesik+'</strong><br>'+
-      '<strong>Gün — Yöntem 2:</strong> doğum tarihi rakam toplamı='+r.bolum1.gunY2.dogumToplam+
-      (r.bolum1.gunY2.dogumToplamGosterim!==r.bolum1.gunY2.dogumToplam ? ' → '+r.bolum1.gunY2.dogumToplamGosterim : '')+
-      ', incelenen tarih rakam toplamı='+r.bolum1.gunY2.incelenenToplam+'; toplam='+r.bolum1.gunY2.toplam+' → <strong>'+r.bolum1.gunY2.sonuc+'</strong>'+
-      '<br><span style="font-size:.78rem;">⚠️ Kaynakta doğum tarihi toplamı ikinci kez indirgenirken (38→11 örneği), incelenen tarih toplamı indirgenmeden bırakılıyor — bu, kılavuzun kendi belgelediği açık bir tutarsızlıktır (Ek E); yukarıdaki sonuç kaynağın örnek davranışını birebir izler.</span>'+
-      '</div>';
+    html += '<h4 style="margin-top:18px;margin-bottom:10px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.06em;text-align:center;">GÜNLÜK ENERJİLER</h4>';
+    html += '<div class="tbl-wrap"><table class="hane">'+
+      '<tr><th>Hesaplama Sistemi</th><th>Kullanılan İşlem</th><th>Sonuç</th></tr>'+
+      '<tr><td>Klasik Gün — Yöntem 1</td><td>Ayın kökü + gün</td><td><span class="val">'+r.bolum1.gunY1.klasikHam+'/'+r.bolum1.gunY1.klasik+'</span></td></tr>'+
+      '<tr><td>22\\'lik Gün — Yöntem 1</td><td>Ayın bileşik değeri + gün</td><td><span class="val">'+r.bolum1.gunY1.bilesikDeger+'/'+r.bolum1.gunY1.bilesikKok+'</span></td></tr>'+
+      '<tr><td>Gün — Yöntem 2</td><td>Doğum tarihi değeri + incelenen tarih toplamı</td><td><span class="val">'+r.bolum1.gunY2.toplam+'/'+r.bolum1.gunY2.sonuc+'</span></td></tr>'+
+      '</table></div>';
+    html += '<details style="margin-top:10px;">'+
+      '<summary style="cursor:pointer;font-size:.8rem;color:var(--ink-soft);">Hesaplama adımlarını göster</summary>'+
+      '<div class="note" style="margin-top:8px;">'+
+      '<strong>Klasik Gün — Yöntem 1:</strong> Klasik Ay kökü ('+r.bolum1.klasikAy.kok+') + gün = '+r.bolum1.gunY1.klasikHam+' → <strong>'+r.bolum1.gunY1.klasik+'</strong><br>'+
+      '<strong>22\\'lik Gün — Yöntem 1:</strong> Klasik Ay bileşiği ('+r.bolum1.klasikAy.ham+') + gün = '+r.bolum1.gunY1.bilesikHam+' → <strong>'+r.bolum1.gunY1.bilesikDeger+'</strong>'+
+      (r.bolum1.gunY1.bilesikDeger!==r.bolum1.gunY1.bilesikKok ? ' (kök: '+r.bolum1.gunY1.bilesikKok+')' : '')+'<br>'+
+      '<strong>Gün — Yöntem 2:</strong> doğum tarihi değeri='+r.bolum1.gunY2.dogumToplamGosterim+' + incelenen tarih toplamı='+r.bolum1.gunY2.incelenenToplam+' = '+r.bolum1.gunY2.toplam+' → <strong>'+r.bolum1.gunY2.sonuc+'</strong>'+
+      '</div></details>';
   }
   html += '</div>';
 
