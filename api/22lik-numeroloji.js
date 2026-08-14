@@ -1441,6 +1441,22 @@ var OG_HA_DONEM = {
   9:[[0,27],[28,36],[37,45],[46,999]]
 };
 
+// ---------- Büyük Yaşam Döngüsü — kendi 3 döngülük yaş sınırları (Zirve/Mücadele
+// tablosuyla KARIŞTIRILMAZ; kullanıcının verdiği ayrı tablo, HA/Yaşam Yolu 1-9'a göre;
+// 11→2'nin, 22→4'ün, 33→6'nın tablosuyla aynı aralıkları kullanır — bu eşleme zaten
+// ogHayatAmaci()'nin tabloDegeri alanında yapılıyor) ----------
+var OG_BYD_DONEM = {
+  1:[[0,26],[27,53],[54,999]],
+  2:[[0,25],[26,52],[53,999]],
+  3:[[0,33],[34,60],[61,999]],
+  4:[[0,32],[33,59],[60,999]],
+  5:[[0,31],[32,58],[59,999]],
+  6:[[0,30],[31,57],[58,999]],
+  7:[[0,29],[30,56],[57,999]],
+  8:[[0,28],[29,55],[56,999]],
+  9:[[0,27],[28,54],[55,999]]
+};
+
 /* ============================================================
    1) KİŞİSEL YIL · AY · GÜN ENERJİLERİ  (Kılavuz Bölüm 3-4)
    ============================================================ */
@@ -1610,8 +1626,10 @@ function ogZirveMucadele(DG,DA,DY){
 /* ============================================================
    7) BÜYÜK YAŞAM DÖNGÜSÜ  (Kılavuz Bölüm 11)
    Doğrulama: 03.03.1970 klasik 3/3/8, 22 arketip 3/3/17 — kaynakla birebir eşleşti.
-   "Aktif" dönem: kullanıcı onayıyla Zirve dönem sınırlarıyla aynı kabul edilir
-   (1. dönem→Gençlik, 2. dönem→Erişkinlik, 3./4. dönem→Bilgelik).
+   Aktif döngü, Yaşam Yolu/Hayat Amacı sayısına göre AYRI bir 3'lü yaş aralığı
+   tablosuyla (OG_BYD_DONEM) belirlenir — Zirve/Mücadele'nin 4'lü OG_HA_DONEM
+   tablosuyla KARIŞTIRILMAZ. 1.Döngü→Gençlik (doğum ayı), 2.Döngü→Erişkinlik
+   (doğum günü), 3.Döngü→Bilgelik (doğum yılı rakam toplamı).
    ============================================================ */
 function ogBuyukYasamDongusu(DG,DA,DY){
   var dyDigitSum = ogDigitSum(DY);
@@ -1622,6 +1640,15 @@ function ogBuyukYasamDongusu(DG,DA,DY){
 }
 function ogAktifBydAlani(donemIndex){
   return donemIndex===1 ? 'genclik' : (donemIndex===2 ? 'eriskinlik' : 'bilgelik');
+}
+// Büyük Yaşam Döngüsü'nün KENDİ 3'lü yaş aralığı tablosundan aktif döngüyü bulur.
+// tabloDegeri: ogHayatAmaci().tabloDegeri (11→2, 22→4, 33→6 eşlemesi zaten yapılmış).
+function ogAktifBydDonemi(tabloDegeri, yas){
+  var sinirlar = OG_BYD_DONEM[tabloDegeri] || OG_BYD_DONEM[ogReduceA(tabloDegeri)] || OG_BYD_DONEM[1];
+  for(var i=0;i<sinirlar.length;i++){
+    if(yas>=sinirlar[i][0] && yas<=sinirlar[i][1]) return {index:i+1, aralik:sinirlar[i]};
+  }
+  return {index:3, aralik:sinirlar[2]};
 }
 
 /* ============================================================
@@ -1653,7 +1680,10 @@ function ogHesapla(DG,DA,DY,Y,M,G,harfler){
   var donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
   var zm = ogZirveMucadele(DG,DA,DY);
   var byd = ogBuyukYasamDongusu(DG,DA,DY);
-  var bydAlan = ogAktifBydAlani(donem.index);
+  // BYD'nin aktif döngüsü KENDİ 3'lü yaş tablosundan belirlenir (Zirve/Mücadele'nin
+  // 4'lü dönem tablosuyla karıştırılmaz — bkz. ogAktifBydDonemi).
+  var bydDonem = ogAktifBydDonemi(ha.tabloDegeri, yas);
+  var bydAlan = ogAktifBydAlani(bydDonem.index);
 
   var aktifZ = zm.klasik.Z[donem.index-1];
   var aktifM = zm.klasik.M[donem.index-1];
@@ -1691,7 +1721,7 @@ function ogHesapla(DG,DA,DY,Y,M,G,harfler){
   return {
     ayVar:ayVar, gunVar:gunVar, yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
     bolum1:bolum1, ekAKarti:ekAKarti, durtu:durtu, harfSonuc:harfSonuc,
-    cakraDongu:cakraDongu, ha:ha, donem:donem, zm:zm, byd:byd, bydAlan:bydAlan,
+    cakraDongu:cakraDongu, ha:ha, donem:donem, zm:zm, byd:byd, bydAlan:bydAlan, bydDonem:bydDonem,
     aktifZ:aktifZ, aktifM:aktifM, aktifZc:aktifZc, aktifMc:aktifMc,
     aktifByd:aktifByd, aktifBydC:aktifBydC, sentez:sentez
   };
@@ -1752,7 +1782,6 @@ function ogRenderCiktisi(r){
 
   // 2) Yıllık Öngörü
   html += '<div class="mod"><h3>2. Yıllık Öngörü ve 22\\'lik Enerji Yorumu</h3>';
-  html += '<p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:14px;">Kişisel yılın 22\\'lik değeri (<strong>'+r.bolum1.kisiselYil22.deger+'</strong>) Ek A kataloğunda aranıyor:</p>';
   html += ogRenderEkA(r.ekAKarti);
   html += '</div>';
 
@@ -1840,17 +1869,35 @@ function ogRenderCiktisi(r){
   if(mDonem){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">Mücadele '+r.aktifM+' — '+mDonem.baslik+'</h4>'+ogMadList(mDonem.maddeler); }
   html += '</div>';
 
-  // 7) Büyük Yaşam Döngüsü
-  var bydAlanEtiket = {genclik:'Gençlik (Doğum Ayı)', eriskinlik:'Erişkinlik (Doğum Günü)', bilgelik:'Bilgelik (Doğum Yılı)'}[r.bydAlan];
+  // 7) Büyük Yaşam Döngüsü — kendi 3'lü yaş aralığı tablosu (Zirve/Mücadele'den bağımsız)
+  var bydDonemAdlari = ['Gençlik Döngüsü','Erişkinlik Döngüsü','Bilgelik Döngüsü'];
+  var bydAlanEtiket = {genclik:'Gençlik Döngüsü', eriskinlik:'Erişkinlik Döngüsü', bilgelik:'Bilgelik Döngüsü'}[r.bydAlan];
+  var bydSinirlar = OG_BYD_DONEM[r.ha.tabloDegeri] || OG_BYD_DONEM[ogReduceA(r.ha.tabloDegeri)] || OG_BYD_DONEM[1];
+  var bydDegerler = [
+    {klasik:r.byd.klasik.genclik, arketip:r.byd.arketip.genclik},
+    {klasik:r.byd.klasik.eriskinlik, arketip:r.byd.arketip.eriskinlik},
+    {klasik:r.byd.klasik.bilgelik, arketip:r.byd.arketip.bilgelik}
+  ];
   html += '<div class="mod"><h3>7. Büyük Yaşam Döngüsü</h3><div class="kv-grid">';
-  html += ogKv('Gençlik (Klasik/22)', r.byd.klasik.genclik+' / '+r.byd.arketip.genclik);
-  html += ogKv('Erişkinlik (Klasik/22)', r.byd.klasik.eriskinlik+' / '+r.byd.arketip.eriskinlik);
-  html += ogKv('Bilgelik (Klasik/22)', r.byd.klasik.bilgelik+' / '+r.byd.arketip.bilgelik);
-  html += ogKv('Aktif Alan', bydAlanEtiket);
+  html += ogKv('Yaşam Yolu / Hayat Amacı', r.ha.ham+'/'+r.ha.kok);
+  html += ogKv('İncelenen Tarihteki Yaş', r.yas);
+  html += ogKv('Aktif Yaşam Döngüsü', r.bydDonem.index+'. Döngü — '+bydAlanEtiket);
+  html += ogKv('Aktif Döngü Sayısı (Klasik/22)', r.aktifByd+' / '+r.aktifBydC);
   html += '</div>';
+  html += '<h4 style="margin-top:22px;margin-bottom:10px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.06em;text-align:center;">BÜYÜK YAŞAM DÖNGÜLERİ</h4>';
+  html += '<div class="tbl-wrap"><table class="hane">'+
+    '<tr><th>Döngü</th><th>Yaş Aralığı</th><th>Döngü Sayısı (Klasik)</th><th>Döngü Sayısı (22 Arketip)</th><th>Dönemin Adı</th><th>Durum</th></tr>'+
+    [0,1,2].map(function(i){
+      var aktifMi = (i+1)===r.bydDonem.index;
+      var aralik = bydSinirlar[i][1]===999 ? bydSinirlar[i][0]+'+ yaş' : bydSinirlar[i][0]+'–'+bydSinirlar[i][1]+' yaş';
+      return '<tr'+(aktifMi?' class="og-aktif-donem"':'')+'><td>'+(i+1)+'. Döngü</td><td>'+aralik+'</td>'+
+        '<td><span class="val">'+bydDegerler[i].klasik+'</span></td>'+
+        '<td><span class="val">'+bydDegerler[i].arketip+'</span></td>'+
+        '<td>'+bydDonemAdlari[i]+'</td><td>'+(aktifMi?'Aktif':'Pasif')+'</td></tr>';
+    }).join('') +
+    '</table></div>';
   var bydTemel = OG_BYD[String(r.aktifByd)];
-  if(bydTemel){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">'+r.aktifByd+' — '+bydTemel.baslik+'</h4>'+ogMadList(bydTemel.maddeler); }
-  html += '<div class="note" style="margin-top:12px;font-size:.78rem;">ℹ️ Aktif alan seçimi, Zirve dönem sınırlarıyla eşleştirilerek belirlenir (1. dönem→Gençlik, 2. dönem→Erişkinlik, 3./4. dönem→Bilgelik).</div>';
+  if(bydTemel){ html += '<h4 style="margin-top:16px;font-size:.9rem;color:var(--gold-lt);">'+r.aktifByd+' — '+bydTemel.baslik+' (Aktif Döngünün Yorumu)</h4>'+ogMadList(bydTemel.maddeler); }
   html += '</div>';
 
   // 8) Sentez
