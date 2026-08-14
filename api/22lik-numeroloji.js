@@ -1793,70 +1793,6 @@ function ogRenderEkA(kart){
     '</div>';
 }
 
-/* ============================================================
-   YILLIK ÇAKRA MERDİVENİ — DOĞUM MERDİVENİYLE KARŞILAŞTIRMA
-   (Ana uygulamanın çalışan piramit hesaplarını DEĞİŞTİRMEZ; yalnızca
-   zamanAnaliziHesapla()'nın döndürdüğü diziler hane-hane karşılaştırılır.)
-   ============================================================ */
-var OG_KARMIK_SAYILAR = [13,14,16,19]; // kaynakta zaten kullanılan karmik borç havuzu (Görev matrisiyle aynı)
-
-function ogCakraYorumTablosu(baslik, dogumArr, yilArr, karmikKontrolVar){
-  var satirlar = [];
-  var frekans = {};
-  yilArr.forEach(function(v){ frekans[v] = (frekans[v]||0)+1; });
-  for(var i=0;i<13;i++){
-    if(dogumArr[i] !== yilArr[i]){
-      satirlar.push({hane:(i+1)+'. Hane', dogum:dogumArr[i], yil:yilArr[i], durum:'Değişti', yorum:'Bu yıl farklı bir tema devrede.'});
-    } else if(frekans[yilArr[i]] >= 2){
-      satirlar.push({hane:(i+1)+'. Hane', dogum:dogumArr[i], yil:yilArr[i], durum:'Aynı (Güçlendi)', yorum:'Doğum merdiveniyle aynı; bu alan bu yıl güçleniyor.'});
-    }
-  }
-  var html = '<h4 style="margin-top:18px;margin-bottom:8px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.04em;">'+baslik+'</h4>';
-  if(!satirlar.length){
-    html += '<p style="color:var(--ink-soft);font-size:.85rem;">Doğum merdiveniyle karşılaştırıldığında bu yıl için ayrıca vurgulanacak belirgin bir değişiklik veya tekrar yok.</p>';
-  } else {
-    html += '<div class="tbl-wrap"><table class="hane">'+
-      '<tr><th>Hane/Çakra</th><th>Doğum Merdiveni</th><th>Yıllık Merdiven</th><th>Durum</th><th>Kısa Yorum</th></tr>'+
-      satirlar.map(function(s){
-        return '<tr><td>'+s.hane+'</td><td><span class="val">'+s.dogum+'</span></td><td><span class="val">'+s.yil+'</span></td><td>'+s.durum+'</td><td style="text-align:left;">'+s.yorum+'</td></tr>';
-      }).join('') + '</table></div>';
-  }
-  if(karmikKontrolVar){
-    var karmikHaneler = [];
-    yilArr.forEach(function(v,i){ if(OG_KARMIK_SAYILAR.indexOf(v)>-1) karmikHaneler.push((i+1)+'. Hane ('+v+')'); });
-    if(karmikHaneler.length){
-      html += '<div class="note" style="margin-top:10px;">⚠️ Karmik sayı tespit edildi: '+karmikHaneler.join(', ')+'.</div>';
-    }
-  }
-  return html;
-}
-
-function ogYillikKarsilastirmaTablosu(Y, dogumK, dogumA, yilK, yilA){
-  var satirlar = [];
-  for(var i=0;i<13;i++){
-    var klasikAyni = dogumK[i]===yilK[i];
-    var arketipAyni = dogumA[i]===yilA[i];
-    if(klasikAyni && arketipAyni){
-      satirlar.push({hane:(i+1)+'. Hane', klasik:yilK[i], arketip:yilA[i], ortak:'Her iki sistemde de güçleniyor (doğumla aynı)', guclu:true});
-    } else if(!klasikAyni && !arketipAyni){
-      satirlar.push({hane:(i+1)+'. Hane', klasik:yilK[i], arketip:yilA[i], ortak:'Her iki sistemde de yeni bir tema devrede', guclu:false});
-    }
-  }
-  satirlar.sort(function(a,b){ return (b.guclu?1:0)-(a.guclu?1:0); });
-  satirlar = satirlar.slice(0,5);
-  var html = '<h4 style="margin-top:22px;margin-bottom:10px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.06em;text-align:center;">'+Y+' YILLIK ÇAKRA KARŞILAŞTIRMASI</h4>';
-  if(!satirlar.length){
-    html += '<p style="color:var(--ink-soft);font-size:.85rem;">Klasik ve 22\\'lik sistemler bu yıl için ortak bir tema paylaşmıyor; iki katman birbirinden bağımsız okunmalı.</p>';
-  } else {
-    html += '<div class="tbl-wrap"><table class="hane">'+
-      '<tr><th>Alan</th><th>Klasik Yıllık Sonuç</th><th>22\\'lik Yıllık Sonuç</th><th>Ortak Tema</th></tr>'+
-      satirlar.map(function(s){
-        return '<tr><td>'+s.hane+'</td><td><span class="val">'+s.klasik+'</span></td><td><span class="val">'+s.arketip+'</span></td><td style="text-align:left;">'+s.ortak+'</td></tr>';
-      }).join('') + '</table></div>';
-  }
-  return html;
-}
-
 function ogRenderCiktisi(r){
   var html = '';
 
@@ -1904,9 +1840,6 @@ function ogRenderCiktisi(r){
     cakraAgaciPaneli(r.Y+' KLASİK YILLIK ÇAKRA MERDİVENİ', r.yillikZA.kisiselYilPiramit)+
     cakraAgaciPaneli(r.Y+' 22\\'LİK YILLIK ÇAKRA MERDİVENİ', r.yillikZA.kisiselYilPiramit22)+
     '</div>';
-  html += ogCakraYorumTablosu(r.Y+' Klasik Yıllık Çakra Yorumu', r.yillikZA.dogumPiramit, r.yillikZA.kisiselYilPiramit, false);
-  html += ogCakraYorumTablosu(r.Y+' 22\\'lik Yıllık Çakra Yorumu', r.yillikZA.dogumPiramit22, r.yillikZA.kisiselYilPiramit22, true);
-  html += ogYillikKarsilastirmaTablosu(r.Y, r.yillikZA.dogumPiramit, r.yillikZA.dogumPiramit22, r.yillikZA.kisiselYilPiramit, r.yillikZA.kisiselYilPiramit22);
   html += '</div>';
 
   // 4) Dürtü
