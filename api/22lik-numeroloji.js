@@ -1757,9 +1757,9 @@ function ogRenderCiktisi(r){
     html += '<div class="note">⚠️ '+r.durtu.sebep+'</div>';
   } else {
     html += '<div class="kv-grid">';
-    html += ogKv('Dürtü Ürünü ('+r.durtu.haneSayisi+' haneli)', r.durtu.urun);
-    html += ogKv('Basamak No (döngü içinde)', r.durtu.basamakNo+'. tur: '+r.durtu.turNo);
-    html += ogKv('Aktif Dürtü Rakamı', r.durtu.rakam);
+    html += ogKv('Döngü Dürtü Kodu', r.durtu.urun);
+    html += ogKv('Döngü Sayısı', r.durtu.turNo);
+    html += ogKv('Dürtü Sayısı', r.durtu.rakam);
     html += '</div>';
     if(r.durtu.anlam) html += ogMadList(r.durtu.anlam);
   }
