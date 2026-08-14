@@ -226,6 +226,11 @@ const APP_HTML = `<!DOCTYPE html>
   table.hane th,table.hane td{border:1px solid var(--line);padding:8px 6px;text-align:center;}
   table.hane th{background:var(--paper-alt);color:var(--ink-soft);font-weight:700;}
   .tbl-wrap{overflow-x:auto;}
+  table.hane .val{font-family:'Cinzel',serif;font-size:1.15rem;color:var(--gold-lt);}
+  table.hane tbody tr:hover td, table.hane tr:hover td{background:var(--brand-soft);}
+  table.hane tr.og-aktif-donem td{background:var(--brand-soft);box-shadow:inset 0 0 0 1px var(--gold);}
+  table.hane tr.og-aktif-donem td:first-child{font-weight:700;color:var(--ink);}
+  table.hane tr.og-aktif-donem .val{color:var(--gold);font-weight:700;}
   .note{font-size:.82rem;color:var(--ink-soft);background:var(--brand-soft);border-left:3px solid var(--gold);padding:12px 16px;border-radius:0 10px 10px 0;margin-top:6px;}
   #calcOut{display:none;}
   #calcOut.show{display:block;}
@@ -1808,14 +1813,25 @@ function ogRenderCiktisi(r){
   html += '<div class="kv-grid">';
   html += ogKv('Hayat Amacı (ham/kök)', r.ha.ham+' / '+r.ha.kok);
   html += ogKv('Aktif Dönem', r.donem.index+'. dönem ('+(r.donem.aralik[1]===999 ? r.donem.aralik[0]+'+' : r.donem.aralik[0]+'–'+r.donem.aralik[1])+' yaş)');
-  html += ogKv('Aktif Zirve (Klasik)', r.aktifZ);
-  html += ogKv('Aktif Mücadele (Klasik)', r.aktifM);
-  html += ogKv('Aktif Zirve (22 Arketip)', r.aktifZc);
-  html += ogKv('Aktif Mücadele (22 Arketip)', r.aktifMc);
   html += '</div>';
-  html += '<div style="margin-top:14px;font-size:.82rem;color:var(--ink-soft);">Tüm dönemler — Klasik Zirve: '+r.zm.klasik.Z.join(', ')+
-    ' · Klasik Mücadele: '+r.zm.klasik.M.join(', ')+' · 22 Arketip Zirve: '+r.zm.arketip.Z.join(', ')+
-    ' · 22 Arketip Mücadele: '+r.zm.arketip.M.join(', ')+'</div>';
+  html += '<h4 style="margin-top:18px;margin-bottom:10px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.06em;text-align:center;">AKTİF ZİRVE VE MÜCADELE DÖNEMİ</h4>';
+  html += '<div class="tbl-wrap"><table class="hane">'+
+    '<tr><th>Sistem</th><th>Aktif Zirve</th><th>Aktif Mücadele</th></tr>'+
+    '<tr><td>Klasik Sistem</td><td><span class="val">'+r.aktifZ+'</span></td><td><span class="val">'+r.aktifM+'</span></td></tr>'+
+    '<tr><td>22 Arketip Sistemi</td><td><span class="val">'+r.aktifZc+'</span></td><td><span class="val">'+r.aktifMc+'</span></td></tr>'+
+    '</table></div>';
+  html += '<h4 style="margin-top:22px;margin-bottom:10px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.06em;text-align:center;">TÜM ZİRVE VE MÜCADELE DÖNEMLERİ</h4>';
+  html += '<div class="tbl-wrap"><table class="hane">'+
+    '<tr><th>Dönem</th><th>Klasik Zirve</th><th>Klasik Mücadele</th><th>22 Arketip Zirve</th><th>22 Arketip Mücadele</th></tr>'+
+    [0,1,2,3].map(function(i){
+      var aktifMi = (i+1)===r.donem.index;
+      return '<tr'+(aktifMi?' class="og-aktif-donem"':'')+'><td>'+(i+1)+'. Dönem</td>'+
+        '<td><span class="val">'+r.zm.klasik.Z[i]+'</span></td>'+
+        '<td><span class="val">'+r.zm.klasik.M[i]+'</span></td>'+
+        '<td><span class="val">'+r.zm.arketip.Z[i]+'</span></td>'+
+        '<td><span class="val">'+r.zm.arketip.M[i]+'</span></td></tr>';
+    }).join('') +
+    '</table></div>';
   var zTemel = OG_ZIRVE_TEMEL[String(r.aktifZ)];
   var zDonem = OG_ZIRVE_DONEM[String(ogReduceA(r.aktifZ))];
   var mDonem = OG_MUCADELE[String(r.aktifM)];
