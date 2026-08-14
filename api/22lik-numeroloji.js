@@ -1623,68 +1623,68 @@ function ogAktifBydAlani(donemIndex){
    ANA HESAPLAMA — tüm alt bölümleri birleştirir
    ============================================================ */
 function ogHesapla(DG,DA,DY,Y,M,G,harfler){
-  // Y HER ZAMAN dolu (zorunlu). M ve/veya G null olabilir. Yaşa bağlı bölümler
-  // (3-8: Dürtü, Harf Yankısı, Çakra Döngüsü, Zirve/Mücadele, Büyük Yaşam
-  // Döngüsü, Sentez) yalnızca TAM tarih (Y+M+G) varsa hesaplanır — çünkü yaş
-  // GG.AA.YYYY hassasiyeti gerektirir; eksik alan için "bugün" ASLA kullanılmaz.
-  var tamTarihVar = !!(M && G);
+  // Y HER ZAMAN dolu (zorunlu). M ve/veya G null olabilir.
+  // ayVar: kişisel ay / klasik ay gibi AYA ÖZGÜ sonuçlar için.
+  // gunVar: gün yöntem 1/2 gibi GÜNE ÖZGÜ sonuçlar için (ay da gerektirir).
+  var ayVar = !!M;
+  var gunVar = !!(M && G);
 
   var bolum1 = ogKisiselYilAyGun(DG,DA,DY,Y,M,G);
   var ekAKarti = ogEkABul(bolum1.kisiselYil22.deger);
 
-  var yas=null, durtu=null, harfSonuc=null, cakraDongu=null, ha=null, donem=null,
-      zm=null, byd=null, bydAlan=null, aktifZ=null, aktifM=null, aktifZc=null,
-      aktifMc=null, aktifByd=null, aktifBydC=null, sentez=[];
+  // Yaş: Dürtü, Harf Yankısı, Çakra Döngüsü, Zirve/Mücadele, Büyük Yaşam
+  // Döngüsü gibi bölümler AYIN/GÜNÜN kendisine değil, YAŞA bağlıdır — bu
+  // yüzden bu bölümler yalnızca yıl girildiğinde de hesaplanabilir. Tam
+  // tarih (Y+M+G) varsa doğum gününe göre TAM yaş kullanılır; yalnızca yıl
+  // (M ve/veya G eksik) girildiyse "o yıl içinde ulaşılan yaş" (Y-DY)
+  // kullanılır — ay/gün bilgisi olmadığından doğum günü sınırı uygulanamaz,
+  // bu yaklaşık değer bu bölümlerin gösterilebilmesi için yeterlidir.
+  var yas = gunVar ? ogYas(new Date(DY, DA-1, DG), new Date(Y, M-1, G)) : (Y - DY);
 
-  if(tamTarihVar){
-    var dogum = new Date(DY, DA-1, DG);
-    var incelenenTarih = new Date(Y, M-1, G);
-    yas = ogYas(dogum, incelenenTarih);
+  var durtu = ogDurtuHesapla(DG,DA,DY,yas);
+  var harfSonuc = ogAktifHarf(harfler, yas);
+  var cakraDongu = ogCakraDongusu(yas);
+  var ha = ogHayatAmaci(DG,DA,DY);
+  var donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
+  var zm = ogZirveMucadele(DG,DA,DY);
+  var byd = ogBuyukYasamDongusu(DG,DA,DY);
+  var bydAlan = ogAktifBydAlani(donem.index);
 
-    durtu = ogDurtuHesapla(DG,DA,DY,yas);
-    harfSonuc = ogAktifHarf(harfler, yas);
-    cakraDongu = ogCakraDongusu(yas);
-    ha = ogHayatAmaci(DG,DA,DY);
-    donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
-    zm = ogZirveMucadele(DG,DA,DY);
-    byd = ogBuyukYasamDongusu(DG,DA,DY);
-    bydAlan = ogAktifBydAlani(donem.index);
+  var aktifZ = zm.klasik.Z[donem.index-1];
+  var aktifM = zm.klasik.M[donem.index-1];
+  var aktifZc = zm.arketip.Z[donem.index-1];
+  var aktifMc = zm.arketip.M[donem.index-1];
+  var aktifByd = byd.klasik[bydAlan];
+  var aktifBydC = byd.arketip[bydAlan];
 
-    aktifZ = zm.klasik.Z[donem.index-1];
-    aktifM = zm.klasik.M[donem.index-1];
-    aktifZc = zm.arketip.Z[donem.index-1];
-    aktifMc = zm.arketip.M[donem.index-1];
-    aktifByd = byd.klasik[bydAlan];
-    aktifBydC = byd.arketip[bydAlan];
+  // 8) SENTEZ — tekrar eden kök sayılar. Ay/gün'e özgü kalemler yalnızca
+  // ilgili veri varsa listeye eklenir; eksik veri sentezi engellemez.
+  var sayilar = [
+    {deger:bolum1.kisiselYil.kok, kaynak:'Kişisel Yıl'},
+    {deger:cakraDongu.tema, kaynak:'Çakra Döngüsü teması'},
+    {deger:ogReduceA(aktifZ), kaynak:'Aktif Zirve (kök)'},
+    {deger:aktifM, kaynak:'Aktif Mücadele'},
+    {deger:ogReduceA(aktifByd), kaynak:'Büyük Yaşam Döngüsü (kök)'}
+  ];
+  if(bolum1.klasikAy) sayilar.push({deger:bolum1.klasikAy.kok, kaynak:'Klasik Ay'});
+  if(bolum1.gunY1) sayilar.push({deger:bolum1.gunY1.klasik, kaynak:'Gün (Yöntem 1, klasik)'});
+  if(bolum1.gunY2) sayilar.push({deger:bolum1.gunY2.sonuc, kaynak:'Gün (Yöntem 2)'});
+  if(!durtu.gecersiz) sayilar.push({deger:durtu.rakam, kaynak:'Dürtü'});
+  if(harfSonuc.aktif) sayilar.push({deger:harfSonuc.aktif.cakraNo, kaynak:'Harf Yankısı çakrası'});
 
-    // 8) SENTEZ — tekrar eden kök sayılar
-    var sayilar = [
-      {deger:bolum1.kisiselYil.kok, kaynak:'Kişisel Yıl'},
-      {deger:bolum1.klasikAy.kok, kaynak:'Klasik Ay'},
-      {deger:bolum1.gunY1.klasik, kaynak:'Gün (Yöntem 1, klasik)'},
-      {deger:bolum1.gunY2.sonuc, kaynak:'Gün (Yöntem 2)'},
-      {deger:cakraDongu.tema, kaynak:'Çakra Döngüsü teması'},
-      {deger:ogReduceA(aktifZ), kaynak:'Aktif Zirve (kök)'},
-      {deger:aktifM, kaynak:'Aktif Mücadele'},
-      {deger:ogReduceA(aktifByd), kaynak:'Büyük Yaşam Döngüsü (kök)'}
-    ];
-    if(!durtu.gecersiz) sayilar.push({deger:durtu.rakam, kaynak:'Dürtü'});
-    if(harfSonuc.aktif) sayilar.push({deger:harfSonuc.aktif.cakraNo, kaynak:'Harf Yankısı çakrası'});
-
-    var frekans = {};
-    sayilar.forEach(function(s){
-      var k = String(s.deger);
-      if(!frekans[k]) frekans[k] = {deger:s.deger, adet:0, kaynaklar:[]};
-      frekans[k].adet++;
-      frekans[k].kaynaklar.push(s.kaynak);
-    });
-    sentez = Object.keys(frekans).map(function(k){ return frekans[k]; })
-      .filter(function(f){ return f.adet>=2; })
-      .sort(function(a,b){ return b.adet-a.adet; });
-  }
+  var frekans = {};
+  sayilar.forEach(function(s){
+    var k = String(s.deger);
+    if(!frekans[k]) frekans[k] = {deger:s.deger, adet:0, kaynaklar:[]};
+    frekans[k].adet++;
+    frekans[k].kaynaklar.push(s.kaynak);
+  });
+  var sentez = Object.keys(frekans).map(function(k){ return frekans[k]; })
+    .filter(function(f){ return f.adet>=2; })
+    .sort(function(a,b){ return b.adet-a.adet; });
 
   return {
-    tamTarihVar:tamTarihVar, yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
+    ayVar:ayVar, gunVar:gunVar, yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
     bolum1:bolum1, ekAKarti:ekAKarti, durtu:durtu, harfSonuc:harfSonuc,
     cakraDongu:cakraDongu, ha:ha, donem:donem, zm:zm, byd:byd, bydAlan:bydAlan,
     aktifZ:aktifZ, aktifM:aktifM, aktifZc:aktifZc, aktifMc:aktifMc,
@@ -1730,9 +1730,9 @@ function ogRenderCiktisi(r){
   }
   html += '</div>';
   if(!r.bolum1.klasikAy){
-    html += '<div class="note" style="margin-top:14px;">ℹ️ Yalnızca yıl girildi. Aylık ve günlük enerjiler için yukarıdan ay (ve gün) seçin.</div>';
+    html += '<div class="note" style="margin-top:14px;">ℹ️ Bu hesaplama için ay gereklidir.</div>';
   } else if(!r.bolum1.gunY1){
-    html += '<div class="note" style="margin-top:14px;">ℹ️ Yıl ve ay girildi. Günlük enerji için yukarıdan gün seçin.</div>';
+    html += '<div class="note" style="margin-top:14px;">ℹ️ Bu hesaplama için gün gereklidir.</div>';
   } else {
     html += '<div class="note" style="margin-top:14px;">'+
       '<strong>Gün — Yöntem 1:</strong> Klasik tema (ay kökü+gün) = '+r.bolum1.gunY1.klasikHam+' → <strong>'+r.bolum1.gunY1.klasik+'</strong>; '+
@@ -1750,12 +1750,6 @@ function ogRenderCiktisi(r){
   html += '<p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:14px;">Kişisel yılın 22\\'lik değeri (<strong>'+r.bolum1.kisiselYil22.deger+'</strong>) Ek A kataloğunda aranıyor:</p>';
   html += ogRenderEkA(r.ekAKarti);
   html += '</div>';
-
-  if(!r.tamTarihVar){
-    html += '<div class="mod"><h3>3-8. Dürtü · Harf Yankısı · Çakra Döngüsü · Zirve/Mücadele · Büyük Yaşam Döngüsü · Sentez</h3>'+
-      '<div class="note">ℹ️ Bu bölümler yaşa duyarlıdır ve tam tarih (yıl + ay + gün) gerektirir. Hesaplanması için yukarıdan ay ve gün seçin.</div></div>';
-    return html;
-  }
 
   // 3) Dürtü
   html += '<div class="mod"><h3>3. Dürtü Hesabı ve Aktif Dönem</h3>';
@@ -1912,6 +1906,11 @@ document.getElementById('ogBtn').addEventListener('click', function(){
   var M = ayStr ? Number(ayStr) : null;
   var G = (ayStr && gunStr) ? Number(gunStr) : null;
 
+  if(Y < DY){
+    out.classList.remove('show');
+    alert('İncelenecek yıl, doğum yılından önce olamaz.');
+    return;
+  }
   if(M && G && new Date(Y,M-1,G) < new Date(DY,DA-1,DG)){
     out.classList.remove('show');
     alert('İncelenecek tarih, doğum tarihinden önce olamaz.');
