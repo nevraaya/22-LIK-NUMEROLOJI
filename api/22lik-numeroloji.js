@@ -298,13 +298,37 @@ const APP_HTML = `<!DOCTYPE html>
         kendi ayrı bir mantıkla çalışır.
       </p>
       <div class="calc-card">
-        <div class="grid2">
-          <div class="field" style="grid-column:1/-1;">
-            <label for="ogTarih">İncelenecek Tarih</label>
-            <input type="date" id="ogTarih">
-            <div class="hint">Kişisel yıl/ay/gün enerjileri, dürtü ve harf yankısı bu tarihe göre hesaplanır. Boş bırakılırsa bugünün tarihi kullanılır.</div>
+        <div class="grid2" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="field">
+            <label for="ogYil">İncelenecek Yıl *</label>
+            <input type="number" id="ogYil" placeholder="Örn: 2027" step="1">
+          </div>
+          <div class="field">
+            <label for="ogAy">Ay (isteğe bağlı)</label>
+            <select id="ogAy">
+              <option value="">Seçiniz</option>
+              <option value="1">Ocak</option>
+              <option value="2">Şubat</option>
+              <option value="3">Mart</option>
+              <option value="4">Nisan</option>
+              <option value="5">Mayıs</option>
+              <option value="6">Haziran</option>
+              <option value="7">Temmuz</option>
+              <option value="8">Ağustos</option>
+              <option value="9">Eylül</option>
+              <option value="10">Ekim</option>
+              <option value="11">Kasım</option>
+              <option value="12">Aralık</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ogGun">Gün (isteğe bağlı)</label>
+            <select id="ogGun" disabled>
+              <option value="">Önce ay seçin</option>
+            </select>
           </div>
         </div>
+        <div class="hint">En az yılı girin. Ay eklenirse aylık; gün de eklenirse günlük enerjiler hesaplanır. Boş bırakılan dönemler otomatik olarak hesaplanmaz.</div>
         <button class="btn" type="button" id="ogBtn">Öngör</button>
       </div>
       <div id="ogOut" class="results"></div>
@@ -1266,15 +1290,29 @@ var OG_HA_DONEM = {
    1) KİŞİSEL YIL · AY · GÜN ENERJİLERİ  (Kılavuz Bölüm 3-4)
    ============================================================ */
 function ogKisiselYilAyGun(DG,DA,DY,Y,M,G){
+  // M ve/veya G null/undefined olabilir — kullanıcı yalnızca yıl (M,G yok) ya da
+  // yıl+ay (G yok) girmiş olabilir. Bu durumda ilgili alt sonuçlar null döner ve
+  // ekranda hiç gösterilmez; "bugünün ay/günü" ASLA yerine konmaz.
   var kyHam = DG + DA + ogDigitSum(Y);
   var kyKok = ogReduceA(kyHam);
   var ky22 = ogReduceC(kyHam);
 
+  var result = {
+    kisiselYil: {ham:kyHam, kok:kyKok},
+    kisiselYil22: {ham:kyHam, deger:ky22},
+    klasikAy: null, yy22Ay: null, gunY1: null, gunY2: null
+  };
+
+  if(!M) return result;
+
   var klasikAyHam = kyKok + M;
   var klasikAyKok = ogReduceA(klasikAyHam);
-
   var yy22AyHam = ky22 + M;
   var yy22Ay = ogReduceC(yy22AyHam);
+  result.klasikAy = {ham:klasikAyHam, kok:klasikAyKok};
+  result.yy22Ay = {ham:yy22AyHam, deger:yy22Ay};
+
+  if(!G) return result;
 
   // Gün — Yöntem 1
   var gunY1KlasikHam = klasikAyKok + G;
@@ -1291,14 +1329,9 @@ function ogKisiselYilAyGun(DG,DA,DY,Y,M,G){
   var gunY2Toplam = dogumToplamGosterim + incelenenToplam;
   var gunY2Sonuc = ogReduceA(gunY2Toplam);
 
-  return {
-    kisiselYil: {ham:kyHam, kok:kyKok},
-    kisiselYil22: {ham:kyHam, deger:ky22},
-    klasikAy: {ham:klasikAyHam, kok:klasikAyKok},
-    yy22Ay: {ham:yy22AyHam, deger:yy22Ay},
-    gunY1: {klasikHam:gunY1KlasikHam, klasik:gunY1Klasik, bilesikHam:gunY1BilesikHam, bilesik:gunY1Bilesik},
-    gunY2: {dogumToplam:dogumToplam, dogumToplamGosterim:dogumToplamGosterim, incelenenToplam:incelenenToplam, toplam:gunY2Toplam, sonuc:gunY2Sonuc}
-  };
+  result.gunY1 = {klasikHam:gunY1KlasikHam, klasik:gunY1Klasik, bilesikHam:gunY1BilesikHam, bilesik:gunY1Bilesik};
+  result.gunY2 = {dogumToplam:dogumToplam, dogumToplamGosterim:dogumToplamGosterim, incelenenToplam:incelenenToplam, toplam:gunY2Toplam, sonuc:gunY2Sonuc};
+  return result;
 }
 
 /* ============================================================
@@ -1439,56 +1472,69 @@ function ogAktifBydAlani(donemIndex){
 /* ============================================================
    ANA HESAPLAMA — tüm alt bölümleri birleştirir
    ============================================================ */
-function ogHesapla(DG,DA,DY,incelenenTarih,harfler){
-  var Y = incelenenTarih.getFullYear(), M = incelenenTarih.getMonth()+1, G = incelenenTarih.getDate();
-  var dogum = new Date(DY, DA-1, DG);
-  var yas = ogYas(dogum, incelenenTarih);
+function ogHesapla(DG,DA,DY,Y,M,G,harfler){
+  // Y HER ZAMAN dolu (zorunlu). M ve/veya G null olabilir. Yaşa bağlı bölümler
+  // (3-8: Dürtü, Harf Yankısı, Çakra Döngüsü, Zirve/Mücadele, Büyük Yaşam
+  // Döngüsü, Sentez) yalnızca TAM tarih (Y+M+G) varsa hesaplanır — çünkü yaş
+  // GG.AA.YYYY hassasiyeti gerektirir; eksik alan için "bugün" ASLA kullanılmaz.
+  var tamTarihVar = !!(M && G);
 
   var bolum1 = ogKisiselYilAyGun(DG,DA,DY,Y,M,G);
   var ekAKarti = ogEkABul(bolum1.kisiselYil22.deger);
-  var durtu = ogDurtuHesapla(DG,DA,DY,yas);
-  var harfSonuc = ogAktifHarf(harfler, yas);
-  var cakraDongu = ogCakraDongusu(yas);
-  var ha = ogHayatAmaci(DG,DA,DY);
-  var donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
-  var zm = ogZirveMucadele(DG,DA,DY);
-  var byd = ogBuyukYasamDongusu(DG,DA,DY);
-  var bydAlan = ogAktifBydAlani(donem.index);
 
-  var aktifZ = zm.klasik.Z[donem.index-1];
-  var aktifM = zm.klasik.M[donem.index-1];
-  var aktifZc = zm.arketip.Z[donem.index-1];
-  var aktifMc = zm.arketip.M[donem.index-1];
-  var aktifByd = byd.klasik[bydAlan];
-  var aktifBydC = byd.arketip[bydAlan];
+  var yas=null, durtu=null, harfSonuc=null, cakraDongu=null, ha=null, donem=null,
+      zm=null, byd=null, bydAlan=null, aktifZ=null, aktifM=null, aktifZc=null,
+      aktifMc=null, aktifByd=null, aktifBydC=null, sentez=[];
 
-  // 8) SENTEZ — tekrar eden kök sayılar
-  var sayilar = [
-    {deger:bolum1.kisiselYil.kok, kaynak:'Kişisel Yıl'},
-    {deger:bolum1.klasikAy.kok, kaynak:'Klasik Ay'},
-    {deger:bolum1.gunY1.klasik, kaynak:'Gün (Yöntem 1, klasik)'},
-    {deger:bolum1.gunY2.sonuc, kaynak:'Gün (Yöntem 2)'},
-    {deger:cakraDongu.tema, kaynak:'Çakra Döngüsü teması'},
-    {deger:ogReduceA(aktifZ), kaynak:'Aktif Zirve (kök)'},
-    {deger:aktifM, kaynak:'Aktif Mücadele'},
-    {deger:ogReduceA(aktifByd), kaynak:'Büyük Yaşam Döngüsü (kök)'}
-  ];
-  if(!durtu.gecersiz) sayilar.push({deger:durtu.rakam, kaynak:'Dürtü'});
-  if(harfSonuc.aktif) sayilar.push({deger:harfSonuc.aktif.cakraNo, kaynak:'Harf Yankısı çakrası'});
+  if(tamTarihVar){
+    var dogum = new Date(DY, DA-1, DG);
+    var incelenenTarih = new Date(Y, M-1, G);
+    yas = ogYas(dogum, incelenenTarih);
 
-  var frekans = {};
-  sayilar.forEach(function(s){
-    var k = String(s.deger);
-    if(!frekans[k]) frekans[k] = {deger:s.deger, adet:0, kaynaklar:[]};
-    frekans[k].adet++;
-    frekans[k].kaynaklar.push(s.kaynak);
-  });
-  var sentez = Object.keys(frekans).map(function(k){ return frekans[k]; })
-    .filter(function(f){ return f.adet>=2; })
-    .sort(function(a,b){ return b.adet-a.adet; });
+    durtu = ogDurtuHesapla(DG,DA,DY,yas);
+    harfSonuc = ogAktifHarf(harfler, yas);
+    cakraDongu = ogCakraDongusu(yas);
+    ha = ogHayatAmaci(DG,DA,DY);
+    donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
+    zm = ogZirveMucadele(DG,DA,DY);
+    byd = ogBuyukYasamDongusu(DG,DA,DY);
+    bydAlan = ogAktifBydAlani(donem.index);
+
+    aktifZ = zm.klasik.Z[donem.index-1];
+    aktifM = zm.klasik.M[donem.index-1];
+    aktifZc = zm.arketip.Z[donem.index-1];
+    aktifMc = zm.arketip.M[donem.index-1];
+    aktifByd = byd.klasik[bydAlan];
+    aktifBydC = byd.arketip[bydAlan];
+
+    // 8) SENTEZ — tekrar eden kök sayılar
+    var sayilar = [
+      {deger:bolum1.kisiselYil.kok, kaynak:'Kişisel Yıl'},
+      {deger:bolum1.klasikAy.kok, kaynak:'Klasik Ay'},
+      {deger:bolum1.gunY1.klasik, kaynak:'Gün (Yöntem 1, klasik)'},
+      {deger:bolum1.gunY2.sonuc, kaynak:'Gün (Yöntem 2)'},
+      {deger:cakraDongu.tema, kaynak:'Çakra Döngüsü teması'},
+      {deger:ogReduceA(aktifZ), kaynak:'Aktif Zirve (kök)'},
+      {deger:aktifM, kaynak:'Aktif Mücadele'},
+      {deger:ogReduceA(aktifByd), kaynak:'Büyük Yaşam Döngüsü (kök)'}
+    ];
+    if(!durtu.gecersiz) sayilar.push({deger:durtu.rakam, kaynak:'Dürtü'});
+    if(harfSonuc.aktif) sayilar.push({deger:harfSonuc.aktif.cakraNo, kaynak:'Harf Yankısı çakrası'});
+
+    var frekans = {};
+    sayilar.forEach(function(s){
+      var k = String(s.deger);
+      if(!frekans[k]) frekans[k] = {deger:s.deger, adet:0, kaynaklar:[]};
+      frekans[k].adet++;
+      frekans[k].kaynaklar.push(s.kaynak);
+    });
+    sentez = Object.keys(frekans).map(function(k){ return frekans[k]; })
+      .filter(function(f){ return f.adet>=2; })
+      .sort(function(a,b){ return b.adet-a.adet; });
+  }
 
   return {
-    yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
+    tamTarihVar:tamTarihVar, yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
     bolum1:bolum1, ekAKarti:ekAKarti, durtu:durtu, harfSonuc:harfSonuc,
     cakraDongu:cakraDongu, ha:ha, donem:donem, zm:zm, byd:byd, bydAlan:bydAlan,
     aktifZ:aktifZ, aktifM:aktifM, aktifZc:aktifZc, aktifMc:aktifMc,
@@ -1525,26 +1571,41 @@ function ogRenderCiktisi(r){
   var html = '';
 
   // 1) Kişisel Yıl/Ay/Gün
-  html += '<div class="mod"><h3>1. Kişisel Yıl · Ay · Gün Enerjileri</h3><div class="kv-grid">';
+  html += '<div class="mod"><h3>1. Kişisel Yıl'+(r.bolum1.klasikAy?' · Ay':'')+(r.bolum1.gunY1?' · Gün':'')+' Enerjileri</h3><div class="kv-grid">';
   html += ogKv('Kişisel Yıl (Mod A)', r.bolum1.kisiselYil.ham+' / '+r.bolum1.kisiselYil.kok);
   html += ogKv('Kişisel Yıl 22\\'lik (Mod C)', r.bolum1.kisiselYil22.deger);
-  html += ogKv('Klasik Ay (Mod A)', r.bolum1.klasikAy.ham+' / '+r.bolum1.klasikAy.kok);
-  html += ogKv('22\\'lik Ay (Mod C)', r.bolum1.yy22Ay.deger);
+  if(r.bolum1.klasikAy){
+    html += ogKv('Klasik Ay (Mod A)', r.bolum1.klasikAy.ham+' / '+r.bolum1.klasikAy.kok);
+    html += ogKv('22\\'lik Ay (Mod C)', r.bolum1.yy22Ay.deger);
+  }
   html += '</div>';
-  html += '<div class="note" style="margin-top:14px;">'+
-    '<strong>Gün — Yöntem 1:</strong> Klasik tema (ay kökü+gün) = '+r.bolum1.gunY1.klasikHam+' → <strong>'+r.bolum1.gunY1.klasik+'</strong>; '+
-    '22\\'lik okuma (ayın bileşiği+gün) = '+r.bolum1.gunY1.bilesikHam+' → <strong>'+r.bolum1.gunY1.bilesik+'</strong><br>'+
-    '<strong>Gün — Yöntem 2:</strong> doğum tarihi rakam toplamı='+r.bolum1.gunY2.dogumToplam+
-    (r.bolum1.gunY2.dogumToplamGosterim!==r.bolum1.gunY2.dogumToplam ? ' → '+r.bolum1.gunY2.dogumToplamGosterim : '')+
-    ', incelenen tarih rakam toplamı='+r.bolum1.gunY2.incelenenToplam+'; toplam='+r.bolum1.gunY2.toplam+' → <strong>'+r.bolum1.gunY2.sonuc+'</strong>'+
-    '<br><span style="font-size:.78rem;">⚠️ Kaynakta doğum tarihi toplamı ikinci kez indirgenirken (38→11 örneği), incelenen tarih toplamı indirgenmeden bırakılıyor — bu, kılavuzun kendi belgelediği açık bir tutarsızlıktır (Ek E); yukarıdaki sonuç kaynağın örnek davranışını birebir izler.</span>'+
-    '</div></div>';
+  if(!r.bolum1.klasikAy){
+    html += '<div class="note" style="margin-top:14px;">ℹ️ Yalnızca yıl girildi. Aylık ve günlük enerjiler için yukarıdan ay (ve gün) seçin.</div>';
+  } else if(!r.bolum1.gunY1){
+    html += '<div class="note" style="margin-top:14px;">ℹ️ Yıl ve ay girildi. Günlük enerji için yukarıdan gün seçin.</div>';
+  } else {
+    html += '<div class="note" style="margin-top:14px;">'+
+      '<strong>Gün — Yöntem 1:</strong> Klasik tema (ay kökü+gün) = '+r.bolum1.gunY1.klasikHam+' → <strong>'+r.bolum1.gunY1.klasik+'</strong>; '+
+      '22\\'lik okuma (ayın bileşiği+gün) = '+r.bolum1.gunY1.bilesikHam+' → <strong>'+r.bolum1.gunY1.bilesik+'</strong><br>'+
+      '<strong>Gün — Yöntem 2:</strong> doğum tarihi rakam toplamı='+r.bolum1.gunY2.dogumToplam+
+      (r.bolum1.gunY2.dogumToplamGosterim!==r.bolum1.gunY2.dogumToplam ? ' → '+r.bolum1.gunY2.dogumToplamGosterim : '')+
+      ', incelenen tarih rakam toplamı='+r.bolum1.gunY2.incelenenToplam+'; toplam='+r.bolum1.gunY2.toplam+' → <strong>'+r.bolum1.gunY2.sonuc+'</strong>'+
+      '<br><span style="font-size:.78rem;">⚠️ Kaynakta doğum tarihi toplamı ikinci kez indirgenirken (38→11 örneği), incelenen tarih toplamı indirgenmeden bırakılıyor — bu, kılavuzun kendi belgelediği açık bir tutarsızlıktır (Ek E); yukarıdaki sonuç kaynağın örnek davranışını birebir izler.</span>'+
+      '</div>';
+  }
+  html += '</div>';
 
   // 2) Yıllık Öngörü
   html += '<div class="mod"><h3>2. Yıllık Öngörü ve 22\\'lik Enerji Yorumu</h3>';
   html += '<p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:14px;">Kişisel yılın 22\\'lik değeri (<strong>'+r.bolum1.kisiselYil22.deger+'</strong>) Ek A kataloğunda aranıyor:</p>';
   html += ogRenderEkA(r.ekAKarti);
   html += '</div>';
+
+  if(!r.tamTarihVar){
+    html += '<div class="mod"><h3>3-8. Dürtü · Harf Yankısı · Çakra Döngüsü · Zirve/Mücadele · Büyük Yaşam Döngüsü · Sentez</h3>'+
+      '<div class="note">ℹ️ Bu bölümler yaşa duyarlıdır ve tam tarih (yıl + ay + gün) gerektirir. Hesaplanması için yukarıdan ay ve gün seçin.</div></div>';
+    return html;
+  }
 
   // 3) Dürtü
   html += '<div class="mod"><h3>3. Dürtü Hesabı ve Aktif Dönem</h3>';
@@ -1649,13 +1710,40 @@ function ogRenderCiktisi(r){
   return html;
 }
 
+// Ay seçildiğinde/değiştiğinde Gün seçeneklerini (28/29/30/31) yeniden kur.
+// Yıl bilgisi Şubat'ın gün sayısını (artık yıl) doğru belirlemek için kullanılır.
+function ogGunSecenekleriniGuncelle(){
+  var ay = document.getElementById('ogAy').value;
+  var gunSel = document.getElementById('ogGun');
+  var oncekiDeger = gunSel.value;
+  if(!ay){
+    gunSel.disabled = true;
+    gunSel.innerHTML = '<option value="">Önce ay seçin</option>';
+    return;
+  }
+  var yilStr = document.getElementById('ogYil').value;
+  var yil = yilStr ? Number(yilStr) : new Date().getFullYear();
+  var gunSayisi = new Date(yil, Number(ay), 0).getDate();
+  var html = '<option value="">Seçiniz</option>';
+  for(var g=1; g<=gunSayisi; g++){ html += '<option value="'+g+'">'+g+'</option>'; }
+  gunSel.innerHTML = html;
+  gunSel.disabled = false;
+  if(oncekiDeger && Number(oncekiDeger)<=gunSayisi) gunSel.value = oncekiDeger;
+}
+document.getElementById('ogAy').addEventListener('change', ogGunSecenekleriniGuncelle);
+document.getElementById('ogYil').addEventListener('input', function(){
+  if(document.getElementById('ogAy').value) ogGunSecenekleriniGuncelle();
+});
+
 document.getElementById('ogBtn').addEventListener('click', function(){
   var ad1 = document.getElementById('ad1').value;
   var ad2 = document.getElementById('ad2').value;
   var soyad = document.getElementById('soyad').value;
   var esSoyad = document.getElementById('esSoyad').value;
   var dStr = document.getElementById('dtarih').value;
-  var tStr = document.getElementById('ogTarih').value;
+  var yilStr = document.getElementById('ogYil').value;
+  var ayStr = document.getElementById('ogAy').value;
+  var gunStr = document.getElementById('ogGun').value;
   var out = document.getElementById('ogOut');
 
   if(!dStr){
@@ -1663,17 +1751,25 @@ document.getElementById('ogBtn').addEventListener('click', function(){
     alert('Öngörü için yukarıdaki "Doğum Tarihi" alanını doldurun.');
     return;
   }
+  if(!yilStr){
+    out.classList.remove('show');
+    alert('Lütfen en az incelenecek yılı yazın');
+    return;
+  }
   var dParts = dStr.split('-');
   var DY = Number(dParts[0]), DA = Number(dParts[1]), DG = Number(dParts[2]);
-  var incelenenTarih = tStr ? new Date(tStr.split('-')[0], Number(tStr.split('-')[1])-1, tStr.split('-')[2]) : new Date();
-  if(incelenenTarih < new Date(DY,DA-1,DG)){
+  var Y = Number(yilStr);
+  var M = ayStr ? Number(ayStr) : null;
+  var G = (ayStr && gunStr) ? Number(gunStr) : null;
+
+  if(M && G && new Date(Y,M-1,G) < new Date(DY,DA-1,DG)){
     out.classList.remove('show');
     alert('İncelenecek tarih, doğum tarihinden önce olamaz.');
     return;
   }
 
   var harfler = ogHarfleriTemizle((ad1||'')+(ad2||'')+(soyad||'')+(esSoyad||''));
-  var sonuc = ogHesapla(DG,DA,DY,incelenenTarih,harfler);
+  var sonuc = ogHesapla(DG,DA,DY,Y,M,G,harfler);
 
   out.innerHTML = ogRenderCiktisi(sonuc);
   out.classList.add('show');
