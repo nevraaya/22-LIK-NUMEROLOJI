@@ -232,6 +232,8 @@ const APP_HTML = `<!DOCTYPE html>
   table.hane tr.og-aktif-donem td:first-child{font-weight:700;color:var(--ink);}
   table.hane tr.og-aktif-donem .val{color:var(--gold);font-weight:700;}
   .note{font-size:.82rem;color:var(--ink-soft);background:var(--brand-soft);border-left:3px solid var(--gold);padding:12px 16px;border-radius:0 10px 10px 0;margin-top:6px;}
+  .og-yillik-merdiven-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+  @media (max-width:760px){ .og-yillik-merdiven-grid{grid-template-columns:1fr;} }
   #calcOut{display:none;}
   #calcOut.show{display:block;}
 </style>
@@ -614,6 +616,25 @@ function zamanAnaliziHesapla(dogumTarih, bugun, hesapYili){
   var kB49=kD37+kD38+kD39+kD40+kD41+kD46+kD47+kD48, kC49=rs(kB49), kD49=rs(kC49);
   var kisiselYilPiramit = [kD37,kD38,kD39,kD40,kD41,kD42,kD43,kD44,kD45,kD46,kD47,kD48,kD49];
 
+  // ÇAKRA MERDİVENİ — KİŞİSEL YIL PİRAMİDİ, "22 BAZLI" (kisiselYilPiramit'in BİREBİR aynı
+  // hücre ilişkileri/toplama sırası; tek fark rs() yerine rs22() kullanılması — dogumPiramit22'nin
+  // dogumPiramit'i aynı şekilde ayna aldığı yöntemin devamı. Mevcut kisiselYilPiramit hiç
+  // değiştirilmedi; bu yalnızca EKLENEN, bağımsız bir ikinci sonuçtur.)
+  var k2C37=rs22(bGun), k2D37=rs22(k2C37);
+  var k2C38=rs22(bAy), k2D38=rs22(k2C38);
+  var k2C39=rs22(D14), k2D39=rs22(k2C39);
+  var k2B40=k2C37+k2C38+k2C39, k2C40=rs22(k2B40), k2D40=rs22(k2C40);
+  var k2B41=k2D37+k2D40, k2C41=rs22(k2B41), k2D41=rs22(k2C41);
+  var k2B42=k2D37+k2D38, k2C42=rs22(k2B42), k2D42=rs22(k2C42);
+  var k2B43=k2D38+k2D39, k2C43=rs22(k2B43), k2D43=rs22(k2C43);
+  var k2B44=k2D42+k2D43, k2C44=rs22(k2B44), k2D44=rs22(k2C44);
+  var k2B45=k2D37+k2D38+k2D39+k2D40+k2D41+k2D42+k2D43+k2D44, k2C45=rs22(k2B45), k2D45=rs22(k2C45);
+  var k2B46=k2D39+k2D40, k2C46=rs22(k2B46), k2D46=rs22(k2C46);
+  var k2B47=k2D40+k2D41, k2C47=rs22(k2B47), k2D47=rs22(k2C47);
+  var k2B48=k2D46+k2D47, k2C48=rs22(k2B48), k2D48=rs22(k2C48);
+  var k2B49=k2D37+k2D38+k2D39+k2D40+k2D41+k2D46+k2D47+k2D48, k2C49=rs22(k2B49), k2D49=rs22(k2C49);
+  var kisiselYilPiramit22 = [k2D37,k2D38,k2D39,k2D40,k2D41,k2D42,k2D43,k2D44,k2D45,k2D46,k2D47,k2D48,k2D49];
+
   return {
     yas: yas,
     kisiselYil: kisiselYil,
@@ -621,7 +642,8 @@ function zamanAnaliziHesapla(dogumTarih, bugun, hesapYili){
     enerjiArketip: enerjiArketip,
     dogumPiramit: dogumPiramit,
     dogumPiramit22: dogumPiramit22,
-    kisiselYilPiramit: kisiselYilPiramit
+    kisiselYilPiramit: kisiselYilPiramit,
+    kisiselYilPiramit22: kisiselYilPiramit22
   };
 }
 
@@ -1675,6 +1697,14 @@ function ogHesapla(DG,DA,DY,Y,M,G,harfler){
   var bolum1 = ogKisiselYilAyGun(DG,DA,DY,Y,M,G);
   var ekAKarti = ogEkABul(bolum1.kisiselYil22.deger);
 
+  // YILLIK ÇAKRA MERDİVENİ (klasik + 22 bazlı) — ana uygulamanın ÇALIŞAN
+  // zamanAnaliziHesapla() fonksiyonu, seçilen "İncelenecek Yıl" (Y) ile birebir
+  // aynı şekilde çağrılıyor (hiçbir formül yeniden yazılmadı). Ay/gün bu sonucu
+  // ETKİLEMEZ — yalnızca Y kullanılır, tam tarih (M/G) girilse de girilmese de
+  // aynı sonuç çıkar. Doğum merdiveni (klasik/22) de aynı çağrıdan gelir; bu
+  // sayede kişinin doğum merdiveniyle seçilen yılın merdiveni karşılaştırılabilir.
+  var yillikZA = zamanAnaliziHesapla(new Date(DY,DA-1,DG), new Date(), Y);
+
   // Yaş: Dürtü, Harf Yankısı, Çakra Döngüsü, Zirve/Mücadele, Büyük Yaşam
   // Döngüsü gibi bölümler AYIN/GÜNÜN kendisine değil, YAŞA bağlıdır — bu
   // yüzden bu bölümler yalnızca yıl girildiğinde de hesaplanabilir. Tam
@@ -1731,7 +1761,7 @@ function ogHesapla(DG,DA,DY,Y,M,G,harfler){
 
   return {
     ayVar:ayVar, gunVar:gunVar, yas:yas, DG:DG, DA:DA, DY:DY, Y:Y, M:M, G:G,
-    bolum1:bolum1, ekAKarti:ekAKarti, durtu:durtu, harfSonuc:harfSonuc,
+    bolum1:bolum1, ekAKarti:ekAKarti, yillikZA:yillikZA, durtu:durtu, harfSonuc:harfSonuc,
     cakraDongu:cakraDongu, ha:ha, donem:donem, zm:zm, byd:byd, bydAlan:bydAlan, bydDonem:bydDonem,
     aktifZ:aktifZ, aktifM:aktifM, aktifZc:aktifZc, aktifMc:aktifMc,
     aktifByd:aktifByd, aktifBydC:aktifBydC, sentez:sentez
@@ -1761,6 +1791,70 @@ function ogRenderEkA(kart){
     '<div style="display:grid;gap:6px;font-size:.9rem;">'+
     satirlar.map(function(p){ return '<div><strong style="color:var(--ink-soft);">'+p[0]+':</strong> '+p[1]+'</div>'; }).join('') +
     '</div>';
+}
+
+/* ============================================================
+   YILLIK ÇAKRA MERDİVENİ — DOĞUM MERDİVENİYLE KARŞILAŞTIRMA
+   (Ana uygulamanın çalışan piramit hesaplarını DEĞİŞTİRMEZ; yalnızca
+   zamanAnaliziHesapla()'nın döndürdüğü diziler hane-hane karşılaştırılır.)
+   ============================================================ */
+var OG_KARMIK_SAYILAR = [13,14,16,19]; // kaynakta zaten kullanılan karmik borç havuzu (Görev matrisiyle aynı)
+
+function ogCakraYorumTablosu(baslik, dogumArr, yilArr, karmikKontrolVar){
+  var satirlar = [];
+  var frekans = {};
+  yilArr.forEach(function(v){ frekans[v] = (frekans[v]||0)+1; });
+  for(var i=0;i<13;i++){
+    if(dogumArr[i] !== yilArr[i]){
+      satirlar.push({hane:(i+1)+'. Hane', dogum:dogumArr[i], yil:yilArr[i], durum:'Değişti', yorum:'Bu yıl farklı bir tema devrede.'});
+    } else if(frekans[yilArr[i]] >= 2){
+      satirlar.push({hane:(i+1)+'. Hane', dogum:dogumArr[i], yil:yilArr[i], durum:'Aynı (Güçlendi)', yorum:'Doğum merdiveniyle aynı; bu alan bu yıl güçleniyor.'});
+    }
+  }
+  var html = '<h4 style="margin-top:18px;margin-bottom:8px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.04em;">'+baslik+'</h4>';
+  if(!satirlar.length){
+    html += '<p style="color:var(--ink-soft);font-size:.85rem;">Doğum merdiveniyle karşılaştırıldığında bu yıl için ayrıca vurgulanacak belirgin bir değişiklik veya tekrar yok.</p>';
+  } else {
+    html += '<div class="tbl-wrap"><table class="hane">'+
+      '<tr><th>Hane/Çakra</th><th>Doğum Merdiveni</th><th>Yıllık Merdiven</th><th>Durum</th><th>Kısa Yorum</th></tr>'+
+      satirlar.map(function(s){
+        return '<tr><td>'+s.hane+'</td><td><span class="val">'+s.dogum+'</span></td><td><span class="val">'+s.yil+'</span></td><td>'+s.durum+'</td><td style="text-align:left;">'+s.yorum+'</td></tr>';
+      }).join('') + '</table></div>';
+  }
+  if(karmikKontrolVar){
+    var karmikHaneler = [];
+    yilArr.forEach(function(v,i){ if(OG_KARMIK_SAYILAR.indexOf(v)>-1) karmikHaneler.push((i+1)+'. Hane ('+v+')'); });
+    if(karmikHaneler.length){
+      html += '<div class="note" style="margin-top:10px;">⚠️ Karmik sayı tespit edildi: '+karmikHaneler.join(', ')+'.</div>';
+    }
+  }
+  return html;
+}
+
+function ogYillikKarsilastirmaTablosu(Y, dogumK, dogumA, yilK, yilA){
+  var satirlar = [];
+  for(var i=0;i<13;i++){
+    var klasikAyni = dogumK[i]===yilK[i];
+    var arketipAyni = dogumA[i]===yilA[i];
+    if(klasikAyni && arketipAyni){
+      satirlar.push({hane:(i+1)+'. Hane', klasik:yilK[i], arketip:yilA[i], ortak:'Her iki sistemde de güçleniyor (doğumla aynı)', guclu:true});
+    } else if(!klasikAyni && !arketipAyni){
+      satirlar.push({hane:(i+1)+'. Hane', klasik:yilK[i], arketip:yilA[i], ortak:'Her iki sistemde de yeni bir tema devrede', guclu:false});
+    }
+  }
+  satirlar.sort(function(a,b){ return (b.guclu?1:0)-(a.guclu?1:0); });
+  satirlar = satirlar.slice(0,5);
+  var html = '<h4 style="margin-top:22px;margin-bottom:10px;font-size:.85rem;color:var(--ink-soft);letter-spacing:.06em;text-align:center;">'+Y+' YILLIK ÇAKRA KARŞILAŞTIRMASI</h4>';
+  if(!satirlar.length){
+    html += '<p style="color:var(--ink-soft);font-size:.85rem;">Klasik ve 22\\'lik sistemler bu yıl için ortak bir tema paylaşmıyor; iki katman birbirinden bağımsız okunmalı.</p>';
+  } else {
+    html += '<div class="tbl-wrap"><table class="hane">'+
+      '<tr><th>Alan</th><th>Klasik Yıllık Sonuç</th><th>22\\'lik Yıllık Sonuç</th><th>Ortak Tema</th></tr>'+
+      satirlar.map(function(s){
+        return '<tr><td>'+s.hane+'</td><td><span class="val">'+s.klasik+'</span></td><td><span class="val">'+s.arketip+'</span></td><td style="text-align:left;">'+s.ortak+'</td></tr>';
+      }).join('') + '</table></div>';
+  }
+  return html;
 }
 
 function ogRenderCiktisi(r){
@@ -1803,8 +1897,20 @@ function ogRenderCiktisi(r){
   html += ogRenderEkA(r.ekAKarti);
   html += '</div>';
 
-  // 3) Dürtü
-  html += '<div class="mod"><h3>3. Dürtü Hesabı ve Aktif Dönem</h3>';
+  // 3) Yıllık Çakra Merdiveni (Klasik + 22'lik) — İncelenecek Yıl'a göre, ana uygulamanın
+  // çalışan zamanAnaliziHesapla() sonucundan; ay/gün bu bölümü etkilemez.
+  html += '<div class="mod"><h3>3. '+r.Y+' Yıllık Çakra Merdiveni</h3>';
+  html += '<div class="og-yillik-merdiven-grid">'+
+    cakraAgaciPaneli(r.Y+' KLASİK YILLIK ÇAKRA MERDİVENİ', r.yillikZA.kisiselYilPiramit)+
+    cakraAgaciPaneli(r.Y+' 22\\'LİK YILLIK ÇAKRA MERDİVENİ', r.yillikZA.kisiselYilPiramit22)+
+    '</div>';
+  html += ogCakraYorumTablosu(r.Y+' Klasik Yıllık Çakra Yorumu', r.yillikZA.dogumPiramit, r.yillikZA.kisiselYilPiramit, false);
+  html += ogCakraYorumTablosu(r.Y+' 22\\'lik Yıllık Çakra Yorumu', r.yillikZA.dogumPiramit22, r.yillikZA.kisiselYilPiramit22, true);
+  html += ogYillikKarsilastirmaTablosu(r.Y, r.yillikZA.dogumPiramit, r.yillikZA.dogumPiramit22, r.yillikZA.kisiselYilPiramit, r.yillikZA.kisiselYilPiramit22);
+  html += '</div>';
+
+  // 4) Dürtü
+  html += '<div class="mod"><h3>4. Dürtü Hesabı ve Aktif Dönem</h3>';
   if(r.durtu.gecersiz){
     html += '<div class="note">⚠️ '+r.durtu.sebep+'</div>';
   } else {
@@ -1818,7 +1924,7 @@ function ogRenderCiktisi(r){
   html += '</div>';
 
   // 4) Harf Yankısı
-  html += '<div class="mod"><h3>4. Harf Yankısı ve Aktif Harf Dönemi</h3>';
+  html += '<div class="mod"><h3>5. Harf Yankısı ve Aktif Harf Dönemi</h3>';
   if(!r.harfSonuc.aktif){
     html += '<div class="note">⚠️ Ad/soyad alanlarında harf-çakra tablosuyla eşleşen harf bulunamadı.</div>';
   } else {
@@ -1849,14 +1955,14 @@ function ogRenderCiktisi(r){
   html += '</div>';
 
   // 5) Çakra Döngüsü
-  html += '<div class="mod"><h3>5. Çakra Döngüsü</h3><div class="kv-grid">';
+  html += '<div class="mod"><h3>6. Çakra Döngüsü</h3><div class="kv-grid">';
   html += ogKv('Döngü No', r.cakraDongu.dongu);
   html += ogKv('Yaş Aralığı', r.cakraDongu.baslangic+'–'+r.cakraDongu.bitis);
   html += ogKv('Çakra Teması', r.cakraDongu.tema);
   html += '</div><p style="margin-top:12px;color:var(--ink-soft);">'+r.cakraDongu.aciklama+'</p></div>';
 
   // 6) Zirve ve Mücadele
-  html += '<div class="mod"><h3>6. Zirve ve Mücadele Dönemi</h3>';
+  html += '<div class="mod"><h3>7. Zirve ve Mücadele Dönemi</h3>';
   html += '<div class="kv-grid">';
   html += ogKv('Hayat Amacı (ham/kök)', r.ha.ham+' / '+r.ha.kok);
   html += ogKv('Aktif Dönem', r.donem.index+'. dönem ('+(r.donem.aralik[1]===999 ? r.donem.aralik[0]+'+' : r.donem.aralik[0]+'–'+r.donem.aralik[1])+' yaş)');
@@ -1896,7 +2002,7 @@ function ogRenderCiktisi(r){
     {klasik:r.byd.klasik.eriskinlik, arketip:r.byd.arketip.eriskinlik},
     {klasik:r.byd.klasik.bilgelik, arketip:r.byd.arketip.bilgelik}
   ];
-  html += '<div class="mod"><h3>7. Büyük Yaşam Döngüsü</h3><div class="kv-grid">';
+  html += '<div class="mod"><h3>8. Büyük Yaşam Döngüsü</h3><div class="kv-grid">';
   html += ogKv('Yaşam Yolu / Hayat Amacı', r.ha.ham+'/'+r.ha.kok);
   html += ogKv('İncelenen Tarihteki Yaş', r.yas);
   html += ogKv('Aktif Yaşam Döngüsü', r.bydDonem.index+'. Döngü — '+bydAlanEtiket);
@@ -1919,7 +2025,7 @@ function ogRenderCiktisi(r){
   html += '</div>';
 
   // 8) Sentez
-  html += '<div class="mod"><h3>8. Tekrar Eden Sayıların Sentezi</h3>';
+  html += '<div class="mod"><h3>9. Tekrar Eden Sayıların Sentezi</h3>';
   if(!r.sentez.length){
     html += '<p style="color:var(--ink-soft);">Bu katmanlar arasında 2 veya daha fazla tekrar eden bir sayı bulunmadı.</p>';
   } else {
