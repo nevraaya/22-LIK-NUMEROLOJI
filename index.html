@@ -20,6 +20,7 @@
 <meta name="googlebot" content="index, follow">
 <meta http-equiv="content-language" content="tr-TR">
 <meta name="author" content="Emine Nevra Aya">
+<meta name="theme-color" content="#140A1E">
 <!-- TODO: gerçek alan adınızı belirleyip aşağıdaki canonical + hreflang + og/twitter url'lerini güncelleyin -->
 <link rel="canonical" href="https://example.com/">
 <link rel="alternate" hreflang="tr-TR" href="https://example.com/">
@@ -299,7 +300,7 @@
   .nav a.navlink:hover{color:var(--brand-text);}
   .nav-links{display:flex;align-items:center;gap:18px;}
   .theme-toggle{
-    width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+    width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);
     display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gold);flex:none;
   }
   .theme-toggle svg{width:18px;height:18px;}
@@ -387,7 +388,7 @@
   .enerji-kart .eyebrow-mini{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px;}
   .enerji-kart .num-big{font-family:'Cinzel',serif;font-size:2.4rem;color:var(--gold-lt);line-height:1;margin-bottom:14px;}
   .enerji-kart .tarot-mini{width:104px;height:auto;display:block;object-fit:contain;margin:0 auto 16px;border-radius:8px;box-shadow:0 10px 24px -8px rgba(0,0,0,.55);border:1px solid rgba(228,168,72,.3);}
-  .enerji-kart h4{margin-bottom:2px;font-size:1.15rem;}
+  .enerji-kart h3{margin-bottom:2px;font-size:1.15rem;}
   .enerji-kart .diger-ad{font-size:.78rem;color:var(--ink-soft);font-style:italic;margin-bottom:14px;display:block;}
   .enerji-kart .metin{font-size:.92rem;color:var(--ink-soft);text-align:left;}
   .enerji-kart .metin ul{margin:0;padding-left:18px;}
@@ -411,6 +412,8 @@
   .sonuc-box h4{font-family:inherit;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin:0 0 8px;color:var(--ink-soft);}
   .sonuc-box.olumlu h4{color:#7FCF9A;}
   .sonuc-box.golge h4{color:#E0A276;}
+  :root[data-theme="light"] .sonuc-box.olumlu h4{color:#1b5e20;}
+  :root[data-theme="light"] .sonuc-box.golge h4{color:#9a3412;}
   .sonuc-box p{margin:0;font-size:.95rem;}
 
   /* TWO COL */
@@ -434,7 +437,7 @@
   .topic-grid{display:grid;grid-template-columns:1fr;gap:20px;}
   @media(min-width:760px){.topic-grid{grid-template-columns:1fr 1fr;}}
   .topic-card{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:var(--radius);padding:24px;}
-  .topic-card h4{font-size:1.05rem;color:var(--brand-dark);margin-bottom:12px;}
+  .topic-card h3{font-size:1.05rem;color:var(--brand-dark);margin-bottom:12px;}
   .topic-card ul{margin:0;padding-left:18px;color:var(--ink-soft);font-size:.94rem;}
   .topic-card li{margin-bottom:6px;}
 
@@ -492,9 +495,9 @@
     background:hsl(var(--h) 62% 55%);color:#1c1206;font-weight:700;font-size:.9rem;
     margin-bottom:12px;font-family:'Cinzel',serif;
   }
-  .arketip-card h4{font-size:1.05rem;margin-bottom:2px;}
+  .arketip-card h3{font-size:1.05rem;margin-bottom:2px;}
   .arketip-card .diger-ad{display:block;font-size:.78rem;color:var(--ink-soft);font-style:italic;margin-bottom:4px;}
-  .arketip-card .klasik{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);opacity:.7;margin-bottom:10px;}
+  .arketip-card .klasik{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);opacity:.7;margin-bottom:10px;}
   .arketip-card p{font-size:.88rem;color:var(--ink-soft);margin:0;}
 
   /* FAQ */
@@ -739,7 +742,7 @@
       </div>
       <div class="topic-grid">
         <div class="topic-card">
-          <h4>22 Arketiple Derinleştirilmiş Okuma</h4>
+          <h3>22 Arketiple Derinleştirilmiş Okuma</h3>
           <ul>
             <li>1–9 yaklaşımını aşan 22 arketipli yorumlama</li>
             <li>Yalnızca 11, 22 ve 33 değil, tüm çift sayıların değerlendirilmesi</li>
@@ -747,7 +750,7 @@
           </ul>
         </div>
         <div class="topic-card">
-          <h4>13 Çakra Sistemi</h4>
+          <h3>13 Çakra Sistemi</h3>
           <ul>
             <li>Çakra Merdiveni hesaplama ve enerji hiyerarşisi</li>
             <li>Çakra frekansları, gölge yönler ve kaldıraç noktaları</li>
@@ -755,7 +758,7 @@
           </ul>
         </div>
         <div class="topic-card">
-          <h4>Şifa ve Karmik Eksenler</h4>
+          <h3>Şifa ve Karmik Eksenler</h3>
           <ul>
             <li>Şifa sayısını bulma ve blokaj kaynağını belirleme</li>
             <li>Sonuç, gölge, şifa ve karmik eksenlerin birlikte okunması</li>
@@ -763,7 +766,7 @@
           </ul>
         </div>
         <div class="topic-card">
-          <h4>Kader Yönü ve Yaşam Amaçları</h4>
+          <h3>Kader Yönü ve Yaşam Amaçları</h3>
           <ul>
             <li>Ana, yan ve tam kulvarlar üzerinden kader yönü</li>
             <li>İkinci, üçüncü ve dördüncü yaşam amaçlarının kurulması</li>
@@ -771,7 +774,7 @@
           </ul>
         </div>
         <div class="topic-card">
-          <h4>İsim, Zaman ve Harita Okumaları</h4>
+          <h3>İsim, Zaman ve Harita Okumaları</h3>
           <ul>
             <li>27 harf değeri ve çakra ilişkisiyle isim okuması</li>
             <li>Zirve, mücadele ve dönüşüm dönemleri</li>
@@ -863,6 +866,41 @@
       </div>
     </div>
   </section>
+
+  <!-- 8b. UYANIŞ NUMEROLOJİSİ -->
+  <section id="uyanis">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Yeni · Hayat Ağacı Sayı Sistemi</span>
+        <h2>Uyanış Numerolojisi</h2>
+        <p class="lead">On küre ve yirmi iki yol üzerine kurulu 10+22 sistemi. Doğum tarihinden haritanı çıkar; hesaplama herkese açık, ayrıntılı yorum kademeli olarak açılır.</p>
+      </div>
+      <a class="uyanis-card" href="/uyanis-numeroloji">
+        <div class="uyanis-card-body">
+          <span class="eyebrow" style="color:var(--gold);">10 Küre + 22 Yol</span>
+          <h3>Hayat Ağacı haritanı hesapla</h3>
+          <p>Doğum tarihini gir; on kürenin ve yirmi iki yolun sayıları, görsel Hayat Ağacı ve tablolar anında çıksın. Ardından yorumu kademeli aç:</p>
+          <ul class="uyanis-list">
+            <li><strong>Ücretsiz:</strong> tüm sayılar, ağaç ve tablolar</li>
+            <li><strong>Kademe 1 — Temel Özet:</strong> haritanın ana hatları</li>
+            <li><strong>Kademe 2 — Premium:</strong> tüm ayrıntılı tanımlama ve analiz</li>
+          </ul>
+          <span class="btn btn-primary" style="margin-top:6px;">Uyanış Haritanı Çıkar →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+  <style>
+    #uyanis .uyanis-card{display:block;max-width:720px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:var(--radius);text-decoration:none;color:inherit;transition:transform .18s,box-shadow .18s;box-shadow:var(--shadow);}
+    #uyanis .uyanis-card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -16px rgba(0,0,0,.4);}
+    #uyanis .uyanis-card-body{padding:30px;}
+    #uyanis .uyanis-card h3{font-size:1.3rem;color:var(--brand-dark);margin:10px 0 12px;}
+    #uyanis .uyanis-card p{color:var(--ink-soft);margin-bottom:14px;}
+    #uyanis .uyanis-list{list-style:none;padding:0;margin:0 0 20px;display:flex;flex-direction:column;gap:8px;}
+    #uyanis .uyanis-list li{padding-left:22px;position:relative;color:var(--ink-soft);}
+    #uyanis .uyanis-list li::before{content:"✦";position:absolute;left:0;color:var(--gold);}
+    #uyanis .uyanis-list strong{color:var(--ink);}
+  </style>
 
   <!-- 9. 22 ARKETIP -->
   <section id="arketipler">
@@ -1158,7 +1196,7 @@
       '<span class="eyebrow-mini">'+label+'</span>' +
       '<div class="num-big">'+no+'</div>' +
       tarotImg(no, rw, 'tarot-mini') +
-      '<h4>'+site+'</h4>' +
+      '<h3>'+site+'</h3>' +
       (diger ? '<span class="diger-ad">Diğer adıyla: '+diger+' · Rider–Waite: '+rw+'</span>' : '<span class="diger-ad">Rider–Waite: '+rw+'</span>') +
       '<div class="metin">'+metinHtml+'</div>';
     return div;
@@ -1207,7 +1245,7 @@
       '<div class="card-media">'+tarotImg(n, rw, '')+'</div>' +
       '<div class="card-body">' +
         '<div class="num">'+n+'</div>' +
-        '<h4>'+ad+'</h4>' +
+        '<h3>'+ad+'</h3>' +
         (diger ? '<span class="diger-ad">Diğer adıyla: '+diger+'</span>' : '') +
         '<span class="klasik">Rider–Waite: '+rw+'</span>' +
         '<p>'+arketipKisa[idx]+'</p>' +
