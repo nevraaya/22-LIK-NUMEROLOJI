@@ -21,24 +21,54 @@ const SECRET = process.env.NUMEROLOJI_SESSION_SECRET || 'nevraaya-22lik-numerolo
 const COOKIE_NAME = 'numeroloji_oturum';
 const GUVENLI_OTURUM_SURESI_MS = 12 * 60 * 60 * 1000; // 12 saat (sunucu tarafli azami sinir)
 
-function imzala(payload) {
-  const h = crypto.createHmac('sha256', SECRET).update(payload).digest('base64url');
+// ------------------------------------------------------------
+// CAKRA ANALIZI (detayli yorum) -- ODEME/KISISEL KOD ILE AYRI KILIT
+// ------------------------------------------------------------
+// Ana sayfa sifresinden (SIFRE) BAGIMSIZ, IKINCI bir kilit. Ogrenciler ana
+// sifreyle hesaplama kismina zaten giriyor; "Cakra Analizi" (detayli hane
+// yorumlari) ise yalnizca kredi karti odemesi sonrasi kendilerine ozel
+// verilen KISISEL bir kodla acilir. Kodlar process.env.NUMEROLOJI_ANALIZ_KODLARI
+// icinde JSON olarak tutulur: {"KOD1":"Ogrenci Adi","KOD2":"..."}
+// Vercel Project -> Settings -> Environment Variables'tan yonetilir; yeni
+// bir odeme onaylandiginda bu degiskene {"YENIKOD":"Ad Soyad"} eklenip
+// (mevcut kodlar SILINMEDEN) proje yeniden deploy edilir (redeploy) --
+// boylece hicbir kod nesnesi kodun icine sabit yazilmaz, kolayca eklenir/
+// iptal edilir (bir kodu silmek = env var'dan cikarip redeploy etmek).
+const ANALIZ_SECRET = process.env.NUMEROLOJI_ANALIZ_SESSION_SECRET || 'nevraaya-cakra-analiz-oturum-anahtari-2026';
+const ANALIZ_COOKIE_NAME = 'numeroloji_analiz_oturum';
+const ANALIZ_GUVENLI_OTURUM_SURESI_MS = 12 * 60 * 60 * 1000; // 12 saat
+function analizKodlariniOku() {
+  try {
+    const ham = process.env.NUMEROLOJI_ANALIZ_KODLARI;
+    if (!ham) return {};
+    const obj = JSON.parse(ham);
+    return (obj && typeof obj === 'object') ? obj : {};
+  } catch (e) { return {}; }
+}
+
+function imzalaGenel(payload, secret) {
+  const h = crypto.createHmac('sha256', secret).update(payload).digest('base64url');
   return payload + '.' + h;
 }
-function dogrula(token) {
+function dogrulaGenel(token, secret) {
   if (!token) return false;
   const idx = token.lastIndexOf('.');
   if (idx < 0) return false;
   const payload = token.slice(0, idx);
   const imza = token.slice(idx + 1);
-  const beklenen = crypto.createHmac('sha256', SECRET).update(payload).digest('base64url');
+  const beklenen = crypto.createHmac('sha256', secret).update(payload).digest('base64url');
   const a = Buffer.from(imza);
   const b = Buffer.from(beklenen);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return false;
+  // Bitis damgasi payload'un HER ZAMAN SON parcasi (":" ile ayrilmis) --
+  // ana oturum payload'u "s:bitis" (2 parca), cakra analiz payload'u
+  // "a:kod:bitis" (3 parca) kullanir; ikisi de bu sekilde dogru calisir.
   const parcalar = payload.split(':');
-  const bitis = parseInt(parcalar[1], 10);
+  const bitis = parseInt(parcalar[parcalar.length - 1], 10);
   return Number.isFinite(bitis) && Date.now() < bitis;
 }
+function imzala(payload) { return imzalaGenel(payload, SECRET); }
+function dogrula(token) { return dogrulaGenel(token, SECRET); }
 function cerezleriOku(header) {
   const out = {};
   (header || '').split(';').forEach(function (p) {
@@ -51,23 +81,69 @@ function girisSayfasi(hata) {
   return LOGIN_HTML.replace('__HATA__', hata ? hata : '');
 }
 
+// Cakra Analizi verisini/kilidini APP_HTML icine gomen kucuk <script> uretir.
+// Kilit KAPALIYSA veri HICBIR SEKILDE cevaba eklenmez (tarayiciya gitmez).
+function cakraAnalizScripti(acikMi, hataliMi) {
+  if (!acikMi) {
+    return 'window.CAKRA_ANALIZ_KILIT_ACIK=false;' + (hataliMi ? 'window.CAKRA_ANALIZ_HATA=true;' : '');
+  }
+  const veri = require('./cakra-analiz-veri.json');
+  return 'window.CAKRA_ANALIZ_KILIT_ACIK=true;window.CAKRA_ANALIZ_VERI=' + JSON.stringify(veri) + ';';
+}
+function appHtmlOlustur(analizAcikMi, analizHataliMi) {
+  return APP_HTML.replace(
+    '__CAKRA_ANALIZ_INJECT__',
+    '<script>' + cakraAnalizScripti(analizAcikMi, analizHataliMi) + '</script>'
+  );
+}
+
 module.exports = async (req, res) => {
   const search = (function () { try { return new URL(req.url, 'http://x').searchParams; } catch (e) { return new URLSearchParams(); } })();
   const cerezler = cerezleriOku(req.headers.cookie);
 
-  // Cikis Yap
+  // Cikis Yap (ana oturum + cakra analiz oturumu birlikte temizlenir)
   if (search.get('logout') === '1') {
-    res.setHeader('Set-Cookie', COOKIE_NAME + '=; Path=/22lik-numeroloji; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+    res.setHeader('Set-Cookie', [
+      COOKIE_NAME + '=; Path=/22lik-numeroloji; HttpOnly; Secure; SameSite=Lax; Max-Age=0',
+      ANALIZ_COOKIE_NAME + '=; Path=/22lik-numeroloji; HttpOnly; Secure; SameSite=Lax; Max-Age=0'
+    ]);
     res.statusCode = 302;
     res.setHeader('Location', '/22lik-numeroloji');
     return res.end();
   }
 
-  // Sifre gonderimi
+  // Sifre / kod gonderimi
   if (req.method === 'POST') {
     let body = '';
     for await (const chunk of req) body += chunk;
     const params = new URLSearchParams(body);
+
+    // --- Cakra Analizi kisisel kodu (ana oturum zaten acik olmali) ---
+    if (params.has('analizKod')) {
+      const oturumGecerliMi = dogrula(cerezler[COOKIE_NAME]);
+      if (!oturumGecerliMi) {
+        res.statusCode = 302;
+        res.setHeader('Location', '/22lik-numeroloji');
+        return res.end();
+      }
+      const girilenKod = (params.get('analizKod') || '').trim().toUpperCase();
+      const kodlar = analizKodlariniOku();
+      const eslesenAnahtar = Object.keys(kodlar).find(function (k) { return k.trim().toUpperCase() === girilenKod; });
+      if (girilenKod && eslesenAnahtar) {
+        const bitis = Date.now() + ANALIZ_GUVENLI_OTURUM_SURESI_MS;
+        const token = imzalaGenel('a:' + encodeURIComponent(eslesenAnahtar) + ':' + bitis, ANALIZ_SECRET);
+        res.setHeader('Set-Cookie', ANALIZ_COOKIE_NAME + '=' + encodeURIComponent(token) + '; Path=/22lik-numeroloji; HttpOnly; Secure; SameSite=Lax');
+        res.statusCode = 302;
+        res.setHeader('Location', '/22lik-numeroloji');
+        return res.end();
+      }
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-store');
+      return res.end(appHtmlOlustur(false, true));
+    }
+
+    // --- Ana sayfa sifresi ---
     const girilenSifre = params.get('sifre') || '';
     const a = Buffer.from(girilenSifre);
     const b = Buffer.from(SIFRE);
@@ -94,7 +170,8 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   if (oturumGecerli) {
-    return res.end(APP_HTML);
+    const analizAcikMi = dogrulaGenel(cerezler[ANALIZ_COOKIE_NAME], ANALIZ_SECRET);
+    return res.end(appHtmlOlustur(analizAcikMi, false));
   }
   return res.end(girisSayfasi(''));
 };
@@ -167,6 +244,7 @@ const APP_HTML = `<!DOCTYPE html>
     document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
   })();
 </script>
+__CAKRA_ANALIZ_INJECT__
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1121,6 +1199,61 @@ function cakraAgaciPaneli(title, arr){
     '</div></div>';
 }
 
+// ============================================================
+// ÇAKRA ANALİZİ (detaylı hane yorumları) — kredi kartı ödemesi sonrası
+// öğrenciye özel verilen KİŞİSEL bir kodla açılan, ana şifreden BAĞIMSIZ
+// ikinci bir kilit. Veri (window.CAKRA_ANALIZ_VERI) yalnızca sunucu bu
+// isteğin çakra-analiz oturum çerezini doğruladığında HTML'e gömülür;
+// kilit kapalıyken bu fonksiyon window.CAKRA_ANALIZ_VERI'yi hiç bulamaz.
+// ============================================================
+function cakraAnaliziBlokDizi(arr){
+  return (arr||[]).map(function(b){
+    return b.t==='h'
+      ? '<h5 style="margin:14px 0 6px;font-size:.85rem;color:var(--gold-lt);">'+b.x+'</h5>'
+      : '<p style="margin:0 0 8px;font-size:.88rem;color:var(--ink);line-height:1.65;">'+b.x+'</p>';
+  }).join('');
+}
+function cakraAnaliziBlok(za){
+  var acikMi = window.CAKRA_ANALIZ_KILIT_ACIK === true;
+  var html = '<div class="mod"><h3>Çakra Analizi — Detaylı Yorum</h3>';
+
+  if(!acikMi){
+    html += '<p style="color:var(--ink-soft);font-size:.88rem;margin-bottom:14px;">Bu bölümde her hanenin sayısına özel detaylı yorumlar yer alır. Kredi kartı ödemesi sonrası size özel verilen kişisel kodu girerek kilidi açabilirsiniz.</p>';
+    if(window.CAKRA_ANALIZ_HATA){
+      html += '<div class="note" style="border-left-color:#c0453f;">⚠️ Girdiğiniz kod geçersiz. Lütfen size iletilen kişisel kodu kontrol edip tekrar deneyin.</div>';
+    }
+    html += '<form method="POST" action="/22lik-numeroloji" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:10px;">'+
+      '<div class="field" style="flex:1;min-width:200px;margin:0;">'+
+      '<label for="analizKod">Kişisel Analiz Kodu</label>'+
+      '<input type="text" id="analizKod" name="analizKod" placeholder="Örn: AYS3847" autocomplete="off" style="text-transform:uppercase;">'+
+      '</div>'+
+      '<button class="btn" type="submit" style="margin-top:0;">Kilidi Aç</button>'+
+      '</form>'+
+      '<div class="hint" style="margin-top:8px;">Kodu girdikten sonra sayfa yenilenir; hesaplamanızı bir kez daha yapmanız yeterlidir.</div>';
+  } else {
+    var veri = window.CAKRA_ANALIZ_VERI || {};
+    html += '<p style="color:var(--ink-soft);font-size:.85rem;margin-bottom:14px;">🔓 Kilidiniz açık. Aşağıda 1-9. hanelerin senin hesabındaki sayısına özel detaylı yorumlar yer alıyor (klasik sistem değerleri kullanılır).</p>';
+    for(var h=1; h<=9; h++){
+      var deger = za.dogumPiramit[h-1];
+      var haneVeri = veri[String(h)];
+      html += '<details style="margin-bottom:10px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--paper-alt);">'+
+        '<summary style="cursor:pointer;font-weight:700;color:var(--ink);">'+h+'. Hane — Senin Sayın: <span class="val" style="font-size:1.05rem;">'+deger+'</span></summary>';
+      if(haneVeri){
+        html += '<div style="margin-top:12px;">'+cakraAnaliziBlokDizi(haneVeri.giris)+'</div>';
+        var degerBlok = haneVeri.degerler[String(deger)];
+        if(degerBlok){
+          html += '<div style="margin-top:8px;border-top:1px dashed var(--line);padding-top:10px;">'+cakraAnaliziBlokDizi(degerBlok)+'</div>';
+        }
+      } else {
+        html += '<p style="color:var(--ink-soft);font-size:.85rem;margin-top:10px;">Bu hane için henüz analiz içeriği eklenmedi.</p>';
+      }
+      html += '</details>';
+    }
+  }
+  html += '</div>';
+  return html;
+}
+
 function kv(label, val){
   return '<div class="kv"><div class="lab">'+label+'</div><div class="val">'+val+'</div></div>';
 }
@@ -1331,6 +1464,8 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   html += cakraAgaciPaneli('22 BAZLI', za.dogumPiramit22);
   html += cakraAgaciPaneli('KİŞİSEL YIL ÇAKRA ANALİZİ', za.kisiselYilPiramit);
   html += '</div>';
+
+  html += cakraAnaliziBlok(za);
 
   var matris = matrisHesapla(dogum.getDate(), dogum.getMonth()+1, dogum.getFullYear(), ad1, ad2, soyad, esSoyad);
   // "EŞ GÖREV" ve "EŞ LİYAKAT" sütunları yalnızca eş soyadı girildiyse gösterilir —
