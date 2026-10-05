@@ -1929,29 +1929,29 @@ function ogDurtuHesapla(DG,DA,DY,yas){
    Kural: 1. yaştan başlar; bitiş=başlangıç+değer−1; sonraki
    harf bitiş+1'de başlar; harfler biterse başa dönülür.
    ============================================================ */
-function ogAktifHarf(harfler, yas){
+/* Kullanıcı kuralı: harf dönemleri 1. İsim, 2. İsim, Öz Soyadı (ve varsa Eş Soyadı) için AYRI AYRI
+   hesaplanır; her isim 1. yaştan başlar ve kendi harfleri bitince kendi başına döner. Böylece aynı
+   yaşta her isimde farklı bir harf aktif olur. sonYas'a kadar tüm dönemler üretilir. */
+function ogHarfDizisi(harfler, yas, sonYas){
+  var dizi = [], aktif = null, baslangic = 1, i = 0;
   if(!harfler.length) return {aktif:null, tumDizi:[]};
-  var dizi = [];
-  var baslangic = 1;
-  var bulunan = null;
-  var guard = 0;
-  var maxGuard = harfler.length * 40; // yeterince tur (en az birkaç yüz yıl kapsar)
-  outer:
-  while(guard < maxGuard){
-    for(var i=0;i<harfler.length;i++){
-      var h = harfler[i];
-      var deger = ogHarfSayisi(h);
-      var bitis = baslangic + deger - 1;
-      var kayit = {harf:h, deger:deger, baslangic:baslangic, bitis:bitis, cakraNo:deger};
-      dizi.push(kayit);
-      if(yas>=baslangic && yas<=bitis && !bulunan) bulunan = kayit;
-      baslangic = bitis + 1;
-      guard++;
-      if(bulunan && dizi.length > harfler.length) break outer; // bulunca bir tur daha tamamlayıp çık
-    }
-    if(bulunan) break;
+  while(baslangic <= sonYas){
+    var h = harfler[i % harfler.length];
+    var deger = ogHarfSayisi(h);
+    var kayit = {harf:h, deger:deger, baslangic:baslangic, bitis:baslangic+deger-1, cakraNo:deger};
+    dizi.push(kayit);
+    if(yas>=kayit.baslangic && yas<=kayit.bitis) aktif = kayit;
+    baslangic = kayit.bitis + 1;
+    i++;
   }
-  return {aktif:bulunan, tumDizi:dizi};
+  return {aktif:aktif, tumDizi:dizi};
+}
+function ogHarfParcaHesapla(parcalar, yas){
+  var sonYas = Math.max(yas, 1) + 9;
+  return parcalar.map(function(p){
+    var d = ogHarfDizisi(p.harfler, yas, sonYas);
+    return {ad:p.ad, harfler:p.harfler, aktif:d.aktif, tumDizi:d.tumDizi, sonYas:sonYas};
+  });
 }
 
 /* ============================================================
@@ -2040,7 +2040,7 @@ function ogAktifBydDonemi(tabloDegeri, yas){
 /* ============================================================
    ANA HESAPLAMA — tüm alt bölümleri birleştirir
    ============================================================ */
-function ogHesapla(DG,DA,DY,Y,M,G,harfler){
+function ogHesapla(DG,DA,DY,Y,M,G,harfParcalari){
   // Y HER ZAMAN dolu (zorunlu). M ve/veya G null olabilir.
   // ayVar: kişisel ay / klasik ay gibi AYA ÖZGÜ sonuçlar için.
   // gunVar: gün yöntem 1/2 gibi GÜNE ÖZGÜ sonuçlar için (ay da gerektirir).
@@ -2068,7 +2068,7 @@ function ogHesapla(DG,DA,DY,Y,M,G,harfler){
   var yas = gunVar ? ogYas(new Date(DY, DA-1, DG), new Date(Y, M-1, G)) : (Y - DY);
 
   var durtu = ogDurtuHesapla(DG,DA,DY,yas);
-  var harfSonuc = ogAktifHarf(harfler, yas);
+  var harfSonuc = ogHarfParcaHesapla(harfParcalari, yas);   // isim başına ayrı harf dönemleri
   var cakraDongu = ogCakraDongusu(yas);
   var ha = ogHayatAmaci(DG,DA,DY);
   var donem = ogAktifDonemIndeksi(ha.tabloDegeri, yas);
@@ -2099,7 +2099,9 @@ function ogHesapla(DG,DA,DY,Y,M,G,harfler){
   if(bolum1.gunY1) sayilar.push({deger:bolum1.gunY1.klasik, kaynak:'Gün (Yöntem 1, klasik)'});
   if(bolum1.gunY2) sayilar.push({deger:bolum1.gunY2.sonuc, kaynak:'Gün (Yöntem 2)'});
   if(!durtu.gecersiz) sayilar.push({deger:durtu.rakam, kaynak:'Dürtü'});
-  if(harfSonuc.aktif) sayilar.push({deger:harfSonuc.aktif.cakraNo, kaynak:'Harf Yankısı çakrası'});
+  harfSonuc.forEach(function(p){
+    if(p.aktif) sayilar.push({deger:p.aktif.cakraNo, kaynak:'Harf Yankısı çakrası ('+p.ad+')'});
+  });
 
   var frekans = {};
   sayilar.forEach(function(s){
@@ -2211,15 +2213,21 @@ function ogRenderCiktisi(r){
 
   // 4) Harf Yankısı
   html += '<div class="mod"><h3>5. Harf Yankısı ve Aktif Harf Dönemi</h3>';
-  if(!r.harfSonuc.aktif){
+  var harfParcalar = r.harfSonuc.filter(function(p){ return p.aktif; });
+  if(!harfParcalar.length){
     html += '<div class="note">⚠️ Ad/soyad alanlarında harf-çakra tablosuyla eşleşen harf bulunamadı.</div>';
   } else {
-    var a = r.harfSonuc.aktif;
+    // Her isim için o yaştaki aktif harf
     html += '<div class="kv-grid">';
-    html += ogKv('Aktif Harf', a.harf);
-    html += ogKv('Çakra No / Değer', a.cakraNo);
-    html += ogKv('Etkili Yaş Aralığı', a.baslangic+'–'+a.bitis);
+    harfParcalar.forEach(function(p){
+      html += ogKv(p.ad+' — Aktif Harf', p.aktif.harf+' ('+p.aktif.cakraNo+')'+
+        '<div style="font-family:inherit;font-size:.8rem;color:var(--ink-soft);margin-top:4px;">'+r.yas+' yaş · '+
+        (p.aktif.baslangic===p.aktif.bitis ? p.aktif.baslangic+'. yaş' : p.aktif.baslangic+'–'+p.aktif.bitis+' yaş arası')+'</div>');
+    });
     html += '</div>';
+    harfParcalar.forEach(function(p){
+    var a = p.aktif;
+    html += '<h4 style="margin:18px 0 4px;font-size:.9rem;color:var(--gold-lt);">'+p.ad+': '+a.harf+' ('+a.cakraNo+')</h4>';
     var sinifBilgi = OG_EK_D_SINIF[a.harf] || OG_EK_D_SINIF[a.harf+'-'+a.harf];
     var grupAnahtar = Object.keys(OG_EK_D_SINIF).find(function(k){ return k.split('-').indexOf(a.harf)>-1; });
     if(grupAnahtar) sinifBilgi = OG_EK_D_SINIF[grupAnahtar];
@@ -2231,11 +2239,33 @@ function ogRenderCiktisi(r){
     var detayHarf = a.harf==='İ'?'I':(a.harf==='Ç'?'C':(a.harf==='Ğ'?'G':(a.harf==='Ö'?'O':(a.harf==='Ş'?'S':(a.harf==='Ü'?'U':a.harf)))));
     var detay = OG_EK_D_DETAY[detayHarf];
     if(detay) html += ogMadList(detay);
-    html += '<h4 style="margin-top:18px;font-size:.85rem;color:var(--ink-soft);">Ad/Soyaddaki Tüm Harflerin Yaş Aralığı</h4>';
-    html += '<div class="tbl-wrap"><table class="hane"><tr><th>Harf</th><th>Değer</th><th>Yaş Aralığı</th></tr>'+
-      r.harfSonuc.tumDizi.map(function(d){
-        var aktifMi = d===a;
-        return '<tr'+(aktifMi?' style="background:var(--brand-soft);"':'')+'><td>'+d.harf+'</td><td>'+d.deger+'</td><td>'+d.baslangic+'–'+d.bitis+'</td></tr>';
+    });
+
+    // Tüm isimlerin harf dönemleri yan yana: bir harfin başladığı her yaşta yeni satır açılır,
+    // her sütun o yaş aralığında ilgili isimde hangi harfin aktif olduğunu gösterir.
+    var sinirlar = {};
+    harfParcalar.forEach(function(p){ p.tumDizi.forEach(function(d){ sinirlar[d.baslangic] = true; }); });
+    var sonYas = harfParcalar[0].sonYas;
+    var baslar = Object.keys(sinirlar).map(Number).filter(function(b){ return b<=sonYas; })
+      .sort(function(x,y){ return x-y; });
+    function harfBul(p, yasNo){
+      for(var i=0;i<p.tumDizi.length;i++){ var d=p.tumDizi[i]; if(yasNo>=d.baslangic && yasNo<=d.bitis) return d; }
+      return null;
+    }
+    html += '<h4 style="margin-top:22px;font-size:.85rem;color:var(--ink-soft);">İsim ve Soyadlarda Harflerin Yaş Aralıkları (her isim ayrı ayrı)</h4>';
+    html += '<div class="tbl-wrap"><table class="hane"><tr><th>Yaş Aralığı</th>'+
+      harfParcalar.map(function(p){ return '<th>'+p.ad+'</th>'; }).join('')+'</tr>'+
+      baslar.map(function(b, bi){
+        var son = bi+1<baslar.length ? baslar[bi+1]-1 : sonYas;
+        var aktifMi = r.yas>=b && r.yas<=son;
+        return '<tr'+(aktifMi?' style="background:var(--brand-soft);font-weight:700;"':'')+'><td>'+(b===son?b:b+'–'+son)+'</td>'+
+          harfParcalar.map(function(p){
+            var d = harfBul(p, b);
+            if(!d) return '<td></td>';
+            var yeni = d.baslangic===b;   // harf bu satırda mı başladı
+            return '<td'+(yeni?'':' style="opacity:.55;"')+'><strong>'+d.harf+'</strong> ('+d.deger+')'+
+              '<div style="font-size:.75rem;color:var(--ink-soft);">'+(d.baslangic===d.bitis?d.baslangic:d.baslangic+'–'+d.bitis)+'</div></td>';
+          }).join('')+'</tr>';
       }).join('') + '</table></div>';
   }
   html += '</div>';
@@ -2390,8 +2420,13 @@ document.getElementById('ogBtn').addEventListener('click', function(){
     return;
   }
 
-  var harfler = ogHarfleriTemizle((ad1||'')+(ad2||'')+(soyad||'')+(esSoyad||''));
-  var sonuc = ogHesapla(DG,DA,DY,Y,M,G,harfler);
+  var harfParcalari = [
+    {ad:'1. İsim', harfler:ogHarfleriTemizle(ad1)},
+    {ad:'2. İsim', harfler:ogHarfleriTemizle(ad2)},
+    {ad:'Öz Soyadı', harfler:ogHarfleriTemizle(soyad)},
+    {ad:'Eş Soyadı', harfler:ogHarfleriTemizle(esSoyad)}
+  ].filter(function(p){ return p.harfler.length; });
+  var sonuc = ogHesapla(DG,DA,DY,Y,M,G,harfParcalari);
 
   out.innerHTML = ogRenderCiktisi(sonuc);
   out.classList.add('show');
