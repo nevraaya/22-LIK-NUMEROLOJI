@@ -641,20 +641,32 @@ function zamanAnaliziHesapla(dogumTarih, bugun, hesapYili){
   var H12 = G12>9 ? digitSum(G12) : G12;
   var kisiselYil = {raw:G12, final:H12, display:G12+'/'+H12};
 
-  // 2. Yıllık Enerji — Klasik
+  // YILLIK ENERJİLER (kullanıcı kuralı): 2. yıllık enerji = 1. yıllık enerji − 2 × (doğum gününün
+  // İLK hanesi). Ör. gün 17 -> ilk hane 1 -> 2 çıkarılır; gün 5 -> ilk hane 5 -> 10 çıkarılır.
+  // Sonuç 0 veya eksi çıkarsa 2. yıllık enerji oluşmaz. Klasik değerler "ham/kök" biçiminde
+  // gösterilir (ör. 17/8); Arketipsel'de yalnızca 22'ye göre indirgenmiş değer yazılır.
+  var gunIlkHane = Number(String(bGun).charAt(0));
+  function kokluGoster(n){
+    var s = String(n), k = n;
+    while(k>9){ k = digitSum(k); s += '/'+k; }
+    return s;
+  }
+
+  // Klasik: 1. yıllık enerji = gün + ay + yıl (her biri tek haneye indirgenmiş), toplamın kökü
   var B16 = F11+F12+F13;
   var C16 = B16>9 ? digitSum(B16) : B16;
-  var day2xTensPart = bGun>9 ? Math.floor(bGun/10) : 0; // G6 karşılığı
-  var D16 = C16 - (2*day2xTensPart);
-  var enerjiKlasik = {raw:B16, reduced:C16, display: D16>0 ? (C16+'-'+D16) : String(C16)};
+  var D16 = C16 - 2*gunIlkHane;
+  var enerjiKlasik = {raw:B16, reduced:C16,
+    birinci: kokluGoster(B16),
+    ikinci:  D16>0 ? kokluGoster(D16) : null};
 
-  // 2. Yıllık Enerji — Arketip
+  // Arketipsel: 1. yıllık enerji = gün + ay + yıl (22'lik), toplam 22'yi aşarsa rakamları toplanır
   var B17 = E11+E12+E13;
   var C17 = B17>22 ? digitSum(B17) : B17;
-  var D17 = E11*2;
-  var E17b = D17>22 ? digitSum(D17) : D17;
-  var F17 = C17 - E17b;
-  var enerjiArketip = {raw:B17, reduced:C17, display: F17>0 ? (C17+'-'+F17) : String(C17)};
+  var F17 = C17 - 2*gunIlkHane;
+  var enerjiArketip = {raw:B17, reduced:C17,
+    birinci: String(C17),
+    ikinci:  F17>0 ? String(F17) : null};
 
   // ÇAKRA MERDİVENİ — DOĞUM TARİHİ PİRAMİDİ (satır 23-35)
   function rs(n){ return n>9 ? digitSum(n) : n; }
@@ -1625,8 +1637,10 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   html += '<div class="mod"><h3>Kişisel Yıl · Yıllık Enerji · Yaş</h3><div class="kv-grid">';
   html += kv('Yaş', za.yas);
   html += kv('Kişisel Yıl', za.kisiselYil.display);
-  html += kv('Yıllık Klasik Enerji', za.enerjiKlasik.display);
-  html += kv('Arketipsel Yıllık Enerjiler', za.enerjiArketip.display);
+  html += kv('1. Yıllık Klasik Enerji', za.enerjiKlasik.birinci);
+  html += kv('2. Yıllık Klasik Enerji', za.enerjiKlasik.ikinci || '—');
+  html += kv('1. Arketipsel Yıllık Enerji', za.enerjiArketip.birinci);
+  html += kv('2. Arketipsel Yıllık Enerji', za.enerjiArketip.ikinci || '—');
   html += '</div></div>';
 
   html += '<div class="mod"><h3>Ana Kulvar · Yan Kulvar · Tam Kulvar</h3>';
