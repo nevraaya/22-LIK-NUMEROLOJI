@@ -960,14 +960,37 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
 
   var K10 = xSum(B49,C49,D49);   // hayat amacından çıkan karmik borç tabanı
 
+  /* --- EŞ GÖREV ve ANA KULVAR desteği için kişinin isim parçalarının kulvarları --- */
+  var kEsIcin = L4.length ? kulvarOfLetters(L4) : null;
+  var kAd1Icin = L1.length ? kulvarOfLetters(L1) : null;
+  var kAd2Icin = L2.length ? kulvarOfLetters(L2) : null;
+  var kSoyadIcin = L3.length ? kulvarOfLetters(L3) : null;
+
+  var tamOzIcin = (kAd1Icin||kAd2Icin||kSoyadIcin) ? tamIsimKulvar(kAd1Icin, kAd2Icin, kSoyadIcin, null) : null;
+
   /* --- A sütunu: YÜKSEK GÖREV --- */
   var rngB46F48 = [B46, F47, E48, F48];
   // Yüksek görev (çakra 12/11/10) kaynakları — sol taraftaki kaynak sütunlarında gösterilmek
   // üzere ad etiketli tutulur. Çakra 12 = 33'ler, çakra 11 = 22'ler, çakra 10 = 11'ler + 10'lar.
-  // Kullanıcı kuralı: YALNIZCA Ana Kulvar destek verir; Yan Kulvar ve Tam Kulvar (R26/R27 —
-  // eski Excel'in AY26:27, BI26:27, BV26:27 hücreleri) destek kaynağı DEĞİLDİR.
+  // Kullanıcı kuralı: YALNIZCA Ana Kulvar destek verir; Yan Kulvar ve Tam Kulvar (eski Excel'in
+  // AY26:27, BI26:27, BV26:27 hücreleri) destek kaynağı DEĞİLDİR. Eski Excel'in toplam ana kulvar
+  // hücreleri (BI25/BV25) yerine 1-9. çakralardakiyle AYNI isim parçaları kullanılır: 1. İsim,
+  // 2. İsim, Öz Soyadı, Tam İsim (+ varsa Eş Soyadı). Bir parçanın Ana Kulvarı (ham toplam ya da
+  // ilk indirgemesi) 33 ise çakra 12'ye, 22 ise çakra 11'e, 11 ya da 10 ise çakra 10'a destek verir
+  // (ör. Övel 11, 19/10/1 -> 10). Her parça en fazla bir destek verir.
+  function akYuksek(k){
+    if(!k) return null;
+    var raw = k.ana.raw, ilk = stepReduceMaster(raw);
+    if(ilk===33 || ilk===22 || ilk===11) return ilk;
+    if(raw===10 || ilk===10) return 10;
+    return null;
+  }
   var ygKulvar = [
-    {ad:'Ana K.', v:R25.BI}, {ad:'Ana K.', v:R25.BV}
+    {ad:'1.İsim',   v:akYuksek(kAd1Icin)},
+    {ad:'2.İsim',   v:akYuksek(kAd2Icin)},
+    {ad:'Öz Soy.',  v:akYuksek(kSoyadIcin)},
+    {ad:'Tam İsim', v:akYuksek(tamOzIcin)},
+    {ad:'Eş Soy.',  v:akYuksek(kEsIcin)}
   ];
   var ygHayatMaster = [{ad:'1.HA', v:B10}, {ad:'2.HA', v:B11}];
   var ygHayatOn = [{ad:'1.HA', v:B10}, {ad:'1.HA', v:C10}, {ad:'1.HA', v:D10},
@@ -997,12 +1020,6 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
   var yuksek = ['', gorevSembol(ygSatir[1].dToplam), gorevSembol(ygSatir[2].dToplam), gorevSembol(ygSatir[3].dToplam)];
   for(var oi=9; oi>=1; oi--) yuksek.push(sembol11(xCountIf(rngB46F48, oi)));
 
-  /* --- C sütunu ve ANA KULVAR desteği için kişinin isim parçalarının kulvarları --- */
-  var kEsIcin = L4.length ? kulvarOfLetters(L4) : null;
-  var kAd1Icin = L1.length ? kulvarOfLetters(L1) : null;
-  var kAd2Icin = L2.length ? kulvarOfLetters(L2) : null;
-  var kSoyadIcin = L3.length ? kulvarOfLetters(L3) : null;
-
   /* --- B/D sütunları: TOPLAM GÖREV / GÖREV ---
      Destek kaynakları (çakra 1-9):
        P = Çakra Merdiveni (klasik açılım 1-9. haneler)
@@ -1015,7 +1032,6 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
      Ana Kulvarı hiç sayılmıyordu. Master sayılar (11/22/33) 1-9 çakralarına destek vermez.
      TOPLAM GÖREV = P+Q+ANA KULVAR(+eş); GÖREV = aynısı, eş soyadı HARİÇ. */
   function akTek(k){ return (k && k.ana.reduced>=1 && k.ana.reduced<=9) ? k.ana.reduced : null; }
-  var tamOzIcin = (kAd1Icin||kAd2Icin||kSoyadIcin) ? tamIsimKulvar(kAd1Icin, kAd2Icin, kSoyadIcin, null) : null;
   var anaKulvarKaynak = [
     {ad:'1.İsim', v:akTek(kAd1Icin),   es:false},
     {ad:'2.İsim', v:akTek(kAd2Icin),   es:false},
