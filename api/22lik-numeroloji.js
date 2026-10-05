@@ -962,15 +962,12 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
 
   /* --- A sütunu: YÜKSEK GÖREV --- */
   var rngB46F48 = [B46, F47, E48, F48];
-  var AY26_27 = [R26.AY, R27.AY];
-  var BI25_27 = [R25.BI, R26.BI, R27.BI];
-  var BV25_27 = [R25.BV, R26.BV, R27.BV];
   // Yüksek görev (çakra 12/11/10) kaynakları — sol taraftaki kaynak sütunlarında gösterilmek
   // üzere ad etiketli tutulur. Çakra 12 = 33'ler, çakra 11 = 22'ler, çakra 10 = 11'ler + 10'lar.
+  // Kullanıcı kuralı: YALNIZCA Ana Kulvar destek verir; Yan Kulvar ve Tam Kulvar (R26/R27 —
+  // eski Excel'in AY26:27, BI26:27, BV26:27 hücreleri) destek kaynağı DEĞİLDİR.
   var ygKulvar = [
-    {ad:'Yan K.', v:R26.AY}, {ad:'Tam K.', v:R27.AY},
-    {ad:'Ana K.', v:R25.BI}, {ad:'Yan K.', v:R26.BI}, {ad:'Tam K.', v:R27.BI},
-    {ad:'Ana K.', v:R25.BV}, {ad:'Yan K.', v:R26.BV}, {ad:'Tam K.', v:R27.BV}
+    {ad:'Ana K.', v:R25.BI}, {ad:'Ana K.', v:R25.BV}
   ];
   var ygHayatMaster = [{ad:'1.HA', v:B10}, {ad:'2.HA', v:B11}];
   var ygHayatOn = [{ad:'1.HA', v:B10}, {ad:'1.HA', v:C10}, {ad:'1.HA', v:D10},
