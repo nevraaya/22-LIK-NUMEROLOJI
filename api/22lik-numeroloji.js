@@ -300,6 +300,20 @@ __CAKRA_ANALIZ_INJECT__
   .kv{background:var(--paper-alt);border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
   .kv .lab{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin-bottom:6px;}
   .kv .val{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--gold-lt);}
+  /* Ana / Yan / Tam Kulvar: her biri kendi renginde, alt alta aynı sütunda hizalı */
+  .kv-grid.kulvar-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .kv.kulvar-ana{background:rgba(43,179,168,.16);border-color:rgba(43,179,168,.55);border-top:4px solid #2BB3A8;}
+  .kv.kulvar-yan{background:rgba(224,123,176,.16);border-color:rgba(224,123,176,.55);border-top:4px solid #E07BB0;}
+  .kv.kulvar-tam{background:rgba(228,168,72,.16);border-color:rgba(228,168,72,.55);border-top:4px solid #E4A848;}
+  .kv.kulvar-ana .lab{color:#4FD1C5;font-weight:700;}
+  .kv.kulvar-yan .lab{color:#F29BC8;font-weight:700;}
+  .kv.kulvar-tam .lab{color:#F2C26B;font-weight:700;}
+  :root[data-theme="light"] .kv.kulvar-ana .lab{color:#147A72;}
+  :root[data-theme="light"] .kv.kulvar-yan .lab{color:#A3346E;}
+  :root[data-theme="light"] .kv.kulvar-tam .lab{color:#8A5A0B;}
+  :root[data-theme="light"] .kv.kulvar-ana .val{color:#0E5E57;}
+  :root[data-theme="light"] .kv.kulvar-yan .val{color:#7E2554;}
+  :root[data-theme="light"] .kv.kulvar-tam .val{color:#6B4407;}
   table.hane{width:100%;border-collapse:collapse;font-size:.86rem;}
   table.hane th,table.hane td{border:1px solid var(--line);padding:8px 6px;text-align:center;}
   table.hane th{background:var(--paper-alt);color:var(--ink-soft);font-weight:700;}
@@ -1389,8 +1403,8 @@ function cakraAnaliziBlok(za){
   return html;
 }
 
-function kv(label, val){
-  return '<div class="kv"><div class="lab">'+label+'</div><div class="val">'+val+'</div></div>';
+function kv(label, val, ekSinif){
+  return '<div class="kv'+(ekSinif?' '+ekSinif:'')+'"><div class="lab">'+label+'</div><div class="val">'+val+'</div></div>';
 }
 
 // ============================================================
@@ -1646,8 +1660,9 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   html += '<div class="mod"><h3>Ana Kulvar · Yan Kulvar · Tam Kulvar</h3>';
   function kulvarBlok(baslik, k){
     if(!k) return '';
-    return '<h4 style="margin:14px 0 8px;font-size:.9rem;color:var(--ink-soft);">'+baslik+'</h4><div class="kv-grid">'+
-      kv('Ana Kulvar', k.ana.display) + kv('Yan Kulvar', k.yan.display) + kv('Tam Kulvar', k.tam.display) + '</div>';
+    return '<h4 style="margin:14px 0 8px;font-size:.9rem;color:var(--ink-soft);">'+baslik+'</h4><div class="kv-grid kulvar-grid">'+
+      kv('Ana Kulvar', k.ana.display, 'kulvar-ana') + kv('Yan Kulvar', k.yan.display, 'kulvar-yan') +
+      kv('Tam Kulvar', k.tam.display, 'kulvar-tam') + '</div>';
   }
   html += kulvarBlok('1. İsim: '+ad1.toLocaleUpperCase('tr-TR'), kAd1);
   html += kulvarBlok('2. İsim: '+ad2.toLocaleUpperCase('tr-TR'), kAd2);
