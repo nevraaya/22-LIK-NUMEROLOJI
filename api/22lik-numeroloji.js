@@ -816,8 +816,9 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
     var hD = xLt(hC,10) ? '' : xLR(hC);
     haEk.push({no:zi+2, B:hB, C:hC, D:hD});
   }
-  var E12 = (C8===0) ? 10 : '';   // Excel B10:E12 aralığına düşen gün-sıfırı 10'u (korundu)
-  var H13 = sifirSay*10;          // sıfır varsa 10. çakraya +1 (Excel H13>0 kuralı)
+  // NOT: Tarihteki sıfırın KENDİSİ 10. çakraya destek VERMEZ (kullanıcı kuralı). Eski Excel'deki
+  // "gün sıfırı" (E12) ve "sıfır varsa +1" (H13) destekleri kaldırıldı; sıfır yalnızca ek Hayat
+  // Amacı doğurur (ve Zaman Analizi'nde 2./3. yıllık enerji hesabında kullanılır).
 
   /* --- HARF DEĞER IZGARALARI (FORMÜL SAYFASI2 B14:P21) --- */
   function anaRow(L){ var r=[],i,c; for(i=0;i<15;i++){ c=L[i]; r.push(c && isVowel(c) ? classicValue(c) : 0); } return r; }
@@ -978,8 +979,6 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
     ygHayatMaster.push({ad:h.no+'.HA', v:h.B});
     ygHayatOn.push({ad:h.no+'.HA', v:h.B}, {ad:h.no+'.HA', v:h.C}, {ad:h.no+'.HA', v:h.D});
   });
-  ygHayatOn.push({ad:'Gün 0', v:E12});
-  if(H13>0) ygHayatOn.push({ad:'Sıfır', v:10});
   function kaynakSay(list, hedefler){
     var n=0, sira=[], adet={};
     list.forEach(function(k){
