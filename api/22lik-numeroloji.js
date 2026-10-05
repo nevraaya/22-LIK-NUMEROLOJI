@@ -643,7 +643,7 @@ function zamanAnaliziHesapla(dogumTarih, bugun, hesapYili){
 
   // YILLIK ENERJİLER (kullanıcı kuralı): 2. yıllık enerji = 1. yıllık enerji − 2 × (doğum gününün
   // İLK hanesi). Ör. gün 17 -> ilk hane 1 -> 2 çıkarılır; gün 5 -> ilk hane 5 -> 10 çıkarılır.
-  // Sonuç 0 veya eksi çıkarsa 2. yıllık enerji oluşmaz. Klasik değerler "ham/kök" biçiminde
+  // Sonuç 0 veya eksi çıkarsa 2. yıllık enerji oluşmaz (ekranda "Enerji yok" yazar). Klasik değerler "ham/kök" biçiminde
   // gösterilir (ör. 17/8); Arketipsel'de yalnızca 22'ye göre indirgenmiş değer yazılır.
   var gunIlkHane = Number(String(bGun).charAt(0));
   function kokluGoster(n){
@@ -1638,9 +1638,9 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   html += kv('Yaş', za.yas);
   html += kv('Kişisel Yıl', za.kisiselYil.display);
   html += kv('1. Yıllık Klasik Enerji', za.enerjiKlasik.birinci);
-  html += kv('2. Yıllık Klasik Enerji', za.enerjiKlasik.ikinci || '—');
+  html += kv('2. Yıllık Klasik Enerji', za.enerjiKlasik.ikinci || 'Enerji yok');
   html += kv('1. Arketipsel Yıllık Enerji', za.enerjiArketip.birinci);
-  html += kv('2. Arketipsel Yıllık Enerji', za.enerjiArketip.ikinci || '—');
+  html += kv('2. Arketipsel Yıllık Enerji', za.enerjiArketip.ikinci || 'Enerji yok');
   html += '</div></div>';
 
   html += '<div class="mod"><h3>Ana Kulvar · Yan Kulvar · Tam Kulvar</h3>';
