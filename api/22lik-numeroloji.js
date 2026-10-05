@@ -1467,6 +1467,11 @@ function kisiSecVeHesapla(k){
   document.getElementById('dtarih').value = k.y+'-'+String(k.a).padStart(2,'0')+'-'+String(k.g).padStart(2,'0');
   kisiOneriKapat();
   document.getElementById('hesaplaBtn').click();
+  // Eski kayıtlarda (2. İsim / Eş Soyadı saklanmadan önce kaydedilmiş) bu alanlar yoktur; form boş
+  // kalır ve hesap 2. İsim olmadan yapılır. Kullanıcı bunu fark etsin diye uyarı gösterilir.
+  if(k.ad2===undefined){
+    kisiMesajGoster('⚠️ Bu kayıt eski: 2. İsim / Eş Soyadı kayıtlı değil. Varsa yazıp Hesapla’ya basın; kayıt güncellenir.', '#E4A848', 15000);
+  }
   var out = document.getElementById('calcOut');
   if(out && out.classList.contains('show')) out.scrollIntoView({behavior:'smooth', block:'start'});
 }
@@ -1516,11 +1521,11 @@ function kisiFormdanOku(){
   return {ad:ad, ad2:document.getElementById('ad2').value, soyad:soyad,
           esSoyad:document.getElementById('esSoyad').value, y:Number(p[0]), a:Number(p[1]), g:Number(p[2])};
 }
-function kisiMesajGoster(msg, renk){
+function kisiMesajGoster(msg, renk, sure){
   var el = document.getElementById('kisiKayitMesaj');
   el.textContent = msg;
   el.style.color = renk || 'var(--gold-lt)';
-  if(msg) setTimeout(function(){ if(el.textContent===msg) el.textContent=''; }, 4000);
+  if(msg) setTimeout(function(){ if(el.textContent===msg) el.textContent=''; }, sure || 4000);
 }
 function kisiListesiRenderla(){
   var liste = kisiListesiGetir();
@@ -1539,7 +1544,8 @@ function kisiListesiRenderla(){
   kutu.innerHTML = filtreli.map(function(k){
     return '<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);">'+
       '<div><strong style="color:var(--ink);">'+kisiTamAd(k)+'</strong>'+
-      '<div style="font-size:.8rem;color:var(--ink-soft);">'+kisiTarihMetni(k.g,k.a,k.y)+'</div></div>'+
+      '<div style="font-size:.8rem;color:var(--ink-soft);">'+kisiTarihMetni(k.g,k.a,k.y)+
+      (k.ad2===undefined ? ' · <span style="color:#E4A848;">eski kayıt — 2. İsim kayıtlı değil</span>' : '')+'</div></div>'+
       '<div style="display:flex;gap:8px;flex-shrink:0;">'+
       '<button type="button" class="kisi-sec-btn" data-id="'+k.id+'" style="padding:8px 16px;min-height:36px;border-radius:999px;font-weight:700;font-size:.82rem;border:1px solid var(--line);background:transparent;color:var(--brand-text);cursor:pointer;">Seç</button>'+
       '<button type="button" class="kisi-sil-btn" data-id="'+k.id+'" style="padding:8px 16px;min-height:36px;border-radius:999px;font-weight:700;font-size:.82rem;border:1px solid var(--line);background:transparent;color:#c0453f;cursor:pointer;">Sil</button>'+
