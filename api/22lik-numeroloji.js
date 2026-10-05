@@ -941,10 +941,6 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
 
   var K10 = xSum(B49,C49,D49);   // hayat amacından çıkan karmik borç tabanı
 
-  /* --- 22'lik ana kulvar (BO33/34/35/53) --- */
-  function bo22(raw){ var bj=xMaster(raw)||raw; var bn=bj>22?xLR(bj):bj; return bn>22?xLR(bn):bn; }
-  var BO33=bo22(R25.B), BO34=bo22(R25.H), BO35=bo22(R25.N), BO53=bo22(R25.T);
-
   /* --- A sütunu: YÜKSEK GÖREV --- */
   var rngB46F48 = [B46, F47, E48, F48];
   var AY26_27 = [R26.AY, R27.AY];
@@ -962,18 +958,58 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
   var yuksek = ['', sembol11(AK13), sembol11(AK12), sembol11(AK11+AK14)];  // çakra 13,12,11,10
   for(var oi=9; oi>=1; oi--) yuksek.push(sembol11(xCountIf(rngB46F48, oi)));
 
+  /* --- C sütunu ve ANA KULVAR desteği için kişinin isim parçalarının kulvarları --- */
+  var kEsIcin = L4.length ? kulvarOfLetters(L4) : null;
+  var kAd1Icin = L1.length ? kulvarOfLetters(L1) : null;
+  var kAd2Icin = L2.length ? kulvarOfLetters(L2) : null;
+  var kSoyadIcin = L3.length ? kulvarOfLetters(L3) : null;
+
   /* --- B/D sütunları: TOPLAM GÖREV / GÖREV ---
-     Excel'in orijinal formülü: TOPLAM GÖREV=P+Q+R+S+T (herkes), GÖREV=P+Q+R+S (öz soyadı ile,
-     eş soyadı HARİÇ). Bunlar tarih bazlı (P,Q) ve ad1/ad2 bazlı (R) terimleri de içerir; bu
-     köken orijinal dosyadaki gerçek formüldür ve DEĞİŞTİRİLMEDİ. */
-  var rngB49F52 = [B49,C49,D49,E49,F49, C50,D50, D51, F52];
-  var rngF10H11 = [F10,G10,H10, F11,G11,H11];
+     Destek kaynakları (çakra 1-9):
+       P = Çakra Merdiveni (klasik açılım 1-9. haneler)
+       Q = Hayat Amacı (1. ve 2. Hayat Amacı'nın rakamları + indirgenmiş değerleri)
+       ANA KULVAR = 1. İsim, 2. İsim, Öz Soyadı ve TAM İSİM (1.+2. İsim + Öz Soyadı) Ana Kulvarları;
+                    eş soyadı varsa onun Ana Kulvarı da (yalnız TOPLAM GÖREV'e).
+     DÜZELTME (kullanıcı talebi): Ana Kulvar desteği artık her kulvarın TEK HANEYE indirgenmiş
+     değeriyle sayılır (ör. 14/5 -> 5, Tam İsim 21/3 -> 3). Eskiden 22'ye kadar indirgenmiş değer
+     (14, 21 ...) arandığı için 10-22 arası kulvarlar hiçbir çakraya destek vermiyordu ve Tam İsim
+     Ana Kulvarı hiç sayılmıyordu. Master sayılar (11/22/33) 1-9 çakralarına destek vermez.
+     TOPLAM GÖREV = P+Q+ANA KULVAR(+eş); GÖREV = aynısı, eş soyadı HARİÇ. */
+  function akTek(k){ return (k && k.ana.reduced>=1 && k.ana.reduced<=9) ? k.ana.reduced : null; }
+  var tamOzIcin = (kAd1Icin||kAd2Icin||kSoyadIcin) ? tamIsimKulvar(kAd1Icin, kAd2Icin, kSoyadIcin, null) : null;
+  var anaKulvarKaynak = [
+    {ad:'1.İsim', v:akTek(kAd1Icin),   es:false},
+    {ad:'2.İsim', v:akTek(kAd2Icin),   es:false},
+    {ad:'Öz Soy.', v:akTek(kSoyadIcin), es:false},
+    {ad:'Tam İsim', v:akTek(tamOzIcin), es:false},
+    {ad:'Eş Soy.', v:akTek(kEsIcin),   es:true}
+  ];
+  var merdivenKaynak = [B49,C49,D49,E49,F49, C50,D50, D51, F52];   // 1.-9. hane
+  var hayatKaynak = [
+    {ad:'1.HA', v:[F10,G10,H10]},
+    {ad:'2.HA', v:[F11,G11,H11]}
+  ];
+  function gorevSembol(n){ return n>0 ? new Array(n+1).join('X') : '-'; }
   var gorevler = [];   // çakra 9..1
   for(var oj=9; oj>=1; oj--){
-    var P=xCountIf(rngB49F52,oj), Q=xCountIf(rngF10H11,oj),
-        R=xCountIf([BO33,BO34],oj), S=xCountIf([BO35],oj), T=xCountIf([BO53],oj);
-    // U = COUNTIF(AB33:AB35, ...) — kaynak hücreler orijinalde daima boş
-    gorevler.push({ toplam: sembol11(P+Q+R+S+T), gorev: sembol11(P+Q+R+S) });
+    var mDet=[], hDet=[], aDet=[], P=0, Q=0, A=0, T=0, mi, hi;
+    for(mi=0; mi<merdivenKaynak.length; mi++){
+      if(xCountIf([merdivenKaynak[mi]],oj)){ P++; mDet.push((mi+1)+'.H'); }
+    }
+    for(hi=0; hi<hayatKaynak.length; hi++){
+      var hs = xCountIf(hayatKaynak[hi].v,oj);
+      if(hs){ Q+=hs; hDet.push(hs>1 ? hayatKaynak[hi].ad+' ×'+hs : hayatKaynak[hi].ad); }
+    }
+    anaKulvarKaynak.forEach(function(k){
+      if(k.v===oj){ if(k.es) T++; else A++; aDet.push(k.ad); }
+    });
+    gorevler.push({
+      toplam: gorevSembol(P+Q+A+T), gorev: gorevSembol(P+Q+A),
+      dMerdiven: {n:P, det:mDet.join(', ')},
+      dHayat:    {n:Q, det:hDet.join(', ')},
+      dKulvar:   {n:A+T, det:aDet.join(', ')},
+      dToplam:   P+Q+A+T
+    });
   }
 
   /* --- C sütunu: EŞ GÖREV — YENİDEN TANIMLANDI (kullanıcı talebi) ---
@@ -985,10 +1021,6 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
      Bu iki sonuç hangi çakra numarasına (1-9) denk geliyorsa o satıra X konur; ikisi de aynı
      satıra denk gelirse XX. Kişinin öz soyadından gelen GÖREV/TOPLAM GÖREV işaretleri hiç
      karıştırılmaz. Eş soyadı boşsa (L4 boş) her iki sonuç da null olur, sütun tamamen boş kalır. */
-  var kEsIcin = L4.length ? kulvarOfLetters(L4) : null;
-  var kAd1Icin = L1.length ? kulvarOfLetters(L1) : null;
-  var kAd2Icin = L2.length ? kulvarOfLetters(L2) : null;
-  var kSoyadIcin = L3.length ? kulvarOfLetters(L3) : null;
   var esAnaTek = kEsIcin ? kEsIcin.ana.reduced : null;
   var esTamAna = kEsIcin ? tamIsimKulvar(kAd1Icin, kAd2Icin, kSoyadIcin, kEsIcin).ana.reduced : null;
   var esGorevler = [];  // çakra 9..1
@@ -1003,10 +1035,13 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
   var rngB20P21 = r20.concat(r21);
   var liyakatlar = [];  // çakra 9..1
   for(var ok=9; ok>=1; ok--){
+    var nIsim = xCountIf(rngB14P17, ok), nAta = xCountIf(rngB18P19, ok), nEs = xCountIf(rngB20P21, ok);
     liyakatlar.push({
-      isim: sembol10(xCountIf(rngB14P17, ok)),
-      ata:  sembol10(xCountIf(rngB18P19, ok)),
-      es:   sembol10(xCountIf(rngB20P21, ok))
+      isim: sembol10(nIsim),
+      ata:  sembol10(nAta),
+      es:   sembol10(nEs),
+      // HARF TOPLAM: bu çakra değerindeki harflerin toplam adedi (İsim + Ata Soyu + Eş)
+      toplamHarf: nIsim + nAta + nEs
     });
   }
   // Çakra 12/11/10 için istisnalar (AG33 / AG34 / AG50)
@@ -1069,6 +1104,11 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
       isimLiyakat: ly ? ly.isim : (cak===12?liyakat12 : cak===11?liyakat11 : cak===10?liyakat10 : ''),
       ataSoyu:     ly ? ly.ata  : '',
       esLiyakat:   ly ? ly.es   : '',
+      toplamHarf:  ly ? ly.toplamHarf : '',
+      dMerdiven:   g ? g.dMerdiven : '',
+      dHayat:      g ? g.dHayat    : '',
+      dKulvar:     g ? g.dKulvar   : '',
+      dToplam:     g ? g.dToplam   : '',
       klasikAcilim: cak + '-' + AL + '-' + klasikUcuncu,
       bazli22:      cak + '-' + AI + '-' + bazliUcuncu,
       golge: golge,
@@ -1097,7 +1137,15 @@ var CAKRA_RENK = {
    2:{bg:'#F4A100', fg:'#3A1E00'},
    1:{bg:'#E4402A', fg:'#FFFFFF'}
 };
+// Sol taraftaki destek kaynağı sütunları (Çakra Merdiveni / Hayat Amacı / Ana Kulvar) ve
+// bunların toplamı; sağda ise toplam harf adedi. Kaynak sütunlarında üstte destek ADEDİ,
+// altında küçük yazıyla nereden geldiği (hane no / 1.HA-2.HA / isim parçası) yazılır;
+// DESTEK TOPLAM her zaman TOPLAM GÖREV sütunundaki X sayısına eşittir (kontrol kolaylığı).
 var MATRIS_KOLONLAR = [
+  {key:'dMerdiven',   head:'Ç. MERDİVENİ', bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
+  {key:'dHayat',      head:'HAYAT AMACI',  bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
+  {key:'dKulvar',     head:'ANA KULVAR',   bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
+  {key:'dToplam',     head:'DESTEK TOPLAM', bg:'#FFE08A', fg:'#4A3000', headBg:'#F2B705', toplam:true},
   {key:'yuksekGorev', head:'YÜKSEK GÖREV', bg:'#FBE0CE', fg:'#5A2C00'},
   {key:'toplamGorev', head:'TOPLAM GÖREV', bg:'#DCEEF9', fg:'#0F2E45'},
   {key:'esGorev',     head:'EŞ GÖREV',     bg:'#DCEEF9', fg:'#0F2E45'},
@@ -1106,6 +1154,7 @@ var MATRIS_KOLONLAR = [
   {key:'isimLiyakat', head:'İSİM LİYAKAT', bg:'#FBD9EA', fg:'#5A1638'},
   {key:'ataSoyu',     head:'ATA SOYU',     bg:'#FBD9EA', fg:'#5A1638'},
   {key:'esLiyakat',   head:'EŞ LİYAKAT',   bg:'#FBD9EA', fg:'#5A1638'},
+  {key:'toplamHarf',  head:'HARF TOPLAM',  bg:'#D9C8F5', fg:'#2B1458', headBg:'#9B7BD8', toplam:true},
   {key:'klasikAcilim',head:'KLASİK AÇILIM',bg:'#E3E7F7', fg:'#20264F'},
   {key:'bazli22',     head:'22 BAZLI',     bg:'#E3E7F7', fg:'#20264F'},
   {key:'golge',       head:'GÖLGE',        bg:'#F7D9E6', fg:'#5A1638'},
@@ -1117,17 +1166,24 @@ function matrisTablo(rows){
   // tablo HER ZAMAN kapsayıcı genişliğe (width:100%) sığar, asla taşmaz, yatay kaydırma
   // gerekmez. Kısa sütunlar (Çakra/Gölge/Şifa) dar, uzun başlıklı sütunlar (Yüksek Görev,
   // Toplam Görev, Klasik Açılım, 22 Bazlı, Karmik Borç) biraz daha geniş pay alır.
-  var COLW = {yuksekGorev:9, toplamGorev:9, esGorev:8, gorev:7, cakra:5,
-              isimLiyakat:8, ataSoyu:7, esLiyakat:8, klasikAcilim:10,
-              bazli22:10, golge:5, sifa:5, karmikBorc:9};
+  // Değerler göreli ağırlıktır; aşağıda toplamları %100 olacak şekilde ölçeklenir.
+  var COLW = {dMerdiven:8.5, dHayat:6.5, dKulvar:7, dToplam:7,
+              yuksekGorev:7, toplamGorev:7, esGorev:6, gorev:6, cakra:6,
+              isimLiyakat:7, ataSoyu:5.5, esLiyakat:7, toplamHarf:7, klasikAcilim:6.5,
+              bazli22:7, golge:6, sifa:6, karmikBorc:6.5};
+  var colwToplam = 0, kk;
+  for(kk in COLW) colwToplam += COLW[kk];
+  for(kk in COLW) COLW[kk] = Math.round(COLW[kk]*10000/colwToplam)/100;
   // Ekran genişliğine göre akıcı küçülen yazı boyutu ve hücre boşluğu (clamp: min, tercih, max)
   var FS  = 'clamp(9px, 0.85vw, 13px)';
+  var FSH = 'clamp(8px, 0.75vw, 12px)';   // başlıklar: kelimeler hücre ortasından bölünmesin diye bir tık küçük
   var PAD = 'clamp(2px, 0.5vw, 8px) clamp(1px, 0.35vw, 6px)';
   var thHtml = MATRIS_KOLONLAR.map(function(c){
     var isKarmik = c.key==='karmikBorc';
-    var style = 'background:'+(isKarmik?'#FFD966':'#1FC8C3')+';color:#111;font-weight:700;'+
+    var headBg = c.headBg || (isKarmik?'#FFD966':'#1FC8C3');
+    var style = 'background:'+headBg+';color:#111;font-weight:700;'+
                 'border:1px solid #F2A93C;white-space:normal;word-break:normal;overflow-wrap:break-word;'+
-                'width:'+COLW[c.key]+'%;padding:'+PAD+';font-size:'+FS+';line-height:1.15;';
+                'width:'+COLW[c.key]+'%;padding:'+PAD+';font-size:'+FSH+';line-height:1.15;';
     return '<th style="'+style+'">'+c.head+'</th>';
   }).join('');
   var html = '<div class="tbl-wrap" style="overflow-x:hidden;width:100%;">'+
@@ -1136,7 +1192,16 @@ function matrisTablo(rows){
   rows.forEach(function(r){
     html += '<tr>' + MATRIS_KOLONLAR.map(function(c){
       var v = r[c.key];
-      var txt = (v===''||v===null||v===undefined) ? '' : String(v);
+      var txt;
+      if(c.kaynak){
+        // destek adedi + altında küçük yazıyla kaynağı; destek yoksa hücre boş kalır
+        txt = (v && v.n>0) ? ('<div style="font-weight:800;">'+v.n+'</div>'+
+              '<div style="font-size:.8em;font-weight:500;line-height:1.1;opacity:.85;">'+v.det+'</div>') : '';
+      } else if(c.toplam){
+        txt = (v===''||v===null||v===undefined) ? '' : (v===0 ? '-' : String(v));
+      } else {
+        txt = (v===''||v===null||v===undefined) ? '' : String(v);
+      }
       var bg, fg;
       if(c.key==='cakra'){
         var ck = CAKRA_RENK[r.cakra];
@@ -1146,7 +1211,8 @@ function matrisTablo(rows){
       }
       var style = 'padding:'+PAD+';text-align:center;white-space:normal;word-break:normal;overflow-wrap:break-word;'+
                   'border:1px solid #F2A93C;background:'+bg+';color:'+fg+';width:'+COLW[c.key]+'%;font-size:'+FS+';'+
-                  (c.key==='cakra' ? 'font-family:\\'Cinzel\\',serif;font-weight:700;' : 'font-weight:600;');
+                  (c.key==='cakra' ? 'font-family:\\'Cinzel\\',serif;font-weight:700;' :
+                   c.toplam ? 'font-weight:800;' : 'font-weight:600;');
       return '<td style="'+style+'">'+txt+'</td>';
     }).join('') + '</tr>';
   });
