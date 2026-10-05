@@ -552,6 +552,16 @@ function tamIsimKulvar(kAd1, kAd2, kSoyad, kEsSoyad){
   return kulvarBirlesik([kAd1, kAd2, kSoyad, kEsSoyad]);
 }
 
+// Doğum tarihinde bir rakamdan SONRA gelen sıfırların sayısı (gün 10/20/30, ay 10, yıl 1990/2002/
+// 2000 ...). Baştaki sıfırlar (05, 08 gibi) sayılmaz. Her sıfır yeni bir Hayat Amacı doğurur.
+function sifirSayisi(gun, ay, yil){
+  var n = 0;
+  [String(gun), String(ay), String(yil)].forEach(function(p){
+    for(var i=1; i<p.length; i++) if(p.charAt(i)==='0') n++;
+  });
+  return n;
+}
+
 // ---- HAYAT AMACI (FORMÜL SAYFASI2 satır 8-13) ----
 function hayatAmaciHesapla(gun, ay, yil){
   var dayTens = gun>9 ? Math.floor(gun/10) : 0;
@@ -571,19 +581,22 @@ function hayatAmaciHesapla(gun, ay, yil){
   var first2 = raw2<10 ? raw2 : stepReduceSimple(raw2);
   var final2 = first2>=10 ? stepReduceSimple(first2) : null;
 
-  // 3. HAYAT AMACI: gün/ay/yıl birim hanesi 0 ise +10 (Excel metin/sayı karşılaştırma tuhaflığı nedeniyle her zaman toplanır)
-  var e = dayUnits===0 ? 10 : 0;
-  var f = monUnits===0 ? 10 : 0;
-  var g = yd[3]===0 ? 10 : 0;
-  var raw3 = e+f+g+raw1;
-  var first3 = raw3<10 ? raw3 : stepReduceSimple(raw3);
-  var final3 = first3>=10 ? stepReduceSimple(first3) : null;
-  var goster3 = (raw3 === raw1) ? null : {raw:raw3, first:first3, final:final3};
+  // 3., 4., ... HAYAT AMACI (kullanıcı kuralı): doğum tarihinde bir rakamdan sonra gelen İLK sıfır
+  // 3. HA'yı, bir sıfır daha varsa 4. HA'yı ... doğurur (ör. 2002 -> 3. ve 4. HA). Her biri bir
+  // öncekine +10 eklenerek bulunur: n. ek HA = 1. HA + 10·n.
+  var ek = [];
+  var sifir = sifirSayisi(gun, ay, yil);
+  for(var zi=1; zi<=sifir; zi++){
+    var rawN = raw1 + 10*zi;
+    var firstN = rawN<10 ? rawN : stepReduceSimple(rawN);
+    var finalN = firstN>=10 ? stepReduceSimple(firstN) : null;
+    ek.push({no:zi+2, raw:rawN, first:firstN, final:finalN});
+  }
 
   return {
     ha1:{raw:raw1, first:first1, final:final1},
     ha2:{raw:raw2, first:first2, final:final2},
-    ha3: goster3
+    ek: ek
   };
 }
 
@@ -792,14 +805,19 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
   var B11 = xGt(B8,0) ? (B10 - B8*2) : (B10 - C8*2);
   var C11 = xLt(B11,10) ? B11 : xLR(B11);
   var F11 = xMid(B11,1), G11 = xMid(B11,2), H11 = C11;
-  var E12 = (C8===0) ? 10 : '';
-  var F12 = (E8===0) ? 10 : '';
-  var G12 = (I8===0) ? 10 : '';
-  var H12 = xGt(E12,0) ? xSum(G12,F12,E12,B10) : '';   // "" > 0 => Excel'de DOĞRU
-  var H13 = xSum(E12,F12,G12);
-  var B12 = (B10===H12) ? '' : H12;
-  var C12 = xLt(B12,10) ? B12 : xLR(B12);
-  var D12 = xLt(C12,10) ? '' : xLR(C12);
+  // 3., 4., ... Hayat Amacı (bkz. hayatAmaciHesapla): rakamdan sonra gelen her sıfır için bir
+  // ek HA, her biri 1. HA + 10·n. Eski Excel yalnızca birler hanesindeki sıfırlara bakıp hepsini
+  // TEK bir 3. HA'da topluyordu; 2002 gibi ortadaki sıfırlar hiç sayılmıyordu.
+  var sifirSay = sifirSayisi(gun, ay, yil);
+  var haEk = [];
+  for(var zi=1; zi<=sifirSay; zi++){
+    var hB = B10 + 10*zi;
+    var hC = xLt(hB,10) ? hB : xLR(hB);
+    var hD = xLt(hC,10) ? '' : xLR(hC);
+    haEk.push({no:zi+2, B:hB, C:hC, D:hD});
+  }
+  var E12 = (C8===0) ? 10 : '';   // Excel B10:E12 aralığına düşen gün-sıfırı 10'u (korundu)
+  var H13 = sifirSay*10;          // sıfır varsa 10. çakraya +1 (Excel H13>0 kuralı)
 
   /* --- HARF DEĞER IZGARALARI (FORMÜL SAYFASI2 B14:P21) --- */
   function anaRow(L){ var r=[],i,c; for(i=0;i<15;i++){ c=L[i]; r.push(c && isVowel(c) ? classicValue(c) : 0); } return r; }
@@ -946,16 +964,41 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
   var AY26_27 = [R26.AY, R27.AY];
   var BI25_27 = [R25.BI, R26.BI, R27.BI];
   var BV25_27 = [R25.BV, R26.BV, R27.BV];
-  var B10_B12 = [B10, B11, B12];
-  var B10_E12 = [B10,C10,D10,'', B11,C11,'','', B12,C12,D12,E12];
-  function ygMaster(o){
-    return xCountIf(AY26_27,o) + xCountIf(BI25_27,o) + xCountIf(BV25_27,o)
-         + xCountIf(B10_B12,o) + xCountIf([K10],o);
+  // Yüksek görev (çakra 12/11/10) kaynakları — sol taraftaki kaynak sütunlarında gösterilmek
+  // üzere ad etiketli tutulur. Çakra 12 = 33'ler, çakra 11 = 22'ler, çakra 10 = 11'ler + 10'lar.
+  var ygKulvar = [
+    {ad:'Yan K.', v:R26.AY}, {ad:'Tam K.', v:R27.AY},
+    {ad:'Ana K.', v:R25.BI}, {ad:'Yan K.', v:R26.BI}, {ad:'Tam K.', v:R27.BI},
+    {ad:'Ana K.', v:R25.BV}, {ad:'Yan K.', v:R26.BV}, {ad:'Tam K.', v:R27.BV}
+  ];
+  var ygHayatMaster = [{ad:'1.HA', v:B10}, {ad:'2.HA', v:B11}];
+  var ygHayatOn = [{ad:'1.HA', v:B10}, {ad:'1.HA', v:C10}, {ad:'1.HA', v:D10},
+                   {ad:'2.HA', v:B11}, {ad:'2.HA', v:C11}];
+  haEk.forEach(function(h){
+    ygHayatMaster.push({ad:h.no+'.HA', v:h.B});
+    ygHayatOn.push({ad:h.no+'.HA', v:h.B}, {ad:h.no+'.HA', v:h.C}, {ad:h.no+'.HA', v:h.D});
+  });
+  ygHayatOn.push({ad:'Gün 0', v:E12});
+  if(H13>0) ygHayatOn.push({ad:'Sıfır', v:10});
+  function kaynakSay(list, hedefler){
+    var n=0, sira=[], adet={};
+    list.forEach(function(k){
+      hedefler.forEach(function(o){
+        if(xCountIf([k.v],o)){ n++; if(!adet[k.ad]){ adet[k.ad]=0; sira.push(k.ad); } adet[k.ad]++; }
+      });
+    });
+    return {n:n, det:sira.map(function(a){ return adet[a]>1 ? a+' ×'+adet[a] : a; }).join(', ')};
   }
-  var AK11=ygMaster(11), AK12=ygMaster(22), AK13=ygMaster(33);
-  var AK14 = xCountIf(AY26_27,10) + xCountIf(BI25_27,10) + xCountIf(BV25_27,10)
-           + xCountIf(B10_E12,10) + xCountIf([K10],10) + (xGt(H13,0)?1:0);
-  var yuksek = ['', sembol11(AK13), sembol11(AK12), sembol11(AK11+AK14)];  // çakra 13,12,11,10
+  function ygKaynak(masterHedef, onHedef){
+    var m = kaynakSay([{ad:'1+2+3.H', v:K10}], masterHedef.concat(onHedef));
+    var h = kaynakSay(ygHayatMaster, masterHedef);
+    var h10 = kaynakSay(ygHayatOn, onHedef);
+    if(h10.n){ h.n += h10.n; h.det = h.det ? h.det+', '+h10.det : h10.det; }
+    var k = kaynakSay(ygKulvar, masterHedef.concat(onHedef));
+    return {dMerdiven:m, dHayat:h, dKulvar:k, dToplam:m.n+h.n+k.n};
+  }
+  var ygSatir = [null, ygKaynak([33],[]), ygKaynak([22],[]), ygKaynak([11],[10])];  // çakra 13,12,11,10
+  var yuksek = ['', gorevSembol(ygSatir[1].dToplam), gorevSembol(ygSatir[2].dToplam), gorevSembol(ygSatir[3].dToplam)];
   for(var oi=9; oi>=1; oi--) yuksek.push(sembol11(xCountIf(rngB46F48, oi)));
 
   /* --- C sütunu ve ANA KULVAR desteği için kişinin isim parçalarının kulvarları --- */
@@ -967,7 +1010,7 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
   /* --- B/D sütunları: TOPLAM GÖREV / GÖREV ---
      Destek kaynakları (çakra 1-9):
        P = Çakra Merdiveni (klasik açılım 1-9. haneler)
-       Q = Hayat Amacı (1. ve 2. Hayat Amacı'nın rakamları + indirgenmiş değerleri)
+       Q = Hayat Amacı (1., 2. ve varsa 3., 4. ... Hayat Amacı'nın rakamları + indirgenmiş değerleri)
        ANA KULVAR = 1. İsim, 2. İsim, Öz Soyadı ve TAM İSİM (1.+2. İsim + Öz Soyadı) Ana Kulvarları;
                     eş soyadı varsa onun Ana Kulvarı da (yalnız TOPLAM GÖREV'e).
      DÜZELTME (kullanıcı talebi): Ana Kulvar desteği artık her kulvarın TEK HANEYE indirgenmiş
@@ -989,6 +1032,7 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
     {ad:'1.HA', v:[F10,G10,H10]},
     {ad:'2.HA', v:[F11,G11,H11]}
   ];
+  haEk.forEach(function(h){ hayatKaynak.push({ad:h.no+'.HA', v:[xMid(h.B,1), xMid(h.B,2), h.C]}); });
   function gorevSembol(n){ return n>0 ? new Array(n+1).join('X') : '-'; }
   var gorevler = [];   // çakra 9..1
   for(var oj=9; oj>=1; oj--){
@@ -1105,10 +1149,10 @@ function matrisHesapla(gun, ay, yil, ad1, ad2, soyad, esSoyad){
       ataSoyu:     ly ? ly.ata  : '',
       esLiyakat:   ly ? ly.es   : '',
       toplamHarf:  ly ? ly.toplamHarf : '',
-      dMerdiven:   g ? g.dMerdiven : '',
-      dHayat:      g ? g.dHayat    : '',
-      dKulvar:     g ? g.dKulvar   : '',
-      dToplam:     g ? g.dToplam   : '',
+      dMerdiven:   g ? g.dMerdiven : (ygSatir[i] ? ygSatir[i].dMerdiven : ''),
+      dHayat:      g ? g.dHayat    : (ygSatir[i] ? ygSatir[i].dHayat    : ''),
+      dKulvar:     g ? g.dKulvar   : (ygSatir[i] ? ygSatir[i].dKulvar   : ''),
+      dToplam:     g ? g.dToplam   : (ygSatir[i] ? ygSatir[i].dToplam   : ''),
       klasikAcilim: cak + '-' + AL + '-' + klasikUcuncu,
       bazli22:      cak + '-' + AI + '-' + bazliUcuncu,
       golge: golge,
@@ -1144,7 +1188,7 @@ var CAKRA_RENK = {
 var MATRIS_KOLONLAR = [
   {key:'dMerdiven',   head:'Ç. MERDİVENİ', bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
   {key:'dHayat',      head:'HAYAT AMACI',  bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
-  {key:'dKulvar',     head:'ANA KULVAR',   bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
+  {key:'dKulvar',     head:'KULVAR',   bg:'#F3F0E8', fg:'#3A3326', kaynak:true},
   {key:'dToplam',     head:'DESTEK TOPLAM', bg:'#FFE08A', fg:'#4A3000', headBg:'#F2B705', toplam:true},
   {key:'yuksekGorev', head:'YÜKSEK GÖREV', bg:'#FBE0CE', fg:'#5A2C00'},
   {key:'toplamGorev', head:'TOPLAM GÖREV', bg:'#DCEEF9', fg:'#0F2E45'},
@@ -1502,7 +1546,9 @@ document.getElementById('hesaplaBtn').addEventListener('click', function(){
   html += '<div class="mod"><h3>Hayat Amacı</h3><div class="kv-grid">';
   html += kv('1. Hayat Amacı', ha.ha1.final!=null ? (ha.ha1.raw+' → '+ha.ha1.first+' → '+ha.ha1.final) : (ha.ha1.raw+' → '+ha.ha1.first));
   html += kv('2. Hayat Amacı', ha.ha2.final!=null ? (ha.ha2.raw+' → '+ha.ha2.first+' → '+ha.ha2.final) : (ha.ha2.raw+' → '+ha.ha2.first));
-  if(ha.ha3) html += kv('3. Hayat Amacı', ha.ha3.final!=null ? (ha.ha3.raw+' → '+ha.ha3.first+' → '+ha.ha3.final) : (ha.ha3.raw+' → '+ha.ha3.first));
+  ha.ek.forEach(function(h){
+    html += kv(h.no+'. Hayat Amacı', h.final!=null ? (h.raw+' → '+h.first+' → '+h.final) : (h.raw+' → '+h.first));
+  });
   html += '</div></div>';
 
   html += '<div class="mod"><h3>Kişisel Yıl · Yıllık Enerji · Yaş</h3><div class="kv-grid">';
