@@ -37,7 +37,7 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;}
   h1,h2,h3,h4{font-family:'Cinzel',Georgia,serif;font-weight:600;color:var(--ink);margin:0 0 .5em;letter-spacing:.01em;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 16px;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 16px;}
   @media(min-width:640px){.wrap{padding:0 24px;}}
   .eyebrow{display:inline-block;font-family:'Cinzel',serif;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-text);font-weight:600;margin-bottom:8px;}
 
@@ -51,39 +51,48 @@
   :root[data-theme="light"] .theme-toggle .sun{display:none;}
   :root[data-theme="light"] .theme-toggle .moon{display:block;}
 
-  main{padding:36px 0 90px;}
-  .intro{margin-bottom:22px;}
+  main{padding:32px 0 90px;}
+  .intro{margin-bottom:20px;}
   .intro h1{font-size:1.9rem;}
-  .intro p{color:var(--ink-soft);margin:0;max-width:720px;}
+  .intro p{color:var(--ink-soft);margin:0;max-width:760px;}
 
-  .calc-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);margin-bottom:28px;}
+  .calc-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;}
   .form-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-  @media(min-width:720px){.form-grid{grid-template-columns:2fr 1fr;}}
+  @media(min-width:720px){.form-grid{grid-template-columns:2fr 1.3fr;}}
   .field label{display:block;font-size:.8rem;font-weight:700;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
   .date-row{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:8px;}
-  input[type="text"],input[type="number"]{width:100%;font-size:1.1rem;padding:12px 14px;min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--paper-alt);color:var(--ink);font-family:inherit;}
+  input[type="text"],input[type="number"],select{width:100%;font-size:1.1rem;padding:12px 14px;min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--paper-alt);color:var(--ink);font-family:inherit;}
   input[type="number"]{-moz-appearance:textfield;text-align:center;}
   input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;align-items:center;}
+  details.partner{margin-top:16px;border:1px dashed var(--line);border-radius:12px;padding:10px 14px;}
+  details.partner summary{cursor:pointer;font-weight:700;color:var(--brand-text);}
+  details.partner .form-grid{margin-top:12px;}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center;}
   .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;min-height:46px;border-radius:999px;font-weight:700;font-size:1rem;border:1px solid transparent;cursor:pointer;background:var(--brand);color:#fff;font-family:inherit;}
   .btn:hover{background:#54307F;}
   .btn.ghost{background:transparent;border-color:var(--line);color:var(--ink-soft);}
   .btn.ghost:hover{color:var(--ink);border-color:var(--gold);}
   .err{color:#e07a5f;font-weight:600;min-height:1.4em;margin-top:10px;}
 
-  .mod{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:22px;}
-  .mod h2{font-size:1.25rem;color:var(--brand-dark);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;margin-bottom:14px;position:sticky;top:64px;z-index:40;background:var(--paper);}
+  .tab{flex:0 0 auto;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink-soft);font-weight:700;font-size:.95rem;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .tab.on{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .panel[hidden]{display:none;}
+
+  .mod{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:20px;}
+  .mod h2{font-size:1.25rem;color:var(--brand-dark);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
   .mod h2 .no{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:var(--gold);letter-spacing:.06em;}
-  .mod .lead{color:var(--ink-soft);margin:-4px 0 16px;}
+  .mod .lead{color:var(--ink-soft);margin:-4px 0 14px;}
+  .mod h3.sub{font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:700;margin:18px 0 8px;}
 
   .hero{display:grid;grid-template-columns:1fr;gap:22px;align-items:start;}
-  @media(min-width:900px){.hero{grid-template-columns:1.25fr 1fr;}}
+  @media(min-width:900px){.hero{grid-template-columns:1.2fr 1fr;}}
   .person{font-family:'Cinzel',serif;font-size:1.5rem;font-weight:700;color:var(--ink);margin:0;}
-  .date-big{font-size:1.25rem;font-weight:700;color:var(--ink-soft);margin:2px 0 16px;letter-spacing:.04em;}
+  .date-big{font-size:1.2rem;font-weight:700;color:var(--ink-soft);margin:2px 0 14px;letter-spacing:.04em;}
   .kv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
-  .kv{background:var(--paper-alt);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
-  .kv .k{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
-  .kv .v{font-size:1.6rem;font-weight:700;color:var(--ink);line-height:1.25;margin-top:4px;}
+  .kv{background:var(--paper-alt);border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+  .kv .k{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
+  .kv .v{font-size:1.55rem;font-weight:700;color:var(--ink);line-height:1.25;margin-top:4px;}
   .kv .s{font-size:.92rem;color:var(--ink-soft);margin-top:2px;}
   .kv.gold{border-color:var(--gold);}
   .kv.gold .v{color:var(--gold);}
@@ -110,6 +119,14 @@
   svg .c-ek{fill:none;stroke:var(--eksik);stroke-width:2;stroke-dasharray:5 4;}
   svg .title{fill:var(--ink);font-weight:700;font-size:28px;text-anchor:middle;}
   svg text{font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;}
+  svg .spine{stroke:var(--brand-text);stroke-width:9;fill:none;stroke-linecap:round;}
+  svg .bpt{fill:var(--nokta);}
+  svg .bpt.on{fill:var(--gold);}
+  svg .bno{fill:var(--ink);font-size:26px;font-weight:700;text-anchor:middle;dominant-baseline:central;}
+  svg .bno.on{fill:#241B3D;}
+  svg .blabel{fill:var(--ink-soft);font-size:31px;font-weight:600;dominant-baseline:central;}
+  svg .arrow{stroke:var(--dinamik);stroke-width:4;fill:none;}
+  svg .arrowhead{fill:var(--dinamik);}
 
   .tbl-wrap{overflow-x:auto;}
   table{width:100%;border-collapse:collapse;font-size:1rem;}
@@ -120,6 +137,7 @@
   .dy{color:var(--dinamik);font-weight:700;}
   .ek{color:var(--eksik);font-weight:600;}
   .muted{color:var(--ink-soft);}
+  .gold-t{color:var(--gold);font-weight:700;}
   .count-row{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;}
   .count-row div{background:var(--paper-alt);border:1px solid var(--line);border-radius:10px;text-align:center;padding:8px 2px;}
   .count-row b{display:block;font-size:.75rem;color:var(--ink-soft);}
@@ -137,10 +155,26 @@
   .formula{font-size:1.15rem;font-weight:700;margin:6px 0;word-break:break-word;}
   .formula .sum{color:var(--gold);}
   .readings{list-style:none;margin:6px 0 0;padding:0;font-size:.95rem;}
-  .readings li{margin:3px 0;}
+  .readings li{margin:4px 0;}
   .note{background:var(--brand-soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--ink-soft);font-size:.95rem;margin-top:14px;}
+  .warn{background:color-mix(in srgb, var(--dinamik) 12%, transparent);border:1px solid color-mix(in srgb, var(--dinamik) 35%, transparent);border-radius:12px;padding:12px 16px;font-size:.95rem;margin-top:14px;}
   ul.bul{margin:0;padding-left:0;list-style:none;}
-  ul.bul li{margin:6px 0;}
+  ul.bul li{margin:7px 0;}
+  .chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:1px 10px;font-weight:700;font-size:.95em;cursor:pointer;font-family:inherit;}
+  .chip:hover{border-color:var(--gold);color:var(--gold);}
+  .def{color:var(--ink-soft);}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:0;}
+  .steps>li{counter-increment:s;position:relative;padding:12px 14px 12px 54px;border:1px solid var(--line);border-radius:12px;background:var(--paper-alt);margin-bottom:10px;}
+  .steps>li::before{content:counter(s);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+  .steps>li b.t{display:block;margin-bottom:2px;}
+  .steps>li.bos{opacity:.6;}
+  .steps>li.ekyol{counter-increment:none;border-style:dashed;}
+  .steps>li.ekyol::before{content:'+';background:var(--gold);}
+  .harf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;}
+  .harf-grid div{background:var(--paper-alt);border:1px solid var(--line);border-radius:10px;text-align:center;padding:6px 2px;}
+  .harf-grid b{display:block;font-size:1.1rem;}
+  .coz-in{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .coz-in input{max-width:220px;}
   [hidden]{display:none !important;}
   #results{scroll-margin-top:76px;}
   @media(max-width:640px){
@@ -149,10 +183,11 @@
     .count-row{grid-template-columns:repeat(5,minmax(0,1fr));}
     .intro h1{font-size:1.6rem;}
     th,td{padding:8px 6px;}
+    .tabs{top:60px;}
   }
-
   @media print{
-    header.site,.calc-card,.toggles,.no-print{display:none !important;}
+    header.site,.calc-card,.toggles,.no-print,.tabs,.coz-in{display:none !important;}
+    .panel[hidden]{display:block !important;}
     body{background:#fff;color:#000;}
     .mod,.card{break-inside:avoid;}
   }
@@ -172,9 +207,9 @@
 <main>
   <div class="wrap">
     <div class="intro">
-      <span class="eyebrow">NumeroLogic · Bölüm 1</span>
+      <span class="eyebrow">NumeroLogic · Pentagram</span>
       <h1>Pentagram Hesaplama</h1>
-      <p>İsim soyisim ve doğum tarihini girin. Uygulama pentagramı çizer, statik ve dinamik sayıları yerleştirir; arketipi, eksenleri, seviyeleri, üçgenleri, kadranları, beşgenleri ve trikolonları hesaplar.</p>
+      <p>İsim soyisim ve doğum tarihini girin. Uygulama Doğum Pentagramını, Gölge Pentagramını ve Vücut Resmini çizer; zaman hesaplarını, isim analizini ve her sayının çözümlemesini çıkarır.</p>
     </div>
 
     <form class="calc-card" id="form" autocomplete="off" novalidate>
@@ -192,6 +227,23 @@
           </div>
         </div>
       </div>
+      <details class="partner" id="partnerBox">
+        <summary>💞 İlişki hesabı için partner (isteğe bağlı)</summary>
+        <div class="form-grid">
+          <div class="field">
+            <label for="pIsim">Partnerin İsim Soyisimi</label>
+            <input type="text" id="pIsim" placeholder="Örn. Mehmet Yılmaz">
+          </div>
+          <div class="field">
+            <label for="pGun">Partnerin Doğum Tarihi</label>
+            <div class="date-row">
+              <input type="number" id="pGun" placeholder="Gün" min="1" max="31" inputmode="numeric">
+              <input type="number" id="pAy" placeholder="Ay" min="1" max="12" inputmode="numeric">
+              <input type="number" id="pYil" placeholder="Yıl" min="1000" max="2999" inputmode="numeric">
+            </div>
+          </div>
+        </div>
+      </details>
       <div class="actions">
         <button class="btn" type="submit">⭐ Pentagramı Hesapla</button>
         <button class="btn ghost no-print" type="button" id="printBtn" hidden>🖨️ Yazdır / PDF</button>
@@ -199,66 +251,85 @@
       <div class="err" id="err"></div>
     </form>
 
-    <div id="results" hidden></div>
+    <div id="results" hidden>
+      <nav class="tabs" id="tabs" role="tablist"></nav>
+      <div id="panels"></div>
+    </div>
   </div>
 </main>
 
 <script id="pentagram-motor">
 /* ============================================================
-   PENTAGRAM HESAP MOTORU — "Pentagramı Okumak, Bölüm 1" sunumundaki
-   kurallar. Noktalar 1..10 (10. nokta eksen/seviye adlarında "0").
+   NUMEROLOGIC PENTAGRAM — HESAP MOTORU
+   Kaynaklar: "Pentagram Hesaplama Mantığı" (Sunum 1), "Pentagramı
+   Okumak / Genişletilmiş Analiz" (Sunum 3), "Sayı Çözümleme Mantığı"
+   ve Elon Musk örnek okuması. Noktalar 1..10 (eksen/seviye adlarında
+   10. nokta "0" diye yazılır).
    ============================================================ */
 var PENTAGRAM = (function(){
+
+  /* ---------- Sözlük: yalnızca sunumlarda açıkça tanımı verilen sayılar ---------- */
+  var SOZLUK = {
+    0:'Boşluk, kaos, biçimsizlik', 1:'Fikir, başlangıç, öncülük', 2:'İkilik; sezgi ya da şüphe',
+    3:'Bilinçli karar, kararlılık', 4:'Madde ve günlük düzen', 5:'Genişleme, ölçü, özgürlük',
+    6:'Güç, canlılık, itici kuvvet', 7:'Öz farkındalık, tecrübe', 8:'Kabul eden güç, uyum, estetik',
+    9:'Akıl, bilgelik, arabuluculuk', 10:'Dönüşüm, bırakıp yeniden doğmak',
+    11:'Yaratıcılık; Fikir Zenginliği; İlahi Fikirler', 12:'Mükemmellik, Tamamlanma', 14:'Hayırseverlik',
+    15:'Denge ve Karşılıklı Döllenme', 17:'İyilik, İyilikseverlik, Alçakgönüllülük ve Güzellik',
+    18:'Cazibe', 19:'İyileştirici faktör; iyileştirici bütünlük', 20:'Ölümsüzlük', 21:'İçgörü',
+    23:'Koşulsuz Sevgi', 24:'Gündüz ve Gece, Işık ve Karanlık', 25:'İçsel mutluluk', 27:'Ruhsal İçgörü',
+    28:'Kadınlık, Dişil enerji', 29:'Hizmet, İyileştirme, Yardımcılık; Labirent', 30:'Devrim',
+    31:'İlahi Rehberlik; Tanrı’nın Yerine Getirme Gücü', 32:'İlahi Bağlantı; Yukarıyla Bağlantı',
+    33:'Ruhun Yenilenmesi', 34:'Canlılık', 35:'Özgür irade', 36:'Sfenks, İnsan Hayvan', 37:'Genişleme',
+    38:'İlişkiler; insanlarla karşılaşma', 39:'Burada ve şimdi tam uyanık olmak',
+    41:'Manevi dağcı; en yükseğe ulaşma arzusu', 42:'Kozmik Sevgi', 43:'Öncü', 44:'Üstaca Farkındalık',
+    45:'Aile / Klan', 46:'Diplomasi veya Kader', 47:'İçgörü ve Karma', 51:'Adalet, Dengeleyici adalet',
+    54:'Reformcu', 55:'Küçük öğrenci', 56:'Kader', 57:'Hayati Temel Güç', 58:'Arayıcı',
+    59:'Yükselen peygamber', 62:'Tanrı’nın farkına varma', 63:'Güneş çocuğu; ilgi odağı olma yeteneği',
+    64:'Yüksek Rahip / Yüksek Rahibe', 65:'İlahi Cinsellik; Ahlak ve Etik', 66:'Fiziksel güç ve cinsellik',
+    67:'Hayatın sınırlarını test etmek', 71:'Vizyon, Vizyoner', 72:'Altın Oran; İlahi Oran',
+    73:'Yaşam Döngüsü; Mistik', 75:'Güç, Canlılık Bilinci', 76:'Coşku', 78:'Güvenilirlik',
+    79:'Hükümdar / Yargıç', 80:'Maya; İllüzyon Dünyası', 86:'Erkek cinselliği',
+    87:'Hermafrodit; Sanat ve Moda', 89:'Dışsal mutluluk', 92:'Öngörülemez zekâ',
+    93:'Zamanın Ruhu (Zeitgeist)', 95:'Alçalan (indiren) peygamber', 96:'Manyetik iyileştirme',
+    97:'Adalet Faktörü; Ustalık', 101:'Kutsallık Faktörü', 103:'Çözülme ve Yenilenme',
+    106:'Ezoterik çalışmalar; Kurban; Feragat', 127:'Yükselmiş Üstat Saint-Germain’in Koruyucu faktörü',
+    141:'Şans Monogramı', 157:'Hayati Sihirli Üçgen — Karizma', 251:'Yüksek öğrenci',
+    256:'İnsanın temel titreşimi', 595:'Pentagramdaki bütün sayıların toplamı'
+  };
+
   var ARKETIPLER = {
     12:'Baş Rahip / Başrahibe', 13:'Sanatçı – Yaratıcı – Girişimci', 14:'Bilgin – Bilge',
-    15:'Peygamber – Vaiz', 16:'Usta', 17:'Dünyevi Kral / Kraliçe',
-    18:'Şifacı', 19:'Simyacı', 10:'Büyücü'
+    15:'Peygamber – Vaiz', 16:'Usta', 17:'Dünyevi Kral / Kraliçe', 18:'Şifacı', 19:'Simyacı', 10:'Büyücü'
   };
-
-  /* Yalnızca sunumda açıkça adı verilen sayı anlamları */
-  var ANLAMLAR = {
-    10:'Dönüşüm', 12:'Mükemmellik, Tamamlanma', 15:'Denge ve Karşılıklı Döllenme',
-    23:'Koşulsuz Sevgi', 24:'Gündüz ve Gece, Işık ve Karanlık', 28:'Sezgisel Kadınlık',
-    31:'İlahi Rehberlik', 32:'İlahi Bağlantı', 33:'Ruhun Yenilenmesi', 37:'Genişleme',
-    39:'Burada ve şimdi tam uyanık olmak', 42:'Kozmik Sevgi', 46:'Diplomasi veya Kader',
-    54:'Reformcu', 56:'Kader', 65:'İlahi Cinsellik', 67:'Hayatın sınırlarını test etmek',
-    79:'Hükümdar / Yargıç', 97:'Adalet Faktörü', 101:'Kutsallık Faktörü',
-    157:'Hayati Sihirli Üçgen — Karizma', 256:'İnsanın temel titreşimi'
-  };
-
-  var ARA_USTA = {
-    15:'Denge ve Karşılıklı Döllenme üzerinden gelen ustalık.',
-    24:'Gündüz ve Gece, Işık ve Karanlık üzerinden gelen ustalık.',
-    33:'Ruhun Yenilenmesi üzerinden gelen ustalık.',
-    42:'Kozmik Sevgi üzerinden gelen ustalık.'
-  };
+  var ARA_USTA = {15:'Denge ve Karşılıklı Döllenme', 24:'Gündüz ve Gece, Işık ve Karanlık', 33:'Ruhun Yenilenmesi', 42:'Kozmik Sevgi'};
 
   var EKSENLER = [
-    {n:[1,6], ad:'Azim', aciklama:'Tek dikey eksendir — omurgadır. "Tanrı" alemini "Ego" alemiyle birleştirir.'},
-    {n:[2,7], ad:'Öz Farkındalık', aciklama:'"Ben kimim?" sorusuna en derin cevabı bulmak.'},
-    {n:[3,8], ad:'İlişkiler', aciklama:''},
-    {n:[4,9], ad:'Tutunmak mı, bırakmak mı?', aciklama:''},
-    {n:[5,10], ad:'Değişim, Dönüşüm', aciklama:'İlkel kaosu içsel bir düzenle fiziksel genişlemeye bağlamak.'}
+    {n:[1,6], ad:'Azim', diger:'Uyanış ve Liderlik', paradoks:'"Tanrı" alemini "Ego" alemiyle birleştirmek.', aciklama:'Tek dikey eksendir — omurgadır. Zorluk: kalbi açabilmek için her zaman Bir’in maneviyatını Altı’nın fiziksel yönüyle birleştirmek.'},
+    {n:[2,7], ad:'Öz Farkındalık', diger:'Öz Farkındalığın Genişlemesi', paradoks:'Sezgi ile Öz Farkındalığı birleştirmek.', aciklama:'"Ben kimim?" sorusuna en derin cevabı bulmak. Bu soru yalnızca maddi açıdan cevaplanamaz; İki’nin maneviyatı da dahil edilmelidir.'},
+    {n:[3,8], ad:'İlişkiler', diger:'', paradoks:'İradeyi Teslimiyetle birleştirmek.', aciklama:'Başkalarıyla nasıl ilişki kuruyorum? İrademi (3) partnerime zorla kabul ettiriyor muyum, yoksa kendimi tamamen partnerime teslim mi ediyorum (8)? Zorluk ortada yatıyor: "Aşkım ne kadar derin?"'},
+    {n:[4,9], ad:'Bırakmak mı, tutunmak mı?', diger:'Kader, Odaklanma', paradoks:'Tezahür ve tutunma ile Bilgelik ve bırakmayı birleştirmek.', aciklama:'Nereye odaklanmalıyım? Gerçekten önemli olan nedir? Beni ileriye götüren nedir, beni geri tutan nedir?'},
+    {n:[5,10], ad:'Değişim, Dönüşüm', diger:'Değişim-Dönüşüm', paradoks:'Genişleme ve Düzen ile Kaos ve Boşluğu birleştirmek.', aciklama:'Hayatımı nasıl genişletebilirim, özgür hissedebilirim, tatmin olabilirim? Ve aynı zamanda nasıl sorumlu, bütünsel ve dönüştürücü olabilirim? İlkel kaosu içsel bir düzenle fiziksel genişlemeye bağlamak.'}
   ];
   var SEVIYELER = [
-    {n:[2,10], ad:'Ruhsal', aciklama:'Sezgi, koşulsuz sevgi, evrenle birlik.'},
-    {n:[3,9], ad:'Zihinsel', aciklama:'Düşünceler, inançlar, dünya görüşü.'},
-    {n:[4,8], ad:'Duygusal', aciklama:'İlişkiler, istekler, güç meseleleri.'},
-    {n:[5,7], ad:'Fiziksel', aciklama:'Beden, para, iş, güvenlik, cinsellik.'}
+    {n:[2,10], ad:'Ruhsal', aciklama:'Zihnin üstündedir; koşulsuz sevgi ve şefkat, sezgi, evrenle birlik. İlham, medyumluk ve aşkınlık için gösterge.'},
+    {n:[3,9], ad:'Zihinsel', aciklama:'Düşünceler, inançlar, değerler, dünya görüşü. Somut, analitik, mantıklı düşünme; yüksek hedefler, idealler, hayal gücü.'},
+    {n:[4,8], ad:'Duygusal / karmik', aciklama:'Dünyayı algılama biçimi, ilişkiler, istekler, güç meseleleri. Karmik açıdan yük taşıyan kararların en çok görüldüğü seviyedir.'},
+    {n:[5,7], ad:'Fiziksel', aciklama:'Beden, topraklama, beş duyu, güvenlik, para, iş, cinsellik. Tüm dünyevi görünüşlerin düzlemidir.'}
   ];
   var UCGENLER = [
-    {n:[1,2,10], ad:'Ruhsal üçgen', alem:'Tanrı', aciklama:'Güçlü ilham, sezgi ve hayata bütünsel bir yaklaşım sağlar. Zorluk: bu ruhsal enerjiyi gerçek hayata taşımak; bunun için gölgeyi kabul edip bütünleştirmek gerekir.'},
-    {n:[1,3,9], ad:'Zihinsel üçgen', alem:'Tanrı', aciklama:'İlham verici düşünceler, yaratıcı kavramlar ve yenilikçi inanç sistemleri sağlar. Ayrıca ilhamı anlama ve rasyonel işleme ihtiyacı doğurur.'},
-    {n:[1,4,8], ad:'Duygusal üçgen', alem:'Tanrı', aciklama:'Adanmışlık duyguları, ilham alma ve coşku duyma arzusu verir.'},
-    {n:[1,5,7], ad:'Fiziksel üçgen — Sihirli Canlılık', alem:'Tanrı', aciklama:'Bu üçgene sahip kişiler enerji, canlılık ve sihir yaymalıdır; yaymıyorlarsa potansiyellerini kullanmıyorlardır.'},
-    {n:[6,2,10], ad:'Öncü üçgeni', alem:'Ego', aciklama:'Zamanının ötesinde bir kişiyi gösterir — "avant-gardist", yani öncü. Yüksek ruhsal farkındalık (2-0), birleşik "yaşam" enerjisiyle (6) buluşunca fikir kıvılcımları sonsuzdur.'},
-    {n:[6,3,9], ad:'Hareket Ettirici ve Sarsıcı', alem:'Ego', aciklama:'İşleri gerçekten halleden bir kişiyi gösterir. Yüksek zihinsel farkındalık (3-9) bir konunun tüm mantığını anında kavrar.'},
-    {n:[6,4,8], ad:'Güçlü duygusal üçgen', alem:'Ego', aciklama:'Duygusal seviye tamamen açık ve hassas olduğunda "dünyayı hissederiz". Travma çok fazlaysa kişi duygusal olarak dengesiz hale gelebilir.'},
-    {n:[6,5,7], ad:'Güçlü fiziksel üçgen', alem:'Ego', aciklama:'Fiziksel farkındalık "yaşam" enerjisiyle bağlanıp serbestçe akarsa kişi sadece ev değil şehir inşa eder. Akmasına izin verilmezse kişi bencilleşebilir, daha fazlasına takıntılı olur ve asla tatmin olmaz.'}
+    {n:[1,2,10], ad:'Ruhsal üçgen', alem:'Tanrı', aciklama:'Güçlü ilham, sezgi ve hayata bütünsel bir yaklaşım. Zorluk: bu ruhsal enerjiyi gerçek hayata taşımak; bunun için gölgeyi kabul edip bütünleştirmek gerekir.'},
+    {n:[1,3,9], ad:'Zihinsel üçgen', alem:'Tanrı', aciklama:'İlham verici düşünceler, yaratıcı kavramlar, yenilikçi inanç sistemleri. Ayrıca ilhamı anlama ve rasyonel işleme ihtiyacı doğurur.'},
+    {n:[1,4,8], ad:'Duygusal üçgen', alem:'Tanrı', aciklama:'Adanmışlık duyguları; ilham alma ve coşku duyma arzusu.'},
+    {n:[1,5,7], ad:'Fiziksel üçgen — Sihirli Canlılık', alem:'Tanrı', aciklama:'Büyülü canlılık ile yüksek fiziksel farkındalık. Bu üçgene sahip kişiler enerji, canlılık ve sihir yaymalıdır; yaymıyorlarsa potansiyellerini kullanmıyor olabilirler.'},
+    {n:[6,2,10], ad:'Öncü üçgeni', alem:'Ego', aciklama:'Avant-gardist: zamanının ötesinde kişi. Yüksek ruhsal farkındalık (2-0), birleşik "yaşam" enerjisiyle (6) buluşunca fikir ve içgörü kıvılcımları sonsuzdur.'},
+    {n:[6,3,9], ad:'Hareket Ettirici ve Sarsıcı', alem:'Ego', aciklama:'İşleri ortaya çıkaran, gerçekleşmesini sağlayan kişi. Yüksek zihinsel farkındalık (3-9) bir konunun tüm mantığını anında kavrar.'},
+    {n:[6,4,8], ad:'Güçlü duygusal üçgen', alem:'Ego', aciklama:'Duygusal açıdan güçlü kişi; "dünyayı hisseder". Duygusal travma çok fazlaysa kişi duygusal olarak dengesiz hale gelebilir.'},
+    {n:[6,5,7], ad:'Güçlü fiziksel üçgen', alem:'Ego', aciklama:'Güçlü fiziksel ve maddi kişi; evler değil şehirler inşa eder. Serbestçe akmasına izin verilmezse kişi bencilleşebilir, daha fazlasına takıntılı olur ve asla tatmin olmaz.'}
   ];
   var KADRANLAR = [
-    {n:[2,5,7,10], ad:'Ruhsal – fiziksel kadran (2-0 / 5-7)', aciklama:'Ruhsal düzey; öz farkındalığın genişlemesi (2-7) ve değişim-dönüşüm (5-0) yoluyla fiziksel olarak görünür olur.'},
-    {n:[3,4,8,9], ad:'Zihinsel – duygusal kadran (3-9 / 4-8)', aciklama:'Düşünme ve inanç sistemleri; ilişki kurma (3-8) ve odaklanma (4-9) yoluyla duygular dünyasına bağlanır. Tuzak: duygular hakkında sonsuz düşünmek ya da duyguları mantıkla açıklamaya çalışmak.'}
+    {n:[2,5,7,10], ad:'Ruhsal – fiziksel dörtgen (2-0 / 5-7)', aciklama:'Ruhsal seviye 2-0 ile fiziksel seviye 5-7, 2-7 ve 5-0 eksenleriyle bağlanır. Ruhsal düzey; öz farkındalığın genişlemesi ve değişim-dönüşüm yoluyla fiziksel olarak kendini gösterir.'},
+    {n:[3,4,8,9], ad:'Zihinsel – duygusal dörtgen (3-9 / 4-8)', aciklama:'Düşünme ve inanç sistemleri; ilişki kurma (3-8) ve odaklanma (4-9) yoluyla duygular dünyasına bağlanır. Tuzak: duygular hakkında sonsuz düşüncelere dalmak ya da duyguları mantıkla açıklamaya çalışmak.'}
   ];
   var BESGENLER = [
     {n:[1,3,5,7,9], ad:'Eril beşgen — yıldız gibi parlamak', etiket:'Parlaklık enerjisi', aciklama:'Kişinin "eril" genişleyici ışığını güçlendirir. Kişinin bir yıldız gibi parladığını hayal edin.'},
@@ -267,109 +338,296 @@ var PENTAGRAM = (function(){
   var TRIKOLONLAR = [
     {n:[1,4,7], ad:'Başlatıcı', aciklama:'Bir şeyi başlatma yeteneği: eylem, proje, ilişki. Bir şeyi ateşlemek için "kıvılcım" sağlar.'},
     {n:[2,5,8], ad:'Aracı', aciklama:'Taraflar arasında arabulucu, "motorun yağı" olma yeteneği. İletişim ve alışverişi mümkün kılar.'},
-    {n:[3,6,9], ad:'Hareketlendirici', aciklama:'İşleri gerçekten halletme, sorunları çözme yeteneği.'}
+    {n:[3,6,9], ad:'Hareketlendirici', aciklama:'İşleri gerçekten halletme, sorunları çözme yeteneği (Almancada "Macher").'}
   ];
 
-  function rakamToplami(n){ var s = 0; String(n).split('').forEach(function(c){ s += +c; }); return s; }
-  function noktaAdi(p){ return p === 10 ? '0' : String(p); }
-  function rakamNoktasi(d){ return d === 0 ? 10 : d; }
+  var VUCUT_NOKTALARI = {
+    1:{yer:'Başın arkası (beyin sapı)', tema:'Birlik Bilinci', metin:'"Sebep ve Sonuç" yasası: "Ektiğimi biçeceğim." Kendinizi evrenin bir parçası mı, yoksa terk edilmiş mi hissettiğiniz burada belirlenir.', olumlu:'Ruhsal gelişim, ruhun farkındalığı, sevginin pratikte gerçekleşmesi.', olumsuz:'Dar görüşlülük, inatçılık.'},
+    2:{yer:'Taç çakra', tema:'Sezgi', metin:'Yıldırım hızında düşünme, sınıflandırma ve ayırt etme yeteneği; ne yazık ki yargılama, kınama, dogmalara boyun eğme de verir. "Hem-hem" düşüncesi geliştirilmeli, "ya-ya da"da takılı kalınmamalıdır. Öneri: "Haklı olmaktansa sevmek!" 2. trikolonun diğer sayıları (2-5-8) dinamikse pes etme eğilimi vardır; kadınlarda animus otoriterliğe yöneltir.', olumlu:'', olumsuz:''},
+    3:{yer:'Alın (3. göz)', tema:'Evet kararları', metin:'Kendiniz ve başkaları için iyi ve eğlenceli kararlar alma yeteneği. "Kanserimle savaşıyorum" ile "sağlığım için savaşıyorum" arasında büyük fark vardır; rahatsızlığın arkasında olumlu kutup gizlidir — onu seçin.', olumlu:'İyi refleksler, güçlü hayal gücü.', olumsuz:'İnatçılık, baş ağrısı, göz ve sinüs sorunları.'},
+    4:{yer:'Boğaz', tema:'Temel kendini ifade etme', metin:'Biz sesimiziz; sesimiz duyulmadığında tanınmak çok zorlaşır. Söylediğimiz her şey samimi olmalı; sevilmeme veya saygı görmeme korkusuyla uyarlanmış ya da geri çekilmiş olmamalıdır. Boğaz, "boğazda yumru" ile sıkışma ve korku noktamız olabilir.', olumlu:'Kişi kendini iyi ifade edebilir; daha derin içgörüler elde etme yeteneğine sahiptir.', olumsuz:'Kibir, kaygı; alt çene dişlerinden bronşlara kadar olan bölgede rahatsızlıklar; olağandışı yeme ve içme davranışı (hem çok fazla hem çok az).'},
+    5:{yer:'Solar pleksus', tema:'Benzersizliğin farkına varma', metin:'Hepimizin var olma ve kendi benzersizliğine sahip olma hakkı vardır. Dışarıdan belirlenen hiçbir şeyi tolere etmeyin; kendinizi başkasının yoluna çekilmeye bırakmayın. Bu noktası aktif kişi çok duygusal olabilir; yakınlık, sıcaklık ve sevgiye ihtiyaç duyar ve bunları verebilir.', olumlu:'Coşkulu enerji, melek güçlerini hissetme, kendi yolunda gitme.', olumsuz:'Depresyon, dışsal kararlar, çok hassas ve uyumlu olma, kabuklanma; duygusal bloklar; gastrointestinal sorunlar, pankreas, safra, karaciğer, akciğer, mesane, cilt.'},
+    6:{yer:'Cinsel merkez', tema:'Canlılık, coşku, heyecan', metin:'Genel olarak yaşam gücü: şenlik ateşi, coşku. Her şey zevkle yapılmalıdır — özellikle cinsellik.', olumlu:'İlkel enerjiyi hisseder, kendi gücünden korkmaz, zevkle tadını çıkarır.', olumsuz:'Enerji kaybı, hayal kırıklığı, cinsel ilgi ve partner yeteneğinin bozulması; üreme sistemi, böbrek, lenf, bez ve bağışıklık sorunları.'},
+    7:{yer:'Ayaklar ve bacaklar', tema:'Güven', metin:'Doğadan güç alır; şamanların gücü, içgüdüsel bilgi. Hayatınızın sorumluluğunu alın, ilahi bir yaratıcı olun.', olumlu:'Hareket etme dürtüsünü izler, kendi yolunda ilerler, temel güven.', olumsuz:'Doğadan uzaklaşma, yaşamın bir bütün olarak reddi; kırıklar, şişmiş bacaklar, menisküs, burkulmalar, varisli damarlar, ayak sorunları.'},
+    8:{yer:'Bel (koksiks)', tema:'Yeniden birleşme gücü', metin:'Duvarları yıkma, insanlar arasında köprü kurma, ortak olana odaklanma; güzellik ve uyum duygusu; bırakıp keyfini çıkarma yeteneği. "Astral dünyaya açılan kapı": benzerler birbirini çeker — güçlü ruh hâli değişimleri.', olumlu:'', olumsuz:'Anlaşmazlıklar, tartışma isteği, uyumsuzluklardan muzdarip olma, varoluş korkuları; disk sorunları (L5 / S1), siyatik, anal bölge.'},
+    9:{yer:'Orta sırt', tema:'Basiret', metin:'Hayatı her duyuyla zevkle yaşamak; yüzeysel heyecan değil, yaratılışın harika olduğunu fark etmek.', olumlu:'İlk bakışta fark edilmeyen içtenlik; kısıtlamasız ama kimseye zarar vermeden yaşamak.', olumsuz:'"İçsel körlük", ego iç sesi bozar; omurga, omuz, kol, kalp ve akciğer sorunları.'},
+    10:{yer:'Boyun', tema:'Tamamlama gücü', metin:'Yaptığınız her şeye %100 konsantre olabilmek: mutlak adanmışlık. Sadece yapmak değil, tamamlamak gerekir; tersi dağınıklıktır.', olumlu:'Sezgisel bilgi, ilham, Akashik Kayıtlara açılma.', olumsuz:'Reddetme.'}
+  };
 
-  /* Sunumdaki asal sıralaması 1'i de sayar: 1, 2, 3, 5, 7, 11 … (ör. 67 = 20. asal, 157 = 38. asal) */
-  function asalMi(n){ if (n < 2) return false; for (var i = 2; i * i <= n; i++) if (n % i === 0) return false; return true; }
-  function asalSirasi(n){
-    if (!asalMi(n)) return 0;
-    var sira = 1; for (var i = 2; i <= n; i++) if (asalMi(i)) sira++;
-    return sira;
+  var HARFLER = {A:1,B:2,C:3,D:5,E:7,F:11,G:13,H:17,I:19,J:23,K:29,L:31,M:37,N:41,O:43,P:47,Q:53,R:59,S:61,T:67,U:71,V:73,W:79,X:83,Y:89,Z:97};
+  var TR_HARF = {'Ç':'C','Ğ':'G','İ':'I','Ö':'O','Ş':'S','Ü':'U','Â':'A','Î':'I','Û':'U'};
+
+  /* ---------- Temel araçlar ---------- */
+  function rakamlar(s){ return String(s).split('').map(Number); }
+  function rakamToplami(n){ return rakamlar(n).reduce(function(a, b){ return a + b; }, 0); }
+  function noktaAdi(p){ return p === 10 ? '0' : String(p); }
+
+  /* Asal listesi — bu sistemde 1 de asaldır ve 1. sıradadır (1, 2, 3, 5, 7, 11 …) */
+  var ASALLAR = [1], SIRA = {1:1}, ELEK_UST = 1;
+  function eleGenislet(ust){
+    if (ust <= ELEK_UST) return;
+    var b = new Uint8Array(ust + 1), i, j;
+    for (i = 2; i * i <= ust; i++) if (!b[i]) for (j = i * i; j <= ust; j += i) b[j] = 1;
+    ASALLAR = [1]; SIRA = {1:1};
+    for (i = 2; i <= ust; i++) if (!b[i]){ ASALLAR.push(i); SIRA[i] = ASALLAR.length; }
+    ELEK_UST = ust;
   }
+  eleGenislet(20000);
+  function asalMi(n){ if (n > ELEK_UST) eleGenislet(n * 2); return !!SIRA[n]; }
+  function asalSirasi(n){ return asalMi(n) ? SIRA[n] : 0; }
+  function nAsal(k){ while (ASALLAR.length < k) eleGenislet(ELEK_UST * 2); return ASALLAR[k - 1]; }
   function asalZinciri(n){
     var z = [], x = n;
     while (true){ var s = asalSirasi(x); if (!s) break; z.push([x, s]); if (s === x) break; x = s; }
     return z;
   }
-  function okumaYollari(n){
-    var r = {bolme:[], carpan:[], asal:asalZinciri(n)};
-    var s = String(n);
-    if (s.length >= 3){
-      if (s.charAt(1) !== '0') r.bolme.push(s.slice(0,1) + '-' + s.slice(1));
-      r.bolme.push(s.slice(0,-1) + '-' + s.slice(-1));
-    }
-    for (var a = 2; a * a <= n; a++) if (n % a === 0) r.carpan.push(a + ' × ' + (n / a));
-    return r;
+
+  /* ---------- Titreşim (ara / çekirdek) ---------- */
+  function indirge(ara){
+    var zincir = [ara], n = ara;
+    while (n > 11){ n = rakamToplami(n); zincir.push(n); }   /* 19, 28, 37, 46 → 10'da durulur */
+    var sayim = n === 11 ? 2 : n;                            /* 11 → 1 + 1 = 2 */
+    return {ara:ara, zincir:zincir, cekirdek:n, sayim:sayim, pentagramNo:10 + (sayim % 10), arketip:ARKETIPLER[10 + (sayim % 10)]};
+  }
+  function titresim(tumRakamlar){
+    var ara = tumRakamlar.reduce(function(a, b){ return a + b; }, 0);
+    var t = indirge(ara);
+    var sifir = tumRakamlar.filter(function(d){ return d === 0; }).length;
+    t.sifirSayisi = sifir;
+    t.ekler = [];                                             /* Sıfır kuralı: her 0 için +10 */
+    for (var i = 1; i <= sifir; i++) t.ekler.push(indirge(ara + 10 * i));
+    return t;
   }
 
-  function hesapla(gun, ay, yil){
-    var gunS = String(+gun), ayS = String(+ay), yilS = String(+yil);
-    var yuzyil = yilS.slice(0, -2), yy = yilS.slice(-2);
-    var kullanilan = (gunS + ayS + yy).split('').map(Number);
-    var tumu = (gunS + ayS + yilS).split('').map(Number);
-
-    var ara = tumu.reduce(function(a, b){ return a + b; }, 0);
-    var zincir = [ara], n = ara;
-    while (n > 11){ n = rakamToplami(n); zincir.push(n); }
-    var cekirdek = n;
-    var sayim = cekirdek === 11 ? 2 : cekirdek;   /* 11 → 1+1 = 2 */
-    var pentagramNo = 10 + (sayim % 10);           /* "1" + çekirdek */
-
+  /* ---------- Pentagram yerleşimi ---------- */
+  function pentagram(pentRakamlari, sayim, sadeceDinamik){
     var beklenen = {}, statik = {}, dinamik = {};
     for (var p = 1; p <= 10; p++){ beklenen[p] = ((sayim - 1) + (p - 1)) % 10 + 1; statik[p] = []; dinamik[p] = []; }
-    kullanilan.forEach(function(d){
-      var v = rakamNoktasi(d);
-      statik[v].push(d);
-      var q = (((v - sayim) % 10) + 10) % 10 + 1;
-      dinamik[q].push(d);
+    pentRakamlari.forEach(function(d){
+      var v = d === 0 ? 10 : d;
+      if (!sadeceDinamik) statik[v].push(d);
+      dinamik[(((v - sayim) % 10) + 10) % 10 + 1].push(d);
     });
-
-    var noktalar = {};
+    var N = {};
     for (var k = 1; k <= 10; k++){
-      var sV = statik[k].length > 0, dV = dinamik[k].length > 0;
-      var dRakam = beklenen[k] % 10;
-      noktalar[k] = {
+      var sV = statik[k].length > 0, dV = dinamik[k].length > 0, dR = beklenen[k] % 10;
+      N[k] = {
         no:k, statik:statik[k], dinamik:dinamik[k], beklenen:beklenen[k],
-        dolu: sV || dV, statikVar: sV, dinamikVar: dV,
-        tam: k * 10 + dRakam,
-        terim: (sV ? String(k) : '(' + k + ')') + (dV ? String(dRakam) : '(' + dRakam + ')'),
+        dolu: sV || dV, statikVar: sV, dinamikVar: dV, tam: k * 10 + dR,
+        terim: (sV ? String(k) : '(' + k + ')') + (dV ? String(dR) : '(' + dR + ')'),
         eksikStatik: dV && !sV ? noktaAdi(k) : null,
-        eksikDinamik: sV && !dV ? String(dRakam) : null
+        eksikDinamik: sV && !dV ? String(dR) : null
       };
     }
-
     function yapi(tanim){
-      var pts = tanim.n, olustu = pts.every(function(x){ return noktalar[x].dolu; });
-      var o = {}; for (var key in tanim) o[key] = tanim[key];
+      var pts = tanim.n, o = {};
+      for (var key in tanim) o[key] = tanim[key];
       o.isim = pts.map(noktaAdi).join('-');
-      o.olustu = olustu;
-      o.bos = pts.filter(function(x){ return !noktalar[x].dolu; }).map(noktaAdi);
-      if (olustu){
-        o.toplam = pts.reduce(function(a, x){ return a + noktalar[x].tam; }, 0);
-        o.formul = pts.map(function(x){ return noktalar[x].terim; }).join(' + ') + ' = ' + o.toplam;
-        o.okuma = okumaYollari(o.toplam);
-        o.tumStatik = pts.every(function(x){ return noktalar[x].statikVar; });
-        o.tumDinamik = pts.every(function(x){ return noktalar[x].dinamikVar; });
+      o.olustu = pts.every(function(x){ return N[x].dolu; });
+      o.bos = pts.filter(function(x){ return !N[x].dolu; }).map(noktaAdi);
+      if (o.olustu){
+        o.parcalar = pts.map(function(x){ return N[x].tam; });
+        o.toplam = o.parcalar.reduce(function(a, b){ return a + b; }, 0);
+        o.formul = pts.map(function(x){ return N[x].terim; }).join(' + ') + ' = ' + o.toplam;
+        o.tumStatik = pts.every(function(x){ return N[x].statikVar; });
+        o.tumDinamik = pts.every(function(x){ return N[x].dinamikVar; });
       }
       return o;
     }
-
     return {
-      gun:+gun, ay:+ay, yil:+yil, yuzyil:yuzyil, kullanilan:kullanilan,
-      ara:ara, zincir:zincir, cekirdek:cekirdek, sayim:sayim,
-      pentagramNo:pentagramNo, arketip:ARKETIPLER[pentagramNo],
-      araUsta: sayim === 6 ? (ARA_USTA[ara] || null) : null,
-      beklenen:beklenen, noktalar:noktalar,
+      beklenen:beklenen, noktalar:N,
       eksenler:EKSENLER.map(yapi), seviyeler:SEVIYELER.map(yapi), ucgenler:UCGENLER.map(yapi),
       kadranlar:KADRANLAR.map(yapi), besgenler:BESGENLER.map(yapi), trikolonlar:TRIKOLONLAR.map(yapi)
     };
   }
 
-  return {hesapla:hesapla, ANLAMLAR:ANLAMLAR, ARKETIPLER:ARKETIPLER, noktaAdi:noktaAdi, asalSirasi:asalSirasi, okumaYollari:okumaYollari};
+  /* Tarihi parçalara ayırır; donustur verilirse her rakam dönüştürülür */
+  function tarihParcalari(g, a, y, donustur){
+    var f = donustur || function(d){ return d; };
+    function cevir(s){ return rakamlar(s).map(f).join(''); }
+    var gS = cevir(String(+g)), aS = cevir(String(+a)), yS = cevir(String(+y));
+    var yuzyil = yS.slice(0, -2), yy = yS.slice(-2);
+    return {gun:gS, ay:aS, yil:yS, yuzyil:yuzyil, yy:yy,
+            tum: rakamlar(gS + aS + yS), pent: rakamlar(gS + aS + yy),
+            yazi: gS + '-' + aS + '-' + yS};
+  }
+
+  function harita(g, a, y, donustur, sadeceDinamik){
+    var t = tarihParcalari(g, a, y, donustur);
+    var tit = titresim(t.tum);
+    var pent = pentagram(t.pent, tit.sayim, sadeceDinamik);
+    return {tarih:t, titresim:tit, pent:pent};
+  }
+
+  var GOLGE = function(d){ return (d + 5) % 10; };            /* 1↔6, 2↔7, 3↔8, 4↔9, 5↔0 */
+  var VUCUT = function(d){ return d === 2 ? 5 : d === 1 ? 6 : d === 0 ? 7 : d; };  /* 2→5, 1→6, 0→7 */
+
+  function dogum(g, a, y){
+    var h = harita(g, a, y);
+    var yyN = +h.tarih.yy;
+    h.persona = +g; h.ruh = +a; h.fiziksel = yyN;
+    h.dusunme = (+g) + (+a);
+    h.tepki = (+a) + yyN;
+    h.araYasi = h.titresim.ara;
+    h.araYili = (+y) + h.titresim.ara;
+    h.araUsta = h.titresim.sayim === 6 ? (ARA_USTA[h.titresim.ara] || null) : null;
+    return h;
+  }
+  function golge(g, a, y){ return harita(g, a, y, GOLGE); }
+  function vucut(g, a, y){
+    var h = harita(g, a, y, VUCUT, true);
+    var oklar = [];
+    for (var p = 1; p <= 10; p++) h.pent.noktalar[p].dinamik.forEach(function(d){
+      var hedef = d === 0 ? 10 : d;
+      if (!oklar.some(function(o){ return o[0] === p && o[1] === hedef; })) oklar.push([p, hedef]);
+    });
+    h.oklar = oklar;
+    h.aktif = [];
+    for (var q = 1; q <= 10; q++) if (h.pent.noktalar[q].dinamikVar) h.aktif.push(q);
+    h.yuksekDuyarlilik = [8, 9, 10, 1].every(function(x){ return h.pent.noktalar[x].dinamikVar; });
+    return h;
+  }
+
+  /* ---------- Zaman: Üçlü, geçmiş yaşam, kişisel yıl ---------- */
+  function uclu(baslangic, adet){
+    var sonuc = [], s = baslangic;
+    for (var i = 0; i < (adet || 3); i++){
+      var a1 = s + (s % 10), a2 = a1 + (Math.floor(s / 10) % 10), a3 = a2 + rakamToplami(s);
+      sonuc.push([s, a1, a2, a3]);
+      s = a3;
+    }
+    return sonuc;
+  }
+  function gecmisYasam(g, a, y){
+    var yy = +String(+y).slice(-2);
+    var gorev = (+g) + (+a) + yy, yol = nAsal(+g), hedef = gorev + yol;
+    return {gorev:gorev, yol:yol, gun:+g, hedef:hedef, hedefSira:asalSirasi(hedef)};
+  }
+  function kisiselYil(g, a, Y){
+    var t = tarihParcalari(g, a, Y);
+    var tit = titresim(t.tum);
+    return {yil:Y, gun:+g, ay:+a, yy:+t.yy, titresim:tit};
+  }
+  function gunSayisi(tarih){
+    var t = tarihParcalari(tarih.getDate(), tarih.getMonth() + 1, tarih.getFullYear());
+    return {yazi:t.yazi, titresim:titresim(t.tum)};
+  }
+  function yas(g, a, y, bugun){
+    var n = bugun.getFullYear() - y;
+    if ((bugun.getMonth() + 1) < a || ((bugun.getMonth() + 1) === a && bugun.getDate() < g)) n--;
+    return n;
+  }
+
+  /* ---------- İsim: harfler asal sayıdır ---------- */
+  function harfNormal(c){ return TR_HARF[c] || c; }
+  function isimAnalizi(metin){
+    var kelimeler = metin.trim().split(/\s+/).filter(Boolean);
+    var adlar = [];
+    kelimeler.forEach(function(k){
+      var harfler = [];
+      k.toLocaleUpperCase('tr-TR').split('').forEach(function(c){
+        var l = harfNormal(c);
+        if (HARFLER[l]) harfler.push({harf:c, latin:l, deger:HARFLER[l]});
+      });
+      if (!harfler.length) return;
+      var gorev = harfler.reduce(function(s, h){ return s + h.deger; }, 0);
+      var yol = nAsal(gorev);
+      adlar.push({ad:k, harfler:harfler, gorev:gorev, gorevSira:asalSirasi(gorev), yol:yol, hedef:gorev + yol});
+    });
+    var toplam = null;
+    if (adlar.length > 1){
+      var g = adlar.reduce(function(s, x){ return s + x.gorev; }, 0), yl = nAsal(g);
+      toplam = {gorev:g, gorevSira:asalSirasi(g), yol:yl, hedef:g + yl};
+    }
+    return {adlar:adlar, toplam:toplam};
+  }
+
+  /* ---------- İlişki hesabı ---------- */
+  function iliski(A, B){
+    var tA = tarihParcalari(A.g, A.a, A.y), tB = tarihParcalari(B.g, B.a, B.y);
+    var titA = titresim(tA.tum), titB = titresim(tB.tum);
+    function liste(tit, yil){
+      var l = [{ara:tit.ara, yil:null}];
+      tit.ekler.forEach(function(e){ l.push({ara:e.ara, yil:yil + e.ara}); });
+      return l;
+    }
+    var la = liste(titA, +A.y), lb = liste(titB, +B.y);
+    var olaylar = [];
+    la.slice(1).forEach(function(x){ olaylar.push({yil:x.yil, kim:'A', ara:x.ara}); });
+    lb.slice(1).forEach(function(x){ olaylar.push({yil:x.yil, kim:'B', ara:x.ara}); });
+    olaylar.sort(function(p, q){ return p.yil - q.yil; });
+    var aktA = la[0].ara, aktB = lb[0].ara, donemler = [{baslangic:null, ara:aktA + aktB, a:aktA, b:aktB}];
+    olaylar.forEach(function(o){
+      if (o.kim === 'A') aktA = o.ara; else aktB = o.ara;
+      var son = donemler[donemler.length - 1];
+      if (son.baslangic === o.yil){ son.ara = aktA + aktB; son.a = aktA; son.b = aktB; }
+      else donemler.push({baslangic:o.yil, ara:aktA + aktB, a:aktA, b:aktB});
+    });
+    return {
+      gun:(+A.g) + (+B.g), ay:(+A.a) + (+B.a), yil:(+tA.yy) + (+tB.yy),
+      A:{tarih:tA, titresim:titA}, B:{tarih:tB, titresim:titB}, donemler:donemler
+    };
+  }
+
+  /* ---------- Sayı çözümleme (8 adım + 2 ek yol) ---------- */
+  function cozumle(n){
+    var r = {sayi:n, tanim:SOZLUK[n] || null};
+    r.asal = asalMi(n);
+    r.asalSira = asalSirasi(n);
+    r.carpanlar = [];
+    for (var a = 2; a * a <= n; a++) if (n % a === 0) r.carpanlar.push([a, n / a]);
+    r.kare = null;
+    r.carpanlar.forEach(function(c){ if (c[0] === c[1]) r.kare = c[0]; });
+    var asalCarpanlar = [];
+    if (r.asal && n > 1) asalCarpanlar.push(n);
+    r.carpanlar.forEach(function(c){ c.forEach(function(x){ if (asalMi(x) && x > 1 && asalCarpanlar.indexOf(x) < 0) asalCarpanlar.push(x); }); });
+    asalCarpanlar.sort(function(p, q){ return p - q; });
+    r.zincirler = asalCarpanlar.map(function(p){
+      var z = asalZinciri(p), toplam = null;
+      if (z.length >= 2) toplam = z.reduce(function(s, h){ return s + h[0]; }, 0) + z[z.length - 1][1];
+      return {asal:p, zincir:z, toplam:toplam};
+    });
+    r.siraAsal = [];
+    for (var i = 0; i < ASALLAR.length && ASALLAR[i] < n; i++){ if (ASALLAR[i] + (i + 1) === n) r.siraAsal.push([i + 1, ASALLAR[i]]); }
+    r.ileri = r.asal ? n + r.asalSira : null;
+    r.ustOktav = n <= 5000 ? nAsal(n) : null;
+    var rt = [n], x = n;
+    while (x > 10){ x = rakamToplami(x); rt.push(x); }
+    r.rakamToplami = rt;
+    var s = String(n);
+    r.dizilim = s.length === 2 ? {sol:+s[0], sag:+s[1]} : null;
+    r.kesimler = [];
+    if (s.length >= 3) for (var k = 1; k < s.length; k++) r.kesimler.push([s.slice(0, k), s.slice(k)]);
+    var ters = s.split('').reverse().join('');
+    r.ipuclari = {
+      ters: s.length >= 2 ? (ters === s ? 'ayni' : (ters[0] !== '0' ? +ters : null)) : null,
+      ustat: n >= 11 && n % 11 === 0,
+      sonuSifir: n >= 10 && n % 10 === 0,
+      dort: s.indexOf('4') >= 0
+    };
+    var kk = Math.round((Math.sqrt(8 * n + 1) - 1) / 2);
+    r.okultKok = (kk * (kk + 1) / 2 === n) ? kk : null;
+    return r;
+  }
+
+  return {
+    SOZLUK:SOZLUK, ARKETIPLER:ARKETIPLER, VUCUT_NOKTALARI:VUCUT_NOKTALARI, HARFLER:HARFLER,
+    noktaAdi:noktaAdi, asalSirasi:asalSirasi, nAsal:nAsal, asalZinciri:asalZinciri,
+    indirge:indirge, titresim:titresim, pentagram:pentagram, tarihParcalari:tarihParcalari,
+    dogum:dogum, golge:golge, vucut:vucut, uclu:uclu, gecmisYasam:gecmisYasam,
+    kisiselYil:kisiselYil, gunSayisi:gunSayisi, yas:yas, isimAnalizi:isimAnalizi,
+    iliski:iliski, cozumle:cozumle
+  };
 })();
 if (typeof module !== 'undefined') module.exports = PENTAGRAM;
 </script>
 
 <script>
 (function(){
+  var P = PENTAGRAM;
   var $ = function(id){ return document.getElementById(id); };
   var NS = 'http://www.w3.org/2000/svg';
-  var son = null;
+  var durum = null;
   var gorunum = {eksen:true, seviye:true, eksik:true};
 
   $('themeToggle').addEventListener('click', function(){
@@ -380,11 +638,15 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
   $('printBtn').addEventListener('click', function(){ window.print(); });
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function anlam(n){ var a = PENTAGRAM.ANLAMLAR[n]; return a ? ' <span class="muted">· ' + esc(a) + '</span>' : ''; }
+  /* Tıklanınca Sayı Çözümleyici'de açılan sayı + varsa sunumdaki tanımı */
+  function sayi(n, tanimsiz){
+    var t = P.SOZLUK[n];
+    return '<button type="button" class="chip" data-coz="' + n + '" title="Sayı çözümleyicide aç">' + n + '</button>' +
+      (!tanimsiz && t ? ' <span class="def">' + esc(t) + '</span>' : '');
+  }
+  function araMetni(t){ return t.zincir.join(' / '); }
 
-  /* ---------- Geometri ---------- */
-  /* Sunumdaki çizimle aynı yerleşim: tek sayılar yıldızın uçlarında,
-     çift sayılar kolların arasındaki boşluklarda (R'ye oranla). */
+  /* ================= PENTAGRAM ÇİZİMİ ================= */
   var GEN = 720, CX = 360, CY = 352, R = 225;
   var ORAN = {
     1:[0,-1], 3:[-0.951,-0.309], 5:[-0.588,0.809], 7:[0.588,0.809], 9:[0.951,-0.309],
@@ -400,39 +662,29 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
     if (parent) parent.appendChild(e);
     return e;
   }
-
-  function cizim(s){
-    var svg = el('svg', {viewBox:'0 0 720 650', role:'img', 'aria-label':'Pentagram çizimi'});
-    var tarih = s.gun + ' - ' + s.ay + ' - ' + s.yil;
-    var t = el('text', {x:CX, y:40, 'class':'title'}, svg);
-    t.textContent = tarih + '   ·   ' + araMetni(s);
-
+  function cizim(h, baslik){
+    var pent = h.pent, svg = el('svg', {viewBox:'0 0 720 650', role:'img', 'aria-label':'Pentagram çizimi'});
+    el('text', {x:CX, y:40, 'class':'title'}, svg).textContent = baslik;
     var y = [1,5,9,3,7].map(konum);
     el('polygon', {points: y.map(function(k){ return k.x.toFixed(1) + ',' + k.y.toFixed(1); }).join(' '), 'class':'star'}, svg);
-
-    var N = s.noktalar;
-    if (gorunum.seviye) s.seviyeler.forEach(function(v){
+    if (gorunum.seviye) pent.seviyeler.forEach(function(v){
       if (!v.olustu) return;
       var a = konum(v.n[0]), b = konum(v.n[1]);
       el('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y, 'class':'level'}, svg);
     });
-    if (gorunum.eksen) s.eksenler.forEach(function(v){
+    if (gorunum.eksen) pent.eksenler.forEach(function(v){
       if (!v.olustu) return;
       var a = konum(v.n[0]), b = konum(v.n[1]);
       el('line', {x1:a.x, y1:a.y, x2:b.x, y2:b.y, 'class':'axis'}, svg);
     });
-
     for (var p = 1; p <= 10; p++){
-      var k = konum(p), nk = N[p];
+      var k = konum(p), nk = pent.noktalar[p];
       el('circle', {cx:k.x, cy:k.y, r:11, 'class':'pt' + (nk.dolu ? ' dolu' : '')}, svg);
-      var no = el('text', {x:k.x, y:k.y + 0.5, 'class':'ptno' + (nk.dolu ? ' dolu' : '')}, svg);
-      no.textContent = p;
+      el('text', {x:k.x, y:k.y + 0.5, 'class':'ptno' + (nk.dolu ? ' dolu' : '')}, svg).textContent = p;
       etiket(svg, p, nk, k);
     }
     return svg;
   }
-
-  /* Statik (mavi) + sağında dinamik (kırmızı, halkalı) + eksik eş (gri, kesikli) */
   function etiket(svg, p, nk, k){
     var parcalar = [];
     if (nk.statikVar) parcalar.push({txt: nk.statik.join(' '), cls:'t-st'});
@@ -440,7 +692,6 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
     if (nk.dinamikVar) parcalar.push({txt: nk.dinamik.join(' '), cls:'t-dy', halka:'c-dy'});
     else if (gorunum.eksik && nk.statikVar) parcalar.push({txt: nk.eksikDinamik, cls:'t-ek', halka:'c-ek'});
     if (!parcalar.length) return;
-
     var bosluk = 12, toplam = 0;
     parcalar.forEach(function(q){
       var fs = q.cls === 't-ek' ? 30 : 34;
@@ -448,7 +699,6 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
       toplam += q.w;
     });
     toplam += bosluk * (parcalar.length - 1);
-
     var uzak = (p % 2) ? 48 : 46;
     var ax = k.x + k.ux * uzak, ay = k.y + k.uy * uzak;
     if (p === 1) ay -= 4;
@@ -462,41 +712,76 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
         var hw = q.w / 2, hh = 23;
         el('rect', {x:cx - hw, y:ay - hh, width:q.w, height:hh * 2, rx:hh, ry:hh, 'class':q.halka}, svg);
       }
-      var tx = el('text', {x:cx, y:ay, 'class':q.cls, 'text-anchor':'middle', 'dominant-baseline':'central'}, svg);
-      tx.textContent = q.txt;
+      el('text', {x:cx, y:ay, 'class':q.cls, 'text-anchor':'middle', 'dominant-baseline':'central'}, svg).textContent = q.txt;
       x += q.w + bosluk;
     });
   }
 
-  function araMetni(s){
-    if (s.zincir.length === 1) return String(s.cekirdek);
-    return s.zincir.join(' / ');
+  /* ================= VÜCUT RESMİ ÇİZİMİ ================= */
+  var BK = {1:[427,150],2:[475,99],3:[522,150],10:[436,222],4:[513,222],9:[430,330],5:[519,330],8:[433,452],6:[516,452],7:[474,716]};
+  var BSOL = {1:1,10:1,9:1,8:1};
+  var BKISA = {1:'Başın arkası',2:'Taç çakra',3:'Alın (3. göz)',4:'Boğaz',5:'Solar pleksus',6:'Cinsel merkez',7:'Ayaklar, bacaklar',8:'Bel (koksiks)',9:'Orta sırt',10:'Boyun'};
+  function vucutCizim(v){
+    var svg = el('svg', {viewBox:'0 40 960 720', role:'img', 'aria-label':'Vücut resmi'});
+    var defs = el('defs', {}, svg), m = el('marker', {id:'okucu', viewBox:'0 0 10 10', refX:'8', refY:'5', markerWidth:'5', markerHeight:'5', orient:'auto-start-reverse'}, defs);
+    el('path', {d:'M0,0 L10,5 L0,10 z', 'class':'arrowhead'}, m);
+    el('circle', {cx:474, cy:130, r:64, 'class':'spine'}, svg);
+    el('line', {x1:474, y1:194, x2:474, y2:690, 'class':'spine'}, svg);
+    v.oklar.forEach(function(o, i){
+      var a = BK[o[0]], b = BK[o[1]];
+      var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.sqrt(dx * dx + dy * dy) || 1;
+      var bulge = Math.min(190, 60 + L * 0.35) * (i % 2 ? -1 : 1);
+      var cx = (a[0] + b[0]) / 2 + (-dy / L) * bulge, cy = (a[1] + b[1]) / 2 + (dx / L) * bulge;
+      var ex = b[0] - cx, ey = b[1] - cy, eL = Math.sqrt(ex * ex + ey * ey) || 1;
+      var sx = a[0] + (cx - a[0]) / (Math.sqrt((cx - a[0]) * (cx - a[0]) + (cy - a[1]) * (cy - a[1])) || 1) * 28;
+      var sy = a[1] + (cy - a[1]) / (Math.sqrt((cx - a[0]) * (cx - a[0]) + (cy - a[1]) * (cy - a[1])) || 1) * 28;
+      el('path', {d:'M' + sx.toFixed(1) + ',' + sy.toFixed(1) + ' Q' + cx.toFixed(1) + ',' + cy.toFixed(1) + ' ' + (b[0] - ex / eL * 30).toFixed(1) + ',' + (b[1] - ey / eL * 30).toFixed(1), 'class':'arrow', 'marker-end':'url(#okucu)'}, svg);
+    });
+    for (var p = 1; p <= 10; p++){
+      var k = BK[p], nk = v.pent.noktalar[p], on = nk.dinamikVar, sol = !!BSOL[p];
+      el('circle', {cx:k[0], cy:k[1], r:25, 'class':'bpt' + (on ? ' on' : '')}, svg);
+      el('text', {x:k[0], y:k[1] + 1, 'class':'bno' + (on ? ' on' : '')}, svg).textContent = p;
+      var bx = sol ? 395 : 565, lx = sol ? 295 : 662;
+      if (on){
+        var txt = nk.dinamik.join(' '), w = txt.length * 21 + 28;
+        var rx = sol ? bx - w : bx;
+        if (sol) lx = Math.min(lx, rx - 14); else lx = Math.max(lx, rx + w + 14);
+        el('rect', {x:rx, y:k[1] - 21, width:w, height:42, rx:21, ry:21, 'class':'c-dy'}, svg);
+        el('text', {x:rx + w / 2, y:k[1] + 1, 'class':'t-dy', 'text-anchor':'middle', 'dominant-baseline':'central', style:'font-size:30px'}, svg).textContent = txt;
+      }
+      el('text', {x: lx, y:k[1], 'class':'blabel', 'text-anchor': sol ? 'end' : 'start'}, svg).textContent = BKISA[p];
+    }
+    return svg;
   }
 
-  /* ---------- Metin bölümleri ---------- */
-  function okumaHtml(o){
-    var r = o.okuma, li = [];
-    li.push('<li>🔢 <b>' + o.toplam + '</b>' + anlam(o.toplam) + '</li>');
-    if (r.asal.length) li.push('<li>✨ ' + r.asal.map(function(z){ return z[0] + ' = ' + z[1] + '. asal'; }).join(' · ') + '</li>');
-    if (r.bolme.length) li.push('<li>✂️ Bölerek: ' + r.bolme.map(esc).join(' · ') + '</li>');
-    if (r.carpan.length) li.push('<li>✖️ Çarpanlar: ' + r.carpan.join(' · ') + '</li>');
+  /* ================= ORTAK KARTLAR ================= */
+  function okumaYollari(n){
+    var c = P.cozumle(n), li = [];
+    li.push('<li>🔢 ' + sayi(n) + (P.SOZLUK[n] ? '' : ' <span class="muted">· hazır tanım yok</span>') + '</li>');
+    if (c.asalSira) li.push('<li>✨ ' + P.asalZinciri(n).map(function(z){ return z[0] + ' = ' + z[1] + '. asal'; }).join(' · ') + '</li>');
+    if (c.kesimler.length) li.push('<li>✂️ Kesimler: ' + c.kesimler.map(function(k){ return '<b>' + k[0] + '-' + k[1] + '</b>'; }).join(' · ') + '</li>');
+    if (c.carpanlar.length) li.push('<li>✖️ Çarpanlar: ' + c.carpanlar.map(function(x){ return x[0] + ' × ' + x[1]; }).join(' · ') + '</li>');
+    if (c.siraAsal.length) li.push('<li>➕ Sıra + asal: ' + c.siraAsal.map(function(x){ return x[0] + ' + ' + x[1]; }).join(' · ') + '</li>');
+    li.push('<li>🎯 Rakamlar toplamı: ' + c.rakamToplami.join(' → ') + '</li>');
     return '<ul class="readings">' + li.join('') + '</ul>';
   }
   function tur(o){
     if (o.tumStatik && o.tumDinamik) return 'statik + dinamik';
     if (o.tumStatik) return 'statik';
     if (o.tumDinamik) return 'dinamik';
-    return 'statik ve dinamik karışık';
+    return 'statik-dinamik';
   }
   function kart(o, opt){
     opt = opt || {};
     var h = '<div class="card' + (o.olustu ? '' : ' off') + '">';
-    h += '<h3>' + esc(o.isim) + ' · ' + esc(o.ad) + '</h3>';
+    h += '<h3>' + esc(o.isim) + ' · ' + esc(o.ad) + (o.diger ? ' <span class="muted">(' + esc(o.diger) + ')</span>' : '') + '</h3>';
     if (o.olustu){
       h += '<span class="tag on">✅ Oluştu' + (opt.tur ? ' · ' + tur(o) : '') + '</span>';
+      if (o.paradoks) h += '<div class="desc">⚖️ ' + esc(o.paradoks) + '</div>';
       if (o.aciklama) h += '<div class="desc">' + esc(o.aciklama) + '</div>';
+      if (opt.parcaTanim) h += '<div class="desc">' + o.parcalar.map(function(n){ return sayi(n); }).join(' · ') + '</div>';
       h += '<div class="formula">' + (opt.etiket ? '<span class="muted">' + esc(opt.etiket) + ':</span> ' : '') + esc(o.formul).replace(/= (\d+)$/, '= <span class="sum">$1</span>') + '</div>';
-      h += okumaHtml(o);
+      h += okumaYollari(o.toplam);
     } else {
       h += '<span class="tag no">⛔ Oluşmadı</span>';
       if (o.aciklama) h += '<div class="desc">' + esc(o.aciklama) + '</div>';
@@ -505,86 +790,332 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
     return h + '</div>';
   }
   function bolum(no, baslik, lead, ic){
-    return '<section class="mod"><h2><span class="no">' + no + '</span>' + baslik + '</h2>' + (lead ? '<p class="lead">' + lead + '</p>' : '') + ic + '</section>';
+    return '<section class="mod"><h2>' + (no ? '<span class="no">' + no + '</span>' : '') + baslik + '</h2>' + (lead ? '<p class="lead">' + lead + '</p>' : '') + ic + '</section>';
   }
-
-  function goster(isim, s){
-    var N = s.noktalar, html = '';
-
-    /* Üst bölüm: kişi + çizim */
-    var kv = '';
-    kv += '<div class="kv"><div class="k">Ara / Çekirdek Sayı</div><div class="v">' + araMetni(s) + '</div>' +
-          (s.cekirdek === 11 ? '<div class="s">Pentagram için 1 + 1 = 2 alınır</div>' : '') + '</div>';
-    kv += '<div class="kv gold"><div class="k">Pentagram (Arketip)</div><div class="v">' + s.pentagramNo + '</div><div class="s">' + esc(s.arketip) + '</div></div>';
-    var dolu = 0, tek = 0, cift = 0;
-    for (var p = 1; p <= 10; p++){ if (N[p].statikVar) dolu++; }
-    s.kullanilan.forEach(function(d){ if (d % 2) tek++; else cift++; });
-    kv += '<div class="kv"><div class="k">Statik Dolu / Boş Nokta</div><div class="v">' + dolu + ' / ' + (10 - dolu) + '</div><div class="s">Boş noktalar açılmamış hediyelerdir</div></div>';
-    kv += '<div class="kv"><div class="k">Statik Tek / Çift Rakam</div><div class="v">' + tek + ' / ' + cift + '</div><div class="s">' + (tek > cift ? 'Dışa dönük, yayan (lamba)' : cift > tek ? 'İçe dönük, alıcı (kadeh)' : 'Dengede') + '</div></div>';
-
-    var info = '<p class="person">' + esc(isim) + '</p>' +
-      '<p class="date-big">' + s.gun + ' - ' + s.ay + ' - ' + s.yil + '</p>' +
-      '<div class="kv-grid">' + kv + '</div>' +
-      '<div class="note">💡 Pentagrama yazılan rakamlar: <b>' + s.kullanilan.join(' – ') + '</b>. Yüzyıl rakamları (' + esc(s.yuzyil) + ') ara sayı hesabına girer, pentagrama yazılmaz.' +
-      (s.araUsta ? '<br>🎭 ' + s.ara + ' → 6: ' + esc(s.araUsta) : '') + '</div>';
-
-    html += '<section class="mod"><div class="hero"><div>' +
-      '<div class="svg-box" id="svgBox"></div>' +
+  function svgKutu(id){
+    return '<div class="svg-box" id="' + id + '"></div>' +
       '<div class="toggles"><label><input type="checkbox" data-g="eksen"' + (gorunum.eksen ? ' checked' : '') + '> Eksenler</label>' +
       '<label><input type="checkbox" data-g="seviye"' + (gorunum.seviye ? ' checked' : '') + '> Seviyeler</label>' +
       '<label><input type="checkbox" data-g="eksik"' + (gorunum.eksik ? ' checked' : '') + '> Eksik eşler</label></div>' +
-      '<div class="legend"><span class="st">● Statik</span><span class="dy">◯ Dinamik</span><span class="ek">◌ Eksik eş</span><span class="ax">━ Eksen</span><span class="lv">╍ Seviye</span></div>' +
-      '</div><div>' + info + '</div></div></section>';
+      '<div class="legend"><span class="st">● Statik</span><span class="dy">◯ Dinamik</span><span class="ek">◌ Eksik eş</span><span class="ax">━ Eksen</span><span class="lv">╍ Seviye</span></div>';
+  }
+  function titresimKutulari(t, etiket){
+    var kv = '<div class="kv"><div class="k">' + etiket + '</div><div class="v">' + araMetni(t) + '</div>' +
+      (t.cekirdek === 11 ? '<div class="s">Pentagram için 1 + 1 = 2 alınır</div>' : '') + '</div>';
+    kv += '<div class="kv gold"><div class="k">Pentagram (Arketip)</div><div class="v">' + t.pentagramNo + '</div><div class="s">' + esc(t.arketip) + '</div></div>';
+    return kv;
+  }
 
-    /* Sayma tablosu */
+  /* Doğum ve Gölge pentagramı için ortak derin okuma (Bölüm 1.4 – 1.10) */
+  function derinOkuma(h, onEk){
+    var N = h.pent.noktalar, html = '', s = h.titresim;
     var sayma = '<div class="count-row">';
-    for (var q = 1; q <= 10; q++) sayma += '<div><b>' + q + '. nokta</b><span>' + s.beklenen[q] + '</span></div>';
+    for (var q = 1; q <= 10; q++) sayma += '<div><b>' + q + '. nokta</b><span>' + h.pent.beklenen[q] + '</span></div>';
     sayma += '</div>';
-    html += bolum('ADIM 4', 'Dinamik sayma', 'Çekirdek tip (' + s.sayim + ') 1. noktaya yazılmış gibi kabul edilir ve saat yönünün tersine bir tur sayılır. Tarihte bulunan rakamlar, beklenen değeri kendisi olan noktaya kırmızıyla yazılır.', '<div class="tbl-wrap">' + sayma + '</div>');
+    html += bolum('ADIM 4', onEk + 'Dinamik sayma', 'Çekirdek tip (' + s.sayim + ') 1. noktaya yazılmış gibi kabul edilir ve oradan ilke ilke sayılır. Tarihte gerçekten bulunan rakamlar, beklenen değeri kendisi olan noktaya kırmızıyla yazılır.', '<div class="tbl-wrap">' + sayma + '</div>');
 
-    /* 1.4 Tam potansiyel */
     var rows = '';
     for (var i = 1; i <= 10; i++){
       var n = N[i], durum;
-      if (!n.dolu) durum = '<span class="muted">Boş</span>';
+      if (!n.dolu) durum = '<span class="muted">Boş — açılmamış hediye ya da ek zorluk</span>';
       else if (n.statikVar && n.dinamikVar) durum = 'Tam ✓';
       else if (n.statikVar) durum = 'Dinamik <span class="ek">' + n.eksikDinamik + '</span> eksik';
       else durum = 'Statik <span class="ek">' + n.eksikStatik + '</span> eksik';
-      rows += '<tr><td class="num">' + i + '</td>' +
-        '<td class="st">' + (n.statik.join(' ') || '—') + '</td>' +
-        '<td class="dy">' + (n.dinamik.join(' ') || '—') + '</td>' +
-        '<td>' + durum + '</td>' +
-        '<td class="num">' + (n.dolu ? n.tam : '<span class="muted">—</span>') + (n.dolu ? anlam(n.tam) : '') + '</td></tr>';
+      rows += '<tr><td class="num">' + i + '</td><td class="st">' + (n.statik.join(' ') || '—') + '</td><td class="dy">' + (n.dinamik.join(' ') || '—') + '</td><td>' + durum + '</td><td>' + (n.dolu ? sayi(n.tam) : '<span class="muted">—</span>') + '</td></tr>';
     }
-    html += bolum('1.4', 'Sayıların tam potansiyeli', 'Tek başına duran sayı eşini arar. Eksik eş tamamlanınca iki basamaklı tam sayı çıkar; asıl anlam o tam sayıdadır.',
+    html += bolum('1.4', onEk + 'Sayıların tam potansiyeli', 'Bir noktada tek bir sayı varsa — statik ya da dinamik — gelişimin ilk adımı eksik olanı geliştirmektir. Eksik sayı bir kusur değil, gelişim potansiyelidir. Üçlü 5, "555" değil, üç kez 5 demektir.',
       '<div class="tbl-wrap"><table><thead><tr><th>Nokta</th><th>Statik</th><th>Dinamik</th><th>Durum</th><th>Tam sayı</th></tr></thead><tbody>' + rows + '</tbody></table></div>');
 
-    html += bolum('1.5', 'Eksenler', 'Eksen, çözülmesi gereken bir paradokstur. İki ucun tam sayılarının toplamı eksenin teması ve amacıdır.',
-      '<div class="cards">' + s.eksenler.map(function(o){ return kart(o, {tur:true, etiket:'Eksenin teması'}); }).join('') + '</div>');
-    html += bolum('1.6', 'Seviyeler', 'Seviye ancak her iki ucunda da sayı varsa oluşur. İki ucun tam sayılarının toplamı seviyenin hedefidir.',
-      '<div class="cards">' + s.seviyeler.map(function(o){ return kart(o, {tur:true, etiket:'Seviyenin hedefi'}); }).join('') + '</div>');
-    html += bolum('1.7', 'Üçgenler', 'Bir seviye 1. ilke ("Tanrı" alemi) ya da 6. ilke ("Ego" alemi) ile bağlandığında üçgen oluşur. Üçgenin enerjisi üç konumun tam sayılarının toplamıdır.',
-      '<div class="cards">' + s.ucgenler.map(function(o){ return kart(o, {etiket:'Üçgenin enerjisi'}); }).join('') + '</div>');
-    html += bolum('1.8', 'Kadranlar', 'İki seviye iki eksenle bağlandığında kadran oluşur. Genel tema, dört köşenin tam sayılarının toplamıdır.',
-      '<div class="cards">' + s.kadranlar.map(function(o){ return kart(o, {etiket:'Toplam'}); }).join('') + '</div>');
-    html += bolum('1.9', 'Beşgenler', 'Tüm dış noktalar (1-3-5-7-9) ya da tüm iç noktalar (2-4-6-8-0) dolduğunda beşgen oluşur.',
-      '<div class="cards">' + s.besgenler.map(function(o){ return kart(o, {etiket:o.etiket}); }).join('') + '</div>');
-    html += bolum('1.10', 'Trikolonlar', 'Üç konum da pentagramda bir sayı taşıdığında ilgili trikolon enerjisi aktive olur.',
-      '<div class="cards">' + s.trikolonlar.map(function(o){ return kart(o, {etiket:'Toplam'}); }).join('') + '</div>');
+    var eksenSay = h.pent.eksenler.filter(function(o){ return o.olustu; }).length;
+    html += bolum('1.5', onEk + 'Eksenler', 'Eksen, çözülmesi gereken bir paradokstur. Önce eksik uç tamamlanır, sonra iki tam sayı toplanır: toplam eksenin teması ve amacıdır. Bütün eksenler ortada — kalpte — buluşur.',
+      '<div class="cards">' + h.pent.eksenler.map(function(o){ return kart(o, {tur:true, etiket:'Eksenin teması', parcaTanim:true}); }).join('') + '</div>' +
+      '<div class="note">' + (eksenSay === 0 ? '🌍 Hiç eksen yok: kişilik gelişimi ağırlıkla dış dünya ile temas yoluyla — hayatta karşılaşılan durumlar ve insanlar üzerinden — ilerler.' : '🧭 ' + eksenSay + ' eksen var. Eksen ne kadar çoksa, kişinin iç meselelerle uğraşma düzeyi o kadar artar.') + '</div>');
+    html += bolum('1.6', onEk + 'Farkındalık seviyeleri', 'Seviye ancak her iki ucunda da sayı varsa oluşur. İki taraftaki tam sayılar seviyenin eril ve dişil itici güçleridir; toplamları seviyenin hedefini açıklar.',
+      '<div class="cards">' + h.pent.seviyeler.map(function(o){ return kart(o, {tur:true, etiket:'Seviyenin hedefi', parcaTanim:true}); }).join('') + '</div>');
+    html += bolum('1.7', onEk + 'Üçgenler', 'Bir seviye 1. ilke ("Tanrı" alemi: ilham, coşku, neşe) ya da 6. ilke ("Ego" alemi: güç, azim, tutku) ile bağlandığında üçgen oluşur. Üçgen yeteneklere dair ipucu verir; doğru ele alınmazsa tuzağını gösterir.',
+      '<div class="cards">' + h.pent.ucgenler.map(function(o){ return kart(o, {etiket:'Üçgenin enerjisi'}); }).join('') + '</div>');
+    html += bolum('1.8', onEk + 'Kadranlar (dörtgenler)', 'İki seviye iki eksenle bağlandığında kadran oluşur; bu yalnızca iki durumda olur. Köşelerdeki sayılar bireysel temaları, dört köşenin toplamı genel temayı verir.',
+      '<div class="cards">' + h.pent.kadranlar.map(function(o){ return kart(o, {etiket:'Dörtgenin değeri'}); }).join('') + '</div>');
+    html += bolum('1.9', onEk + 'Beşgenler', 'Tüm dış noktalar (1-3-5-7-9) ya da tüm iç noktalar (2-4-6-8-0) dolduğunda beşgen oluşur; üçgen ve kadranlardan daha nadirdir.',
+      '<div class="cards">' + h.pent.besgenler.map(function(o){ return kart(o, {etiket:o.etiket}); }).join('') + '</div>');
+    html += bolum('1.10', onEk + 'Trikolonlar (üçlü sütunlar)', 'Üç konum da pentagramda bir sayı taşıdığında ilgili trikolon enerjisi aktive olur.',
+      '<div class="cards">' + h.pent.trikolonlar.map(function(o){ return kart(o, {etiket:'Değeri'}); }).join('') + '</div>');
+    return html;
+  }
 
-    html += '<div class="note">📘 Gösterim: parantez içindeki rakam eksik eştir — <b>1(5)</b> statik 1 var, dinamik 5 eksik; <b>(6)4</b> statik 6 eksik, dinamik 4 var. Asal sıralaması sunumdaki gibi 1\'den başlar (1, 2, 3, 5, 7 …). Sayı anlamları yalnızca sunumda adı geçen sayılar için gösterilir.</div>';
+  /* ================= SEKMELER ================= */
+  function sekmeDogum(isim, h){
+    var s = h.titresim, N = h.pent.noktalar;
+    var kv = titresimKutulari(s, 'Ruhsal titreşim (Ara / Çekirdek)');
+    kv += '<div class="kv"><div class="k">Ara sayı yaşı</div><div class="v">' + h.araYasi + '</div><div class="s">' + h.araYili + ' yılı: hayatın kontrolünü ele alma</div></div>';
+    var ekler = s.ekler.length ? '<div class="note">🔄 <b>Sıfır kuralı — Dönüşüm tipi:</b> tarihte ' + s.sifirSayisi + ' sıfır var; her sıfır için ara tipe 10 eklenir: ' + s.ekler.map(function(e){ return '<b>' + e.zincir.join(' / ') + '</b>'; }).join(' · ') + '.</div>' : '';
+    var info = '<p class="person">' + esc(isim) + '</p><p class="date-big">' + h.tarih.yazi + '</p><div class="kv-grid">' + kv + '</div>' + ekler +
+      '<div class="note">💡 Pentagrama yazılan rakamlar: <b>' + h.tarih.pent.join(' – ') + '</b>. Yüzyıl rakamları (' + esc(h.tarih.yuzyil) + ') titreşim hesabına girer, pentagrama yazılmaz; kolektif mirası temsil eder.' +
+      '<br>🎭 Ara sayı ' + sayi(s.ara, true) + ' "sahne"dir (dış dünyanın sizi algılayışı); çekirdek sayı ' + sayi(s.cekirdek, true) + ' "oyuncu"dur (öz enerji, bu yaşamdaki ana görev).' +
+      (h.araUsta ? '<br>🛠️ ' + s.ara + ' → 6: ' + esc(h.araUsta) + ' üzerinden gelen ustalık.' : '') + '</div>';
+    var html = '<section class="mod"><div class="hero"><div>' + svgKutu('svgDogum') + '</div><div>' + info + '</div></div></section>';
 
-    $('results').innerHTML = html;
+    /* Okuma sırası 1: doğum günü sayıları */
+    var dg = '<div class="tbl-wrap"><table><tbody>' +
+      '<tr><td><b>👤 Persona (gün)</b><br><span class="muted">Kendinizi gösterme biçiminiz</span></td><td>' + sayi(h.persona) + '</td></tr>' +
+      '<tr><td><b>💗 Ruh (ay)</b><br><span class="muted">Duygular, sosyal ilişkiler</span></td><td>' + sayi(h.ruh) + '</td></tr>' +
+      '<tr><td><b>🌍 Fiziksel (yıl, yüzyılsız)</b><br><span class="muted">Beden ve maddi dünya</span></td><td>' + sayi(h.fiziksel) + '</td></tr>' +
+      '<tr><td><b>🧠 Düşünme ve hissetme (gün + ay)</b><br><span class="muted">Kalp ile zihnin buluşması</span></td><td>' + h.persona + ' + ' + h.ruh + ' = ' + sayi(h.dusunme) + '</td></tr>' +
+      '<tr><td><b>⚡ Davranış ve tepki (ay + yıl)</b><br><span class="muted">Derin düşünmeden, otomatik tepkiler</span></td><td>' + h.ruh + ' + ' + h.fiziksel + ' = ' + sayi(h.tepki) + '</td></tr>' +
+      '</tbody></table></div>';
+    html += bolum('OKUMA 1', 'Doğum tarihinin sayıları', 'Okuma, doğum tarihi sayılarının açıklamalarıyla başlar.', dg);
+
+    /* Okuma sırası 2–4 */
+    var ciftler = [], coklu = [], dolu = [], bos = [];
+    for (var p = 1; p <= 10; p++){
+      var n = N[p];
+      if (n.statikVar && n.dinamikVar) ciftler.push(p);
+      if (n.statik.length > 1) coklu.push('<li>🔁 ' + p + '. noktada statik <span class="st">' + n.statik.join(' ') + '</span> — ' + n.statik.length + ' kez ' + n.statik[0] + '</li>');
+      if (n.dinamik.length > 1) coklu.push('<li>🔁 ' + p + '. noktada dinamik <span class="dy">' + n.dinamik.join(' ') + '</span> — ' + n.dinamik.length + ' kez ' + n.dinamik[0] + '</li>');
+      (n.statikVar ? dolu : bos).push(p);
+    }
+    var tek = 0, cift = 0, eril = 0, disil = 0, alti = 0;
+    h.tarih.pent.forEach(function(d){
+      var v = d === 0 ? 10 : d;
+      if (d % 2) tek++; else cift++;
+      if (v <= 5) eril++; else if (v === 6) alti++; else disil++;
+    });
+    var ic = '<h3 class="sub">2 · Statik-dinamik çift sayılar <span class="muted">(en önemlileri)</span></h3>' +
+      (ciftler.length ? '<ul class="bul">' + ciftler.map(function(p){ return '<li>⭐ ' + p + '. nokta: <span class="st">' + N[p].statik.join(' ') + '</span> + <span class="dy">' + N[p].dinamik.join(' ') + '</span> → ' + sayi(N[p].tam) + '</li>'; }).join('') + '</ul>' : '<p class="muted">Hiçbir noktada statik ve dinamik sayı birlikte yok.</p>') +
+      '<h3 class="sub">3 · Çoklu sayılar</h3>' + (coklu.length ? '<ul class="bul">' + coklu.join('') + '</ul><p class="muted">Aynı ilkenin tekrarı, o enerjinin etkisini katlar.</p>' : '<p class="muted">Tekrarlanan sayı yok.</p>') +
+      '<h3 class="sub">4 · Tek tek noktalar</h3><ul class="bul">' +
+      '<li>🟡 Statik dolu noktalar (' + dolu.length + '): <b>' + dolu.join(', ') + '</b> — dünyaya birlikte getirdiğiniz yetenek ve potansiyeller; hayatı yaşamak için araç kutunuz.</li>' +
+      '<li>⚪ Statik boş noktalar (' + bos.length + '): <b>' + (bos.join(', ') || '—') + '</b> — ya henüz "açılmamış hediyeler" ya da ek zorluklar; soru olarak not edilir. Boşluk normaldir.</li>' +
+      '<li>☀️ Statik rakamlar: ' + tek + ' tek (yayan, dışa dönük) · ' + cift + ' çift (alıcı, içe dönük).</li>' +
+      '<li>⚧️ Statik rakamlar: ' + eril + ' eril (1–5) · ' + disil + ' dişil (7–10)' + (alti ? ' · ' + alti + ' kez 6 (temel güç, Devrim)' : '') + '.</li></ul>';
+    html += bolum('OKUMA 2–4', 'Çift sayılar, çoklu sayılar ve noktalar', '', ic);
+    html += derinOkuma(h, '');
+    html += '<div class="note">📘 Gösterim: parantez içindeki rakam eksik eştir — <b>1(5)</b> statik 1 var, dinamik 5 eksik; <b>(6)4</b> statik 6 eksik, dinamik 4 var. Asal sıralaması bu sistemde 1\'den başlar (1, 2, 3, 5, 7 …). Hangi pentagramı çizerseniz çizin, on noktanın tam sayılarının toplamı her zaman ' + sayi(595, true) + ' çıkar. Sayıya tıklayınca Sayı Çözümleyici açılır.</div>';
+    return html;
+  }
+
+  function sekmeGolge(h){
+    var s = h.titresim, t = h.tarih;
+    var kv = titresimKutulari(s, 'Gölge titreşim (Ara / Çekirdek)');
+    var info = '<p class="person">Gölge Pentagram</p><p class="date-big">' + durum.dogum.tarih.yazi + ' → ' + t.yazi + '</p><div class="kv-grid">' + kv + '</div>' +
+      '<div class="note">🔄 Eksendeki sayının zıttı gölge sayıdır (+5 kuralı): 1↔6 · 2↔7 · 3↔8 · 4↔9 · 5↔0. Doğum tarihinin tüm rakamları — yüzyıl dahil — dönüştürülür ve toplanır. Pentagrama yazılan rakamlar: <b>' + t.pent.join(' – ') + '</b>; gölge yüzyıl rakamları (' + esc(t.yuzyil) + ') pentagrama girmez.</div>' +
+      '<div class="note">🌗 Buradaki temalar kişinin "farkında olmadığı" şeylerdir; kişi sinirlendiğinde, kızdığında veya köşeye sıkıştığında ortaya çıkabilir. Gölge, kendimizdeki karşı cinsi de temsil eder. İlişkilerde çoğu zaman bir partnerin ışık pentagramı, diğerinin gölge pentagramıdır.</div>';
+    var html = '<section class="mod"><div class="hero"><div>' + svgKutu('svgGolge') + '</div><div>' + info + '</div></div></section>';
+    html += derinOkuma(h, 'Gölge · ');
+    return html;
+  }
+
+  function sekmeVucut(v){
+    var VN = P.VUCUT_NOKTALARI, s = v.titresim;
+    var kv = '<div class="kv"><div class="k">Fiziksel titreşim</div><div class="v">' + araMetni(s) + '</div>' + (s.cekirdek === 11 ? '<div class="s">Sayma için 1 + 1 = 2 alınır</div>' : '') + '</div>' +
+      '<div class="kv gold"><div class="k">Aktive noktalar</div><div class="v">' + (v.aktif.join(' · ') || '—') + '</div></div>';
+    var info = '<p class="person">Vücut Resmi</p><p class="date-big">' + durum.dogum.tarih.yazi + ' → ' + v.tarih.yazi + '</p><div class="kv-grid">' + kv + '</div>' +
+      '<div class="note">🧍 Ruhani üçgen 2-1-0, hayati üçgen 5-6-7\'nin üzerine katlanır: <b>2 → 5 · 1 → 6 · 0 → 7</b>. Tüm rakamlar — yüzyıl ve binler dahil — dönüştürülür; toplamı fiziksel titreşimi verir. Dönüştürülen rakamlar (' + v.tarih.pent.join(' – ') + ') pentagramdaki dinamik tur gibi, çekirdek sayıdan (' + s.sayim + ') sayılarak yerleştirilir. Ruhsal titreşim (' + araMetni(durum.dogum.titresim) + ') pentagramın, fiziksel titreşim vücut resminin okunmasını yönetir.</div>' +
+      '<div class="note">👁️ Noktaların içinde duran bir kişinin sol tarafına baktığınızı hayal edin: solda sırt, sağda ön taraf. Kırmızı ok, enerji yaşanmazsa rahatsızlığın çıkabileceği noktayı gösterir.</div>';
+    var html = '<section class="mod"><div class="hero"><div><div class="svg-box" id="svgVucut"></div></div><div>' + info + '</div></div></section>';
+    var kartlar = v.aktif.map(function(p){
+      var d = VN[p], nk = v.pent.noktalar[p];
+      var c = '<div class="card"><h3>' + p + ' · ' + esc(d.yer) + ' — ' + esc(d.tema) + '</h3>';
+      c += '<div class="desc">Bu noktada dinamik <span class="dy">' + nk.dinamik.join(' ') + '</span> var' + (nk.dinamik.length > 1 ? ' (' + nk.dinamik.length + ' kat doz)' : '') + '. ' + p + '\'nin arkasındaki ' + nk.dinamik[0] + ' ayrıca ' + sayi(p * 10 + (nk.dinamik[0] % 10)) + ' okunur.</div>';
+      c += '<div class="desc">' + esc(d.metin) + '</div>';
+      if (d.olumlu) c += '<div class="desc">✅ <b>Olumlu:</b> ' + esc(d.olumlu) + '</div>';
+      if (d.olumsuz) c += '<div class="desc">⚠️ <b>Olumsuz:</b> ' + esc(d.olumsuz) + '</div>';
+      v.oklar.filter(function(o){ return o[0] === p; }).forEach(function(o){
+        var hd = VN[o[1]];
+        c += '<div class="warn">➡️ <b>Bu enerji yaşanmazsa ' + o[1] + '. nokta (' + esc(hd.yer) + ') bloke olur:</b> ' + esc(hd.olumsuz || hd.metin) + '</div>';
+      });
+      return c + '</div>';
+    }).join('');
+    html += bolum('', 'Aktive noktalar', 'Bunlar her gün bize kozmik enerji sağlayan ince beden üzerindeki noktalardır; her gün yaşanmalı ve ifade edilmelidir. Kullanılmazlarsa bedenin başka bir bölümüne müdahale eder ve somatik belirtileri tetikleyebilirler.', v.aktif.length ? '<div class="cards">' + kartlar + '</div>' : '<p class="muted">Aktive nokta yok.</p>');
+    var zincir = v.oklar.map(function(o){ return o[0] + ' → ' + o[1]; }).join(' · ');
+    var notlar = '<ul class="bul"><li>🔗 <b>Etki zinciri:</b> ' + (zincir || '—') + '. Bir noktada hissedilen ağrı, ok veren noktadaki tıkanıklıktan ya da zincirdeki önceki noktalardan kaynaklanabilir.</li>';
+    if (v.yuksekDuyarlilik) notlar += '<li>🌊 <b>Yüksek duyarlılık:</b> 8, 9, 10 ve 1 numaralı noktalar aktif; kişi fiziksel olmayan enerjilere oldukça duyarlıdır. Öneri: doğaya veya denize yakın yaşamak, mümkün olduğunca çok zaman ayırmak ve arkadaş seçiminde çok dikkatli olmak.</li>';
+    notlar += '</ul><div class="note">⚕️ Numerolojik yorum çerçevesidir; tıbbi tanı yerine geçmez.</div>';
+    html += bolum('', 'Zincir ve uyarılar', '', notlar);
+    var tum = '';
+    for (var p = 1; p <= 10; p++){ var d = VN[p]; tum += '<tr><td class="num">' + p + '</td><td><b>' + esc(d.yer) + '</b><br><span class="muted">' + esc(d.tema) + '</span></td><td>' + esc(d.metin) + '</td></tr>'; }
+    html += bolum('', 'On enerjik nokta', '', '<div class="tbl-wrap"><table><thead><tr><th>Nokta</th><th>Yer · Tema</th><th>Açıklama</th></tr></thead><tbody>' + tum + '</tbody></table></div>');
+    return html;
+  }
+
+  function sekmeZaman(h){
+    var bugun = new Date(), g = h.tarih.gun, a = h.tarih.ay, y = +h.tarih.yil;
+    var yas = P.yas(+g, +a, y, bugun), html = '';
+    var u = P.uclu(h.titresim.ara), adlar = [['1','Yetenek — "neden"','"Ekim" aşaması: yeni bir başlangıç, yeniden başlarsınız.'],['2','İzin — "değişim"','Daha önce ekilenlerin sonuçlarını görür, düzeltmek için müdahale edebilirsiniz.'],['3','İhtiyaç — "sonuç"','Ektiğiniz ve düzelttiğiniz şeylerin hasat aşaması.']];
+    var ur = u.map(function(x, i){
+      return '<div class="card"><h3>' + adlar[i][0] + ' · ' + adlar[i][1] + '</h3><div class="formula">' + x[0] + ' → ' + x[1] + ' → ' + x[2] + ' → <span class="sum">' + x[3] + '</span></div><div class="desc">📆 ' + (y + x[0]) + ' – ' + (y + x[3]) + ' · ' + adlar[i][2] + '</div></div>';
+    }).join('');
+    html += bolum('', '⏳ Zaman gözlemi: Üçlü', 'Ara tip yaşına (' + h.titresim.ara + ') ulaşıldığında yeniden başlanır ve hayat üç aşamada ilerler. Adımlar: başlangıç + birler basamağı → sonuç + onlar basamağı → sonuç + başlangıcın rakamları toplamı. Her üçlünün son yaşı bir sonrakinin başlangıcıdır. Bir aşamadaki üç adım yetenek, izin ve yükümlülük olarak da ayrılabilir.',
+      '<div class="cards">' + ur + '</div>' +
+      '<div class="note">🕊️ Altın renkli yaşlar (' + u.map(function(x){ return x[3]; }).join(', ') + ') "özgürlük yılı"dır: uzun süredir çözülmüş durum ve ilişkilerden kurtulma şansı çok yüksektir — bu "rüzgârı" kullanın. Üç aşama tamamlandığında (' + u[2][3] + ' yaş) "aptalın özgürlüğü" başlar: artık hiçbir ilkeye bağlı değilsinizdir.</div>');
+
+    var gy = P.gecmisYasam(+g, +a, y);
+    html += bolum('', '🌞 Geçmiş yaşam: Görev – Yol – Hedef', 'Fritz Guggisberg\'in yöntemi. Görev: gün + ay + yıl (yüzyılsız) = Güneş sayısı. Yol: doğum günü sayısının asal sıralaması. Hedef: Görev + Yol.',
+      '<ul class="bul"><li>🎯 <b>Görev (Güneş sayısı):</b> ' + (+g) + ' + ' + (+a) + ' + ' + (+h.tarih.yy) + ' = ' + sayi(gy.gorev) + '</li>' +
+      '<li>🛤️ <b>Yol:</b> ' + gy.gun + '. asal = ' + sayi(gy.yol) + '</li>' +
+      '<li>🏁 <b>Hedef:</b> ' + gy.gorev + ' + ' + gy.yol + ' = ' + sayi(gy.hedef) + (gy.hedefSira ? ' · ' + gy.hedefSira + '. asal ' + sayi(gy.hedefSira) : '') + '</li></ul>');
+
+    var yilSec = '<label class="muted">Yıl: <select id="kyYil" style="max-width:140px;display:inline-block">';
+    for (var Y = bugun.getFullYear() - 10; Y <= bugun.getFullYear() + 10; Y++) yilSec += '<option' + (Y === bugun.getFullYear() ? ' selected' : '') + '>' + Y + '</option>';
+    yilSec += '</select></label><div id="kyIcerik"></div>';
+    html += bolum('', '📅 Kişisel yıl', 'Doğum yılı, bakmak istediğiniz yılla değiştirilir; gün ve ay aynı kalır ve titreşim hesabı tekrarlanır.', yilSec);
+
+    var gs = P.gunSayisi(bugun);
+    html += bolum('', '🎂 Yaşınızın sayısı ve günün sayısı', '',
+      '<ul class="bul"><li>🎂 <b>Yaş:</b> ' + sayi(yas) + ' <span class="muted">— içinde bulunduğunuz yılın ana temalarını ve genel fikrini verir; her doğum gününde yeni bir sayıya geçersiniz.</span></li>' +
+      '<li>☀️ <b>Bugün (' + gs.yazi + '):</b> ' + araMetni(gs.titresim) + ' → ' + sayi(gs.titresim.ara) + ' · ' + sayi(gs.titresim.cekirdek) + '</li></ul>');
+    return html;
+  }
+  function kisiselYilCiz(){
+    var sel = $('kyYil'); if (!sel) return;
+    var h = durum.dogum, k = P.kisiselYil(h.tarih.gun, h.tarih.ay, +sel.value), t = k.titresim;
+    $('kyIcerik').innerHTML = '<ul class="bul"><li>🗓️ <b>' + (+h.tarih.gun) + ' - ' + (+h.tarih.ay) + ' - ' + k.yil + '</b> → ' + araMetni(t) + '</li>' +
+      '<li>📆 Yılın tarihleri: ' + sayi(k.gun) + ' · ' + sayi(k.ay) + ' · ' + sayi(k.yy) + '</li>' +
+      '<li>🔢 Ara ve çekirdek sayı: ' + sayi(t.ara) + ' · ' + sayi(t.cekirdek) + '</li></ul>';
+  }
+
+  function sekmeIsim(isim){
+    var r = P.isimAnalizi(isim);
+    if (!r.adlar.length) return bolum('', '🔤 İsim analizi', '', '<p class="muted">İsimde harf bulunamadı.</p>');
+    var html = '';
+    var harfTablo = '<div class="harf-grid">' + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(function(c){ return '<div><b>' + c + '</b><span class="muted">' + P.HARFLER[c] + '</span></div>'; }).join('') + '</div>';
+    var kartlar = r.adlar.map(function(a){
+      return '<div class="card"><h3>' + esc(a.ad) + '</h3><div class="desc">' + a.harfler.map(function(x){ return '<b>' + esc(x.harf) + '</b> ' + x.deger; }).join(' + ') + '</div>' +
+        '<ul class="readings"><li>🎯 <b>Görev:</b> ' + sayi(a.gorev) + (a.gorevSira ? ' · ' + a.gorevSira + '. asal' : '') + '</li>' +
+        '<li>🛤️ <b>Yol:</b> ' + a.gorev + '. asal = ' + sayi(a.yol) + '</li>' +
+        '<li>🏁 <b>Hedef:</b> ' + a.gorev + ' + ' + a.yol + ' = ' + sayi(a.hedef) + '</li></ul></div>';
+    }).join('');
+    if (r.toplam) kartlar += '<div class="card"><h3>Bütün adlar birlikte</h3><div class="desc">' + r.adlar.map(function(a){ return a.gorev; }).join(' + ') + ' = ' + r.toplam.gorev + '</div>' +
+      '<ul class="readings"><li>🎯 <b>Görev:</b> ' + sayi(r.toplam.gorev) + (r.toplam.gorevSira ? ' · ' + r.toplam.gorevSira + '. asal' : '') + '</li>' +
+      '<li>🛤️ <b>Yol:</b> ' + r.toplam.gorev + '. asal = ' + sayi(r.toplam.yol) + '</li>' +
+      '<li>🏁 <b>Hedef:</b> ' + r.toplam.gorev + ' + ' + r.toplam.yol + ' = ' + sayi(r.toplam.hedef) + '</li></ul></div>';
+    html += bolum('', '🔤 İsim analizi', 'Alfabenin 26 harfi, 100\'ün altındaki 26 asal sayıyla birebir örtüşür (1 de asal sayılır). Görev: harflerin toplamı. Yol: görev sayısını sıra kabul edip o sıradaki asal. Hedef: Görev + Yol. Adlar önce tek tek, sonra hep birlikte toplanır. Türkçe harfler Latin karşılığıyla (Ç→C, Ğ→G, İ/I→I, Ö→O, Ş→S, Ü→U) hesaplanır.',
+      '<div class="cards">' + kartlar + '</div><div class="note">💡 Sadece kişinin çağrıldığı adları kullanın — nüfustaki bütün adları değil; titreşimi tekrar eden ad yaratır. Doğum tarihi değişmez, ad değişebilir: ad çözümlemesi, tarihin verdiği titreşimi güçlendirip güçlendirmediğini gösterir.</div>' +
+      '<h3 class="sub">Harf tablosu</h3>' + harfTablo);
+    return html;
+  }
+
+  function sekmeIliski(isimA, isimB, il){
+    var A = il.A, B = il.B;
+    function satir(ad, x){ return '<tr><td><b>' + esc(ad) + '</b></td><td>' + (+x.tarih.gun) + '</td><td>' + (+x.tarih.ay) + '</td><td>(' + esc(x.tarih.yuzyil) + ')' + x.tarih.yy + '</td><td>' + araMetni(x.titresim) + '</td><td>' + (x.titresim.ekler.map(function(e){ return e.zincir.join(' / '); }).join(' · ') || '—') + '</td></tr>'; }
+    var tablo = '<div class="tbl-wrap"><table><thead><tr><th></th><th>Gün</th><th>Ay</th><th>Yıl</th><th>Titreşim</th><th>Sıfır kuralı</th></tr></thead><tbody>' +
+      satir(isimA, A) + satir(isimB, B) + '<tr><td><b>Çift</b></td><td class="num">' + il.gun + '</td><td class="num">' + il.ay + '</td><td class="num">' + il.yil + '</td><td colspan="2"></td></tr></tbody></table></div>';
+    var duzey = '<ul class="bul"><li>👤 <b>Kişisel düzey (gün toplamı):</b> ' + sayi(il.gun) + '</li><li>💗 <b>Ruh düzeyi (ay toplamı):</b> ' + sayi(il.ay) + '</li><li>🌍 <b>Fiziksel düzey (yıl toplamı, yüzyılsız):</b> ' + sayi(il.yil) + '</li></ul>';
+    var don = '<ul class="bul">' + il.donemler.map(function(d, i){
+      var son = il.donemler[i + 1];
+      return '<li>🔢 ' + (d.baslangic ? d.baslangic + '\'den itibaren' : 'Baştan itibaren') + (son ? ' (' + son.baslangic + '\'e kadar)' : '') + ': ' + d.a + ' + ' + d.b + ' = ' + sayi(d.ara) + '</li>';
+    }).join('') + '</ul>';
+    return bolum('', '💞 İlişki hesabı', 'Partnerin doğum tarihi alt alta yazılıp toplanır. Gün, ay ve yıl toplamlarına ayrı ayrı bakılır; yıl toplamında yüzyıl yer almaz, titreşim sayısında ise yüzyıl eklenir.',
+      tablo + '<h3 class="sub">İlişkideki temalar: üç düzey</h3>' + duzey +
+      '<h3 class="sub">Ara sayı: dış dünya bu çifti nasıl algılar?</h3><p class="muted">İlişkinin birden fazla ara sayısı olabilir. Birincisi baştan itibaren aktiftir; sıfır kuralından gelen sonraki ara sayı, o sayıya karşılık gelen yaşa ulaşıldığında devreye girer.</p>' + don +
+      '<div class="actions no-print"><button type="button" class="btn ghost" id="partnerAc">⭐ ' + esc(isimB) + ' için pentagramı aç</button></div>');
+  }
+
+  function sekmeCozumle(){
+    return '<section class="mod"><h2>🔍 Sayı Çözümleyici</h2><p class="lead">Tanımı olmayan bir sayıyı kendin nasıl okursun? Sekiz adım, her sayıda aynı sırayla. Araçlar susuyorsa sen de sus: çalışmayan adım boş bırakılır.</p>' +
+      '<div class="coz-in"><input type="number" id="cozSayi" min="1" max="99999" placeholder="Sayı" inputmode="numeric"><button type="button" class="btn" id="cozBtn" style="margin:0">Çözümle</button></div><div id="cozSonuc" style="margin-top:16px"></div></section>';
+  }
+  function cozumCiz(n){
+    var c = P.cozumle(n), L = [];
+    function adim(baslik, ic, bos, ek){ L.push('<li class="' + (bos ? 'bos ' : '') + (ek ? 'ekyol' : '') + '"><b class="t">' + baslik + '</b>' + ic + '</li>'); }
+    adim('Asal mı?', c.asal ? 'Evet — ' + n + ', sırada ' + c.asalSira + '. asaldır; içeriği ' + sayi(c.asalSira) + '.' : 'Hayır — bölünüyor.');
+    adim('Çarpanları yaz', c.carpanlar.length ? c.carpanlar.map(function(x){ return '<div>' + x[0] + ' × ' + x[1] + ' → ' + sayi(x[0]) + ' · ' + sayi(x[1]) + '</div>'; }).join('') + '<div class="muted">Her çift ayrı bir cümle verir: küçük sayı büyüğe ne yapıyor?</div>' : 'Çarpan çifti yok.', !c.carpanlar.length);
+    adim('Aynı sayı iki kez mi?', c.kare ? n + ' = ' + c.kare + ' × ' + c.kare + (c.kare <= 10 ? ' — kök 0–10 arasında: içerik saftır, yalnızca ' + sayi(c.kare) + '.' : ' — kök 10\'dan büyük: kökü de çözümle (' + sayi(c.kare, true) + ').') : 'Hayır, kare değil.', !c.kare);
+    var zl = c.zincirler.filter(function(z){ return z.asal > 3 || z.asal === n; });
+    adim('Asal çarpana bak', zl.length ? zl.map(function(z){
+      return '<div>' + z.zincir.map(function(h){ return h[0] + ' → ' + h[1] + '. asal'; }).join(' · ') + ' → içerik ' + sayi(z.zincir[z.zincir.length - 1][1]) +
+        (z.toplam ? '<br><span class="muted">Zincirin toplamı:</span> ' + z.zincir.map(function(h){ return h[0]; }).concat([z.zincir[z.zincir.length - 1][1]]).join(' + ') + ' = ' + sayi(z.toplam) : '') + '</div>';
+    }).join('') : 'İçeriği okunacak asal çarpan yok.', !zl.length);
+    adim('Sıra + asal ara', (c.siraAsal.length ? c.siraAsal.map(function(x){ return '<div>' + n + ' = ' + x[0] + ' + ' + x[1] + ' (' + x[1] + ' → ' + x[0] + '. asal) → ' + sayi(x[0]) + ' · ' + sayi(x[1]) + '</div>'; }).join('') : 'Böyle bir çift yok.') +
+      (c.ileri ? '<div class="muted">İleri yön: ' + n + ' + ' + c.asalSira + ' = ' + sayi(c.ileri, true) + '</div>' : '') +
+      (c.ustOktav ? '<div class="muted">Üst oktav: ' + n + '. sıra = ' + sayi(c.ustOktav, true) + '</div>' : ''), !c.siraAsal.length);
+    adim('Rakamları topla', c.rakamToplami.length > 1 ? c.rakamToplami.map(function(x, i){ return i ? sayi(x) : String(x); }).join(' → ') + '<div class="muted">Çıkan sayı çözümdür: parçaların iş birliğinin hedefi. İki adım sürerse aradaki basamak da okunur.</div>' : 'Tek basamaklı — kendisi.');
+    var bas = '';
+    if (c.dizilim) bas = 'Soldaki ' + sayi(c.dizilim.sol) + ' yerleşmiş, deneyimlenmiş taraftır; sağdaki ' + sayi(c.dizilim.sag) + ' dinamik taraftır ve soldakini kendi lehine değiştirmek ister.' + (c.dizilim.sag === 0 ? ' Sağdaki 0: bir onluk döngü kapanmıştır.' : '');
+    else if (c.kesimler.length) bas = c.kesimler.map(function(k){ return '<div><b>' + k[0] + '-' + k[1] + '</b> → ' + sayi(+k[0]) + ' · ' + sayi(+k[1]) + '</div>'; }).join('') + '<div class="muted">"Soldakini kullanarak sağdakini yap."</div>';
+    adim('Basamakları oku', bas || 'Tek basamaklı — çalışmaz.', !bas);
+    var ip = [];
+    if (c.ipuclari.ters === 'ayni') ip.push('🔁 Tersten de ' + n + ': içeriyle dışarı aynı şeyi söylüyor.');
+    else if (c.ipuclari.ters && String(n).length === 2) ip.push('🔁 Ters sayı ' + sayi(c.ipuclari.ters, true) + ': aynı malzeme, ters yön.');
+    if (c.ipuclari.ustat) ip.push('🌟 11\'in katı — üstat sayı: fikir çoktur ama hep çifttir.');
+    if (c.ipuclari.sonuSifir) ip.push('⭕ Sonu 0: bir onluk tur biter; bilinen kapanır, sıfırdan başlanır.');
+    if (c.ipuclari.dort) ip.push('🧱 İçinde 4 var: geçmişten gelen yük — madde, sınır, karmik bağlam.');
+    if (c.okultKok) ip.push('🪜 Okült kök: 1 + 2 + … + ' + c.okultKok + ' = ' + n + ' → özü ' + sayi(c.okultKok) + '.');
+    adim('İpuçları ve ek yollar', (ip.length ? ip.map(function(x){ return '<div>' + x + '</div>'; }).join('') : 'Karşılık veren ipucu yok; zorlanmaz.') + '<div class="muted">Araçlardan sonra bakılır; yalnızca karşılık verenler kullanılır.</div>', !ip.length, true);
+    adim('Cümleleri birleştir', 'Tekrarı ele, çelişkiyi gerilim olarak yaz; hepsini tek cümlede topla. Sayı eğilim gösterir, olay bildirmez.');
+    $('cozSonuc').innerHTML = '<div class="kv gold" style="margin-bottom:12px"><div class="k">Çözümlenen sayı</div><div class="v">' + n + '</div><div class="s">' + (c.tanim ? 'Hazır tanım: ' + esc(c.tanim) : 'Bu sayı için sunumlarda hazır tanım yok; yorum aşağıdaki yöntemle çıkarılır.') + '</div></div><ol class="steps">' + L.join('') + '</ol>';
+  }
+
+  /* ================= ANA AKIŞ ================= */
+  var SEKMELER = [];
+  function sekmeKur(liste){
+    SEKMELER = liste;
+    $('tabs').innerHTML = liste.map(function(s, i){ return '<button type="button" class="tab' + (i ? '' : ' on') + '" data-tab="' + s.id + '">' + s.ad + '</button>'; }).join('');
+    $('panels').innerHTML = liste.map(function(s, i){ return '<div class="panel" id="panel-' + s.id + '"' + (i ? ' hidden' : '') + '>' + s.html + '</div>'; }).join('');
+  }
+  function sekmeAc(id){
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(b){ b.classList.toggle('on', b.getAttribute('data-tab') === id); });
+    Array.prototype.forEach.call(document.querySelectorAll('.panel'), function(p){ p.hidden = p.id !== 'panel-' + id; });
+  }
+  function cizimleriYenile(){
+    var b1 = $('svgDogum'), b2 = $('svgGolge'), b3 = $('svgVucut');
+    if (b1){ b1.innerHTML = ''; b1.appendChild(cizim(durum.dogum, durum.dogum.tarih.yazi + '   ·   ' + araMetni(durum.dogum.titresim))); }
+    if (b2){ b2.innerHTML = ''; b2.appendChild(cizim(durum.golge, durum.golge.tarih.yazi + '   ·   ' + araMetni(durum.golge.titresim))); }
+    if (b3){ b3.innerHTML = ''; b3.appendChild(vucutCizim(durum.vucut)); }
+  }
+
+  function goster(){
+    var g = durum.g, a = durum.a, y = durum.y;
+    durum.dogum = P.dogum(g, a, y);
+    durum.golge = P.golge(g, a, y);
+    durum.vucut = P.vucut(g, a, y);
+    var liste = [
+      {id:'dogum', ad:'⭐ Doğum Pentagramı', html:sekmeDogum(durum.isim, durum.dogum)},
+      {id:'golge', ad:'🌑 Gölge Pentagram', html:sekmeGolge(durum.golge)},
+      {id:'vucut', ad:'🧍 Vücut Resmi', html:sekmeVucut(durum.vucut)},
+      {id:'zaman', ad:'⏳ Zaman', html:sekmeZaman(durum.dogum)},
+      {id:'isim', ad:'🔤 İsim', html:sekmeIsim(durum.isim)}
+    ];
+    if (durum.partner){
+      durum.iliski = P.iliski({g:g, a:a, y:y}, durum.partner);
+      liste.push({id:'iliski', ad:'💞 İlişki', html:sekmeIliski(durum.isim, durum.partner.isim, durum.iliski)});
+    }
+    liste.push({id:'coz', ad:'🔍 Sayı Çözümleyici', html:sekmeCozumle()});
+    sekmeKur(liste);
     $('results').hidden = false;
     $('printBtn').hidden = false;
-    $('svgBox').appendChild(cizim(s));
-    Array.prototype.forEach.call(document.querySelectorAll('.toggles input'), function(cb){
-      cb.addEventListener('change', function(){
-        gorunum[cb.getAttribute('data-g')] = cb.checked;
-        var box = $('svgBox'); box.innerHTML = ''; box.appendChild(cizim(son.s));
-      });
+    cizimleriYenile();
+    kisiselYilCiz();
+    var sel = $('kyYil'); if (sel) sel.addEventListener('change', kisiselYilCiz);
+    $('cozBtn').addEventListener('click', function(){ var n = parseInt($('cozSayi').value, 10); if (n >= 1 && n <= 99999) cozumCiz(n); });
+    $('cozSayi').addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); $('cozBtn').click(); } });
+    var pa = $('partnerAc');
+    if (pa) pa.addEventListener('click', function(){
+      var p = durum.partner;
+      $('isim').value = p.isim; $('gun').value = p.g; $('ay').value = p.a; $('yil').value = p.y;
+      $('pIsim').value = ''; $('pGun').value = ''; $('pAy').value = ''; $('pYil').value = '';
+      $('form').requestSubmit();
     });
   }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest ? e.target.closest('[data-tab],[data-coz]') : null;
+    if (!t) return;
+    if (t.hasAttribute('data-tab')) sekmeAc(t.getAttribute('data-tab'));
+    else {
+      var n = +t.getAttribute('data-coz');
+      sekmeAc('coz'); $('cozSayi').value = n; cozumCiz(n);
+      $('results').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+  document.addEventListener('change', function(e){
+    var cb = e.target;
+    if (cb.matches && cb.matches('.toggles input')){
+      gorunum[cb.getAttribute('data-g')] = cb.checked;
+      Array.prototype.forEach.call(document.querySelectorAll('.toggles input[data-g="' + cb.getAttribute('data-g') + '"]'), function(x){ x.checked = cb.checked; });
+      cizimleriYenile();
+    }
+  });
 
   function gecerliTarih(g, a, y){
     if (!(g >= 1 && a >= 1 && a <= 12 && y >= 1000 && y <= 2999)) return false;
@@ -598,9 +1129,14 @@ if (typeof module !== 'undefined') module.exports = PENTAGRAM;
     var g = parseInt($('gun').value, 10), a = parseInt($('ay').value, 10), y = parseInt($('yil').value, 10);
     if (!isim){ $('err').textContent = 'Lütfen isim soyisim girin.'; return; }
     if (!gecerliTarih(g, a, y)){ $('err').textContent = 'Lütfen geçerli bir doğum tarihi girin (gün, ay, dört haneli yıl).'; return; }
+    var pg = parseInt($('pGun').value, 10), pa = parseInt($('pAy').value, 10), py = parseInt($('pYil').value, 10), partner = null;
+    if ($('pGun').value || $('pAy').value || $('pYil').value){
+      if (!gecerliTarih(pg, pa, py)){ $('err').textContent = 'Partnerin doğum tarihi geçerli değil (gün, ay, dört haneli yıl).'; return; }
+      partner = {isim: $('pIsim').value.trim() || 'Partner', g:pg, a:pa, y:py};
+    }
     $('err').textContent = '';
-    son = {isim:isim, s:PENTAGRAM.hesapla(g, a, y)};
-    goster(isim, son.s);
+    durum = {isim:isim, g:g, a:a, y:y, partner:partner};
+    goster();
     $('results').scrollIntoView({behavior:'smooth', block:'start'});
   });
 })();
