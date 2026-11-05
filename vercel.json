@@ -1,6 +1,5 @@
 {
-  "trailingSlash": false,
-  "rewrites": [
-    { "source": "/22lik-numeroloji", "destination": "/api/22lik-numeroloji" }
-  ]
+  "buildCommand": "echo 'SİSİM ANALİZİ - Statik Site'",
+  "outputDirectory": "ebced-app",
+  "trailingSlash": false
 }
