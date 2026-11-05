@@ -1,0 +1,6 @@
+{
+  "buildCommand": "echo 'SİSİM ANALİZİ - Statik Site'",
+  "outputDirectory": ".",
+  "trailingSlash": false,
+  "cleanUrls": true
+}

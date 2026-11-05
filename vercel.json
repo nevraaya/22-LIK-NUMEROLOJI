@@ -1,5 +1,5 @@
 {
-  "buildCommand": "echo 'SİSİM ANALİZİ - Statik Site'",
   "outputDirectory": "ebced-app",
-  "trailingSlash": false
+  "trailingSlash": false,
+  "cleanUrls": true
 }
