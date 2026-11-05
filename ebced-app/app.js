@@ -476,3 +476,74 @@ function showAllNumbers() {
     result.innerHTML = html;
     result.classList.add('show');
 }
+
+// Harflerle İsim Analizi
+function analyzeLetterByLetter() {
+    const name = document.getElementById('lettersName').value.trim();
+    const result = document.getElementById('lettersResult');
+
+    if (!name) {
+        result.innerHTML = '<div class="error-message">⚠️ Lütfen bir isim giriniz</div>';
+        result.classList.add('show');
+        return;
+    }
+
+    const letters = name.toLowerCase().split('');
+    let html = `<div class="result-card"><h3>✨ ${name.toUpperCase()} - HARFLERİN ANALİZİ</h3></div>`;
+    
+    // Her harfin card'ını oluştur
+    html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0;">';
+    
+    let totalDigit = 0;
+    letters.forEach((letter, index) => {
+        const ebcedValue = ebcedMap[letter] || 0;
+        const analysis = letterAnalysis[letter] || letterAnalysis[letter.toUpperCase()];
+        
+        if (analysis) {
+            totalDigit += ebcedValue;
+            const bright = analysis.bright || 'Bilgi bulunmuyor';
+            const kabbalistic = analysis.kabbalistic || 'Bilinmiyor';
+            
+            html += `
+                <div class="harmony-card" style="border-left: 4px solid var(--primary); padding: 15px; border-radius: 8px; background: var(--light);">
+                    <div style="font-size: 2em; font-weight: bold; color: var(--primary); margin-bottom: 10px;">${letter.toUpperCase()}</div>
+                    <div style="color: #6b7280; font-size: 0.9em; line-height: 1.6;">
+                        <p><strong>Rakam:</strong> ${ebcedValue}</p>
+                        <p><strong>Kabala:</strong> ${kabbalistic}</p>
+                        <p style="margin-top: 10px; font-style: italic; color: #4b5563;">"${bright}"</p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+    
+    html += '</div>';
+    
+    // Toplam enerji
+    const finalDigit = reduceToSingleDigit(totalDigit);
+    const finalAnalysis = nameAnalysis[finalDigit];
+    
+    html += `
+        <div class="result-card" style="border: 2px solid var(--primary); background: rgba(102, 126, 234, 0.05);">
+            <h3 style="color: var(--primary);">📊 TOPLAM ENERJİ</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0;">
+                <div style="text-align: center; padding: 15px; background: white; border-radius: 8px;">
+                    <div style="font-size: 0.9em; color: #6b7280;">EBCED Toplam</div>
+                    <div style="font-size: 2em; font-weight: bold; color: var(--primary);">${totalDigit}</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: white; border-radius: 8px;">
+                    <div style="font-size: 0.9em; color: #6b7280;">İndirgeme</div>
+                    <div style="font-size: 2em; font-weight: bold; color: var(--accent);">${finalDigit}</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: white; border-radius: 8px;">
+                    <div style="font-size: 0.9em; color: #6b7280;">Enerji Tipi</div>
+                    <div style="font-size: 1.1em; font-weight: bold; color: var(--primary);">${finalAnalysis.type}</div>
+                </div>
+            </div>
+            <p style="margin-top: 15px; line-height: 1.8; color: #6b7280;">${finalAnalysis.meaning}</p>
+        </div>
+    `;
+    
+    result.innerHTML = html;
+    result.classList.add('show');
+}

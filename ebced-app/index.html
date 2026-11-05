@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EBCED HESABI - Numeroloji Uygulaması | İsim Analizi</title>
-    <meta name="description" content="EBCED numeroloji sistemi ile isim analizi yapın, iki kişi arasındaki uyumu kontrol edin, evlilik uyumunu öğrenin. Numeroloji rehberi ve kişisel analiz.">
-    <meta name="keywords" content="EBCED, numeroloji, isim analizi, uyum, evlilik, numeroloji hesaplama">
+    <title>SİSİM ANALİZİ - Harflerle ve Numeroloji Analizi | Tam İsim Tahlili</title>
+    <meta name="description" content="SİSİM ANALİZİ: Harflerle isim analizi, EBCED numeroloji sistemi, iki kişi uyumu, evlilik danışmanlığı, işletme ortaklığı. Adınızın enerjisini keşfedin.">
+    <meta name="keywords" content="isim analizi, harflerle analiz, EBCED, numeroloji, uyum analizi, evlilik, numeroloji hesaplama, harf enerjisi">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -514,12 +514,13 @@
 <body>
     <div class="container">
         <header>
-            <h1>🌟 EBCED HESABI</h1>
-            <p class="tagline">Numeroloji ile İlişkileri Keşfedin • Nomen Est Omen - İsim Kaderdir</p>
+            <h1>✨ SİSİM ANALİZİ ✨</h1>
+            <p class="tagline">Harflerle İsim Analizi • EBCED Numeroloji • Uyum • Evlilik • İş Ortaklığı</p>
         </header>
 
         <div class="tabs">
             <button class="tab-button active" data-tab="single">📊 Tek İsim</button>
+            <button class="tab-button" data-tab="letters">✨ Harflerle</button>
             <button class="tab-button" data-tab="harmony">💑 İki Kişi</button>
             <button class="tab-button" data-tab="marriage">💍 Evlilik</button>
             <button class="tab-button" data-tab="business">🤝 İş Ortaklığı</button>
@@ -633,11 +634,25 @@
                 </div>
                 <div id="numbersResult" class="result-container"></div>
             </div>
+
+            <!-- Harflerle İsim Analizi -->
+            <div id="letters" class="tab-content">
+                <div class="input-section">
+                    <h2>✨ Harflerle İsim Analizi</h2>
+                    <p style="color: #6b7280; margin-bottom: 20px;">Her harfin enerjisini, anlamını ve Kabalistik archetipi keşfedin.</p>
+                    <div class="input-group">
+                        <label for="lettersName">İsim giriniz:</label>
+                        <input type="text" id="lettersName" placeholder="Örn: Mehmet, Ayşe, Ali..." autocomplete="off">
+                    </div>
+                    <button onclick="analyzeLetterByLetter()">Harfleri Analiz Et</button>
+                </div>
+                <div id="lettersResult" class="result-container"></div>
+            </div>
         </div>
 
         <footer>
-            <p>🌟 EBCED Numeroloji Uygulaması | Nomen Est Omen - İsim Kaderdir</p>
-            <p style="margin-top: 10px; opacity: 0.7;">Her isim bir enerji taşır ve bu enerji kişinin yaşamını şekillendirir.</p>
+            <p>✨ SİSİM ANALİZİ | Harflerle ve Numeroloji Sistemi | Nomen Est Omen - İsim Kaderdir</p>
+            <p style="margin-top: 10px; opacity: 0.7;">Her harfin ve ismin bir enerjisi vardır. İsmin enerjisi kişinin yaşamını ve kaderini şekillendirir.</p>
         </footer>
     </div>
 
